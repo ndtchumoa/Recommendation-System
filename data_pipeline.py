@@ -1,47 +1,71 @@
 """
-Amazon Sales Dataset — Data Engineering Pipeline
-=================================================
+Amazon Sales Dataset — Data Engineering Pipeline (Optimized)
+=============================================================
 Dataset  : Amazon Sales Dataset (amazon.csv)
 Tác giả  : Data Engineering Team
+
+Luồng xử lý:
 amazon.csv
     │
-    ▼ loadData()
-    ├─ usecols → chỉ đọc 4 cột [Bước 1]
-    ├─ to_numeric + dropna → làm sạch cơ bản [Bước 2a, 2b]
-    └─ str.split + explode → chuẩn hóa 1 hàng/user [Bước 1]
+    ▼ loadData(filepath)
+    ├─ usecols        → chỉ đọc 4 cột cần thiết          [Bước 1]
+    ├─ to_numeric     → ép rating sang float              [Bước 2a]
+    ├─ dropna         → xóa hàng thiếu dữ liệu cốt lõi  [Bước 2b]
+    └─ split+explode  → chuẩn hóa 1 hàng = 1 user        [Bước 1]
     │
-    ▼ buildMatrix()
-    ├─ filter ngưỡng ≥ 10 → loại sản phẩm thưa [Bước 2c]
-    ├─ groupby + mean → dedup [Bước 2d]
-    ├─ pivot → Interaction Matrix 91×698 [Bước 3]
-    ├─ fillna(0) → điền ô trống [Bước 3]
-    └─ to_dict → item_mapping [Bước 3]
+    ▼ buildMatrix(df, min_ratings)
+    ├─ filter ≥ min_ratings  → loại sản phẩm thưa        [Bước 2c]
+    ├─ groupby + mean        → dedup                      [Bước 2d]
+    ├─ pivot + fillna(0)     → Interaction Matrix         [Bước 3]
+    └─ to_dict               → item_mapping               [Bước 3]
     │
-    ▼ saveData()
-    ├─ interaction_matrix.pkl [Bước 4]
-    ├─ item_mapping.pkl [Bước 4]
-    └─ matrix_metadata.pkl [Bước 4]
+    ▼ saveData(matrix, mapping, output_dir)
+    ├─ interaction_matrix.pkl                             [Bước 4]
+    └─ item_mapping.pkl                                   [Bước 4]
+
+Thay đổi so với phiên bản cũ:
+    - [FIX]  Bỏ csr_matrix: trả về pd.DataFrame thay vì Sparse Matrix
+             → đúng với instructions, không cần matrix_metadata.pkl nữa
+    - [OPT]  loadData: thêm engine="pyarrow" (nếu có) để đọc CSV nhanh hơn
+    - [OPT]  buildMatrix: dùng isin() với set() thay vì Index để O(1) lookup
+    - [OPT]  buildMatrix: tách item_mapping trước dedup để tránh mất tên sản phẩm
+    - [OPT]  saveData: kiểm tra file tồn tại, log kích thước file sau khi lưu
+    - [OPT]  Thêm hàm validateData() để kiểm tra đầu ra trước khi lưu
+    - [CLEAN] Xóa comment thừa, thống nhất style log [FUNC] prefix
 """
 
+import logging
 import pickle
-import pandas as pd
+import sys
 from pathlib import Path
-from scipy.sparse import csr_matrix
+
+import pandas as pd
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Logging — dùng thay cho print để dễ tắt/bật và redirect ra file
+# ─────────────────────────────────────────────────────────────────────────────
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    datefmt="%H:%M:%S",
+    handlers=[logging.StreamHandler(sys.stdout)],
+)
+log = logging.getLogger(__name__)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# BƯỚC 1 & 2 & 3 (Đọc → Làm sạch → Reshape)
+# BƯỚC 1 + 2a + 2b: Đọc → Ép kiểu → Làm sạch cơ bản
 # ─────────────────────────────────────────────────────────────────────────────
 
 def loadData(filepath: str) -> pd.DataFrame:
     """
     Đọc và xử lý bước đầu file CSV Amazon Sales Dataset.
 
-    Quy trình bên trong:
-        1. Chỉ đọc 4 cột cần thiết để tiết kiệm RAM (usecols).
-        2. Ép cột `rating` sang float; lỗi → NaN.
+    Quy trình:
+        1. Chỉ đọc 4 cột cần thiết (usecols) → tiết kiệm RAM.
+        2. Ép cột rating sang float; lỗi → NaN.
         3. Xóa hàng có NaN ở 3 cột cốt lõi.
-        4. Tách chuỗi user_id gộp → mỗi hàng chỉ chứa 1 user.
+        4. Tách chuỗi user_id gộp → mỗi hàng chứa đúng 1 user.
 
     Parameters
     ----------
@@ -51,180 +75,231 @@ def loadData(filepath: str) -> pd.DataFrame:
     Returns
     -------
     pd.DataFrame
-        DataFrame sạch với các cột: user_id, product_id, rating, product_name.
-        Mỗi hàng đảm bảo: 1 user_id + 1 product_id + 1 rating.
+        Các cột: user_id, product_id, rating, product_name.
+        Đảm bảo: 1 hàng = 1 user_id + 1 product_id + 1 rating.
+
+    Raises
+    ------
+    FileNotFoundError
+        Nếu file CSV không tồn tại tại filepath.
+    ValueError
+        Nếu file không chứa đủ các cột bắt buộc.
     """
-    print(f"[loadData] Bắt đầu đọc file: {filepath}")
+    path = Path(filepath)
+    if not path.exists():
+        raise FileNotFoundError(f"[loadData] Không tìm thấy file: '{filepath}'")
 
+    log.info("[loadData] Bắt đầu đọc: %s", filepath)
+
+    REQUIRED_COLS = ["user_id", "product_id", "rating", "product_name"]
+
+    # [OPT] Thử dùng pyarrow engine để đọc nhanh hơn (~2-3x); fallback về c engine
     try:
-        # ── Bước 1a: Đọc CSV, chỉ lấy 4 cột cần thiết ───────────────────────
-        df = pd.read_csv(
-            filepath,
-            usecols=["user_id", "product_id", "rating", "product_name"],
-            dtype=str,          # đọc tất cả là string trước, sẽ ép kiểu sau
-        )
-        print(f"[loadData] Đọc thô xong — {len(df):,} dòng, {df.shape[1]} cột.")
+        df = pd.read_csv(path, usecols=REQUIRED_COLS, dtype=str, engine="pyarrow")
+        log.info("[loadData] Dùng engine=pyarrow.")
+    except Exception:
+        df = pd.read_csv(path, usecols=REQUIRED_COLS, dtype=str, engine="c")
+        log.info("[loadData] Dùng engine=c (pyarrow không khả dụng).")
 
-        # ── Bước 2a: Ép kiểu cột rating sang float ────────────────────────────
-        # strip() loại bỏ khoảng trắng thừa; errors='coerce' → NaN nếu không hợp lệ
-        df["rating"] = pd.to_numeric(df["rating"].str.strip(), errors="coerce")
-        print(f"[loadData] Ép kiểu 'rating' sang float hoàn tất.")
+    # Kiểm tra cột bắt buộc
+    missing = set(REQUIRED_COLS) - set(df.columns)
+    if missing:
+        raise ValueError(f"[loadData] File thiếu cột bắt buộc: {missing}")
 
-        # ── Bước 2b: Xóa hàng có NaN ở 3 cột cốt lõi ────────────────────────
-        before = len(df)
-        df.dropna(subset=["user_id", "product_id", "rating"], inplace=True)
-        after = len(df)
-        print(f"[loadData] Drop NaN: {before - after:,} hàng bị xóa → còn {after:,} hàng.")
+    log.info("[loadData] Đọc thô xong — %s dòng, %d cột.", f"{len(df):,}", df.shape[1])
 
-        # ── Bước 4: Tách user_id gộp (1 chuỗi nhiều ID → nhiều hàng đơn) ────
-        # Ví dụ: "userA,userB,userC" → 3 hàng riêng biệt, mỗi hàng 1 user_id
-        df["user_id"] = df["user_id"].str.split(",")   # tách thành list
-        df = df.explode("user_id")                     # mỗi phần tử list → 1 hàng
-        df["user_id"] = df["user_id"].str.strip()      # xóa khoảng trắng thừa sau khi tách
+    # [Bước 2a] Ép kiểu rating sang float
+    df["rating"] = pd.to_numeric(df["rating"].str.strip(), errors="coerce")
 
-        # Xóa user_id rỗng có thể phát sinh sau khi tách (ví dụ: "userA,,userB")
-        df = df[df["user_id"] != ""]
-        df.reset_index(drop=True, inplace=True)
+    # [Bước 2b] Xóa hàng NaN ở 3 cột cốt lõi
+    before = len(df)
+    df.dropna(subset=["user_id", "product_id", "rating"], inplace=True)
+    log.info("[loadData] Drop NaN: %s hàng bị xóa → còn %s hàng.",
+             f"{before - len(df):,}", f"{len(df):,}")
 
-        print(f"[loadData] Sau khi explode user_id: {len(df):,} hàng "
-              f"(mỗi hàng = 1 user + 1 product + 1 rating).")
+    # [Bước 1] Tách user_id gộp "userA,userB" → nhiều hàng đơn
+    df["user_id"] = df["user_id"].str.split(",")
+    df = df.explode("user_id")
+    df["user_id"] = df["user_id"].str.strip()
+    df = df[df["user_id"] != ""]            # loại user_id rỗng ("userA,,userB")
+    df.reset_index(drop=True, inplace=True)
 
-    except FileNotFoundError:
-        print(f"[loadData] LỖI: Không tìm thấy file tại '{filepath}'. "
-              "Kiểm tra lại đường dẫn.")
-        raise
-    except Exception as exc:
-        print(f"[loadData] LỖI không xác định: {exc}")
-        raise
-
-    print("[loadData] Hoàn tất. Trả về DataFrame.\n")
+    log.info("[loadData] Sau explode: %s hàng (1 user × 1 product × 1 rating).",
+             f"{len(df):,}")
     return df
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# BƯỚC 2c & 3: Làm sạch nâng cao + Biến đổi cấu trúc
+# BƯỚC 2c + 2d + 3: Lọc → Dedup → Pivot → Mapping
 # ─────────────────────────────────────────────────────────────────────────────
 
-def buildMatrix(df: pd.DataFrame, min_ratings: int = 10):
+def buildMatrix(
+    df: pd.DataFrame,
+    min_ratings: int = 10,
+) -> tuple[pd.DataFrame, dict]:
     """
-    Từ DataFrame thô đã load, thực hiện:
-        - Lọc ngưỡng: chỉ giữ product có >= min_ratings lượt đánh giá.
-        - Xử lý trùng lặp: lấy trung bình rating nếu 1 user rate 1 sản phẩm nhiều lần.
-        - Tạo ma trận tương tác (Interaction Matrix): product_id × user_id.
-        - Tạo bảng ánh xạ product_id → product_name.
-        - Tạo bảng metadata cho ma trận.
+    Xây dựng Interaction Matrix và bảng ánh xạ sản phẩm từ DataFrame sạch.
+
+    Quy trình:
+        2c. Lọc ngưỡng: chỉ giữ product có >= min_ratings lượt đánh giá.
+        2d. Dedup: nếu 1 user rate 1 product nhiều lần → lấy mean.
+        3a. Tạo bảng ánh xạ product_id → product_name.
+        3b. Pivot → Interaction Matrix (product_id × user_id), fillna(0).
 
     Parameters
     ----------
-    df          : pd.DataFrame — output của loadData().
-    min_ratings : int          — ngưỡng tối thiểu số lượt đánh giá của một sản phẩm.
+    df          : pd.DataFrame  — output của loadData().
+    min_ratings : int           — ngưỡng tối thiểu số lượt đánh giá/sản phẩm.
 
     Returns
     -------
-    interaction_matrix : pd.DataFrame — ma trận (product_id × user_id), NaN → 0.
+    interaction_matrix : pd.DataFrame  — (product_id × user_id), giá trị ∈ [0, 5].
     item_mapping       : dict          — {product_id: product_name}.
-    matrix_metadata    : dict          — { "product_ids": [...], "user_ids": [...] }.
     """
-    print(f"[buildMatrix] Bắt đầu xây dựng ma trận. min_ratings={min_ratings}")
+    log.info("[buildMatrix] Bắt đầu. min_ratings=%d", min_ratings)
 
-    # ── Bước 2c: Lọc ngưỡng — chỉ giữ product có đủ lượt đánh giá ───────────
-    rating_counts = df.groupby("product_id")["rating"].count()
-    valid_products = rating_counts[rating_counts >= min_ratings].index
-    before = df["product_id"].nunique()
-    df = df[df["product_id"].isin(valid_products)]
-    after = df["product_id"].nunique()
-    print(f"[buildMatrix] Lọc ngưỡng (>= {min_ratings} ratings): "
-          f"{before} → {after} sản phẩm còn lại.")
-
-    # ── Bước 2d: Xử lý trùng lặp — 1 user rate 1 product nhiều lần → mean ───
-    df = (
-        df.groupby(["product_id", "user_id"], as_index=False)
-          .agg(rating=("rating", "mean"),
-               product_name=("product_name", "first"))   # giữ tên sản phẩm
-    )
-    print(f"[buildMatrix] Sau deduplication: {len(df):,} cặp (product, user) duy nhất.")
-
-    # ── Bước 3a: Tạo bảng ánh xạ product_id → product_name ──────────────────
+    # [OPT] Tạo item_mapping TRƯỚC khi dedup để đảm bảo tên sản phẩm không bị
+    #        mất do cặp (product_id, user_id) bị tổng hợp lại trong groupby
     item_mapping: dict = (
         df[["product_id", "product_name"]]
         .drop_duplicates("product_id")
         .set_index("product_id")["product_name"]
         .to_dict()
     )
-    print(f"[buildMatrix] Bảng ánh xạ: {len(item_mapping):,} sản phẩm.")
+    log.info("[buildMatrix] Bảng ánh xạ: %d sản phẩm.", len(item_mapping))
 
-    # ── Bước 3b: Pivot — tạo ma trận tương tác (Item-Based CF) ───────────────
-    # Hàng = product_id | Cột = user_id | Giá trị = rating
-    interaction_df = df.pivot(
-        index="product_id",
-        columns="user_id",
-        values="rating",
-    ).fillna(0)
-    
-    # Ép kiểu ma trận tương tác thành định dạng nén thưa (Sparse)
-    interaction_matrix_sparse = csr_matrix(interaction_df.values)
-    
-    # Vì Sparse Matrix bị mất index/columns của Pandas, 
-    # ta phải lưu metadata lại để team Algorithm biết hàng/cột nào là của ai
-    matrix_metadata = {
-        "product_ids": interaction_df.index.tolist(),
-        "user_ids": interaction_df.columns.tolist()
-    }
+    # [Bước 2c] Lọc ngưỡng — chỉ giữ product có đủ lượt đánh giá
+    # [OPT] Dùng set() để isin() chạy O(1) thay vì O(n) với Index
+    rating_counts = df.groupby("product_id")["rating"].count()
+    valid_products: set = set(rating_counts[rating_counts >= min_ratings].index)
 
-    print(f"[buildMatrix] Ma trận tương tác (Sparse): "
-          f"{interaction_matrix_sparse.shape[0]} sản phẩm × {interaction_matrix_sparse.shape[1]} users.")
-    print("[buildMatrix] Hoàn tất.\n")
+    n_before = df["product_id"].nunique()
+    df = df[df["product_id"].isin(valid_products)].copy()
+    n_after = df["product_id"].nunique()
+    log.info("[buildMatrix] Lọc ngưỡng: %d → %d sản phẩm còn lại.", n_before, n_after)
 
-    return interaction_matrix_sparse, item_mapping, matrix_metadata
+    # Cập nhật item_mapping chỉ giữ product vượt ngưỡng
+    item_mapping = {k: v for k, v in item_mapping.items() if k in valid_products}
+
+    # [Bước 2d] Dedup — 1 user rate 1 product nhiều lần → mean
+    df = (
+        df.groupby(["product_id", "user_id"], as_index=False)
+          .agg(rating=("rating", "mean"))
+    )
+    log.info("[buildMatrix] Sau dedup: %s cặp (product, user) duy nhất.", f"{len(df):,}")
+
+    # [Bước 3b] Pivot → Interaction Matrix
+    # Hàng = product_id | Cột = user_id | Giá trị = rating | ô trống = 0
+    interaction_matrix: pd.DataFrame = (
+        df.pivot(index="product_id", columns="user_id", values="rating")
+          .fillna(0)
+    )
+    interaction_matrix.columns.name = None  # xóa label thừa "user_id" trên axis cột
+
+    log.info(
+        "[buildMatrix] Interaction Matrix: %d sản phẩm × %d users. "
+        "Sparsity: %.1f%%",
+        *interaction_matrix.shape,
+        100 * (interaction_matrix == 0).values.mean(),
+    )
+    return interaction_matrix, item_mapping
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# BƯỚC 4: Xuất và Ghi file
+# VALIDATION: Kiểm tra đầu ra trước khi lưu
 # ─────────────────────────────────────────────────────────────────────────────
 
-def saveData(matrix, mapping: dict, metadata: dict, output_dir: str) -> None:
+def validateData(matrix: pd.DataFrame, mapping: dict) -> None:
+    """
+    Kiểm tra tính hợp lệ của Interaction Matrix và item_mapping trước khi lưu.
+
+    Raises
+    ------
+    ValueError
+        Nếu phát hiện bất kỳ vấn đề nào trong dữ liệu.
+    """
+    errors = []
+
+    if matrix.empty:
+        errors.append("Interaction Matrix rỗng.")
+
+    if not mapping:
+        errors.append("item_mapping rỗng.")
+
+    # Mọi product_id trong ma trận phải có trong mapping
+    matrix_ids = set(matrix.index)
+    mapping_ids = set(mapping.keys())
+    orphan_ids = matrix_ids - mapping_ids
+    if orphan_ids:
+        errors.append(f"{len(orphan_ids)} product_id trong ma trận không có tên: {list(orphan_ids)[:5]}...")
+
+    # Rating phải nằm trong [0, 5]
+    out_of_range = ((matrix < 0) | (matrix > 5)).values.any()
+    if out_of_range:
+        errors.append("Có giá trị rating ngoài khoảng [0, 5].")
+
+    if errors:
+        raise ValueError("[validateData] Phát hiện lỗi:\n  - " + "\n  - ".join(errors))
+
+    log.info("[validateData] Kiểm tra đầu ra: OK.")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# BƯỚC 4: Xuất và ghi file
+# ─────────────────────────────────────────────────────────────────────────────
+
+def saveData(matrix: pd.DataFrame, mapping: dict, output_dir: str) -> None:
+    """
+    Lưu Interaction Matrix và item_mapping ra file pickle.
+
+    File xuất ra:
+        {output_dir}/interaction_matrix.pkl  — pd.DataFrame (product_id × user_id)
+        {output_dir}/item_mapping.pkl        — dict {product_id: product_name}
+
+    Parameters
+    ----------
+    matrix     : pd.DataFrame  — output của buildMatrix().
+    mapping    : dict          — output của buildMatrix().
+    output_dir : str           — thư mục đích; được tạo tự động nếu chưa tồn tại.
+    """
     out = Path(output_dir)
     out.mkdir(parents=True, exist_ok=True)
 
-    matrix_path  = out / "interaction_matrix.pkl"
-    mapping_path = out / "item_mapping.pkl"
-    metadata_path = out / "matrix_metadata.pkl" # File mới
+    files = {
+        "interaction_matrix.pkl": matrix,
+        "item_mapping.pkl": mapping,
+    }
 
-    with open(matrix_path, "wb") as f:
-        pickle.dump(matrix, f, protocol=pickle.HIGHEST_PROTOCOL)
+    for filename, obj in files.items():
+        dest = out / filename
+        with open(dest, "wb") as f:
+            pickle.dump(obj, f, protocol=pickle.HIGHEST_PROTOCOL)
+        size_kb = dest.stat().st_size / 1024
+        log.info("[saveData] Đã lưu: %-30s (%.1f KB)", filename, size_kb)
 
-    with open(mapping_path, "wb") as f:
-        pickle.dump(mapping, f, protocol=pickle.HIGHEST_PROTOCOL)
-        
-    with open(metadata_path, "wb") as f:
-        pickle.dump(metadata, f, protocol=pickle.HIGHEST_PROTOCOL)
+    log.info("[saveData] Tất cả file đã lưu vào: %s", out.resolve())
 
-    print(f"[saveData] Đã lưu thành công 3 file (Matrix, Mapping, Metadata) vào '{out.resolve()}'.\n")
 
 # ─────────────────────────────────────────────────────────────────────────────
-# ENTRY POINT — chạy toàn bộ pipeline
+# ENTRY POINT
 # ─────────────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    CSV_PATH   = "amazon.csv"   # ← chỉ khai báo 1 lần duy nhất ở đây
-    OUTPUT_DIR = "output"
+    CSV_PATH    = "amazon.csv"
+    OUTPUT_DIR  = "output"
     MIN_RATINGS = 10
 
-    # Bước 1 + 2a + 2b + 4 (explode): đọc và làm sạch cơ bản
     df_raw = loadData(CSV_PATH)
 
-    # Bước 2c + 2d + 3: lọc, dedup, pivot, mapping
-    interaction_matrix, item_mapping, matrix_metadata = buildMatrix(df_raw, min_ratings=MIN_RATINGS)
+    interaction_matrix, item_mapping = buildMatrix(df_raw, min_ratings=MIN_RATINGS)
 
-    # Bước 4: xuất file
-    saveData(interaction_matrix, item_mapping, matrix_metadata, OUTPUT_DIR)
+    validateData(interaction_matrix, item_mapping)
 
-    # ── Tóm tắt kết quả ──────────────────────────────────────────────────────
-    print("=" * 60)
-    print("Pipeline hoàn tất!")
-    print(f"  Ma trận : {interaction_matrix.shape[0]} sản phẩm × "
-          f"{interaction_matrix.shape[1]} users")
-    print(f"  Mapping : {len(item_mapping)} sản phẩm")
-    print(f"  Metadata: {len(matrix_metadata['product_ids'])} sản phẩm, {len(matrix_metadata['user_ids'])} người dùng")
-    print(f"  Output  : {Path(OUTPUT_DIR).resolve()}/")
-    print("=" * 60)
+    saveData(interaction_matrix, item_mapping, OUTPUT_DIR)
+
+    log.info("=" * 55)
+    log.info("Pipeline hoàn tất!")
+    log.info("  Ma trận : %d sản phẩm × %d users", *interaction_matrix.shape)
+    log.info("  Mapping : %d sản phẩm", len(item_mapping))
+    log.info("  Output  : %s/", Path(OUTPUT_DIR).resolve())
+    log.info("=" * 55)
