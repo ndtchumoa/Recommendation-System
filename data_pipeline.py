@@ -1,9 +1,6 @@
 """
 Amazon Sales Dataset — Data Engineering Pipeline
 =================================================
-Bước 1–4: Đọc, làm sạch, biến đổi cấu trúc, và xuất dữ liệu.
-
-Vai trò  : Data Engineer
 Dataset  : Amazon Sales Dataset (amazon.csv)
 Tác giả  : Data Engineering Team
 """
@@ -11,6 +8,7 @@ Tác giả  : Data Engineering Team
 import pickle
 import pandas as pd
 from pathlib import Path
+from scipy.sparse import csr_matrix
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -137,56 +135,51 @@ def buildMatrix(df: pd.DataFrame, min_ratings: int = 10):
 
     # ── Bước 3b: Pivot — tạo ma trận tương tác (Item-Based CF) ───────────────
     # Hàng = product_id | Cột = user_id | Giá trị = rating
-    interaction_matrix = df.pivot(
+    interaction_df = df.pivot(
         index="product_id",
         columns="user_id",
         values="rating",
-    )
+    ).fillna(0)
+    
+    # Ép kiểu ma trận tương tác thành định dạng nén thưa (Sparse)
+    interaction_matrix_sparse = csr_matrix(interaction_df.values)
+    
+    # Vì Sparse Matrix bị mất index/columns của Pandas, 
+    # ta phải lưu metadata lại để team Algorithm biết hàng/cột nào là của ai
+    matrix_metadata = {
+        "product_ids": interaction_df.index.tolist(),
+        "user_ids": interaction_df.columns.tolist()
+    }
 
-    # Điền NaN (chưa có rating) = 0
-    interaction_matrix.fillna(0, inplace=True)
-
-    print(f"[buildMatrix] Ma trận tương tác: "
-          f"{interaction_matrix.shape[0]} sản phẩm × {interaction_matrix.shape[1]} users.")
+    print(f"[buildMatrix] Ma trận tương tác (Sparse): "
+          f"{interaction_matrix_sparse.shape[0]} sản phẩm × {interaction_matrix_sparse.shape[1]} users.")
     print("[buildMatrix] Hoàn tất.\n")
 
-    return interaction_matrix, item_mapping
+    return interaction_matrix_sparse, item_mapping, matrix_metadata
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 # BƯỚC 4: Xuất và Ghi file
 # ─────────────────────────────────────────────────────────────────────────────
 
-def saveData(matrix: pd.DataFrame, mapping: dict, output_dir: str) -> None:
-    """
-    Lưu ma trận tương tác và bảng ánh xạ ra file .pkl (pickle).
-
-    Dùng pickle thay vì CSV để:
-        - Bảo toàn cấu trúc DataFrame (index, dtype, v.v.)
-        - Tránh parse lại tốn thời gian khi load về sau.
-
-    Parameters
-    ----------
-    matrix     : pd.DataFrame — ma trận tương tác (product_id × user_id).
-    mapping    : dict          — {product_id: product_name}.
-    output_dir : str           — thư mục đích để ghi file.
-    """
+def saveData(matrix, mapping: dict, metadata: dict, output_dir: str) -> None:
     out = Path(output_dir)
-    out.mkdir(parents=True, exist_ok=True)   # tạo thư mục nếu chưa có
+    out.mkdir(parents=True, exist_ok=True)
 
     matrix_path  = out / "interaction_matrix.pkl"
     mapping_path = out / "item_mapping.pkl"
+    metadata_path = out / "matrix_metadata.pkl" # File mới
 
-    print(f"[saveData] Ghi ma trận tương tác → {matrix_path}")
     with open(matrix_path, "wb") as f:
         pickle.dump(matrix, f, protocol=pickle.HIGHEST_PROTOCOL)
 
-    print(f"[saveData] Ghi bảng ánh xạ       → {mapping_path}")
     with open(mapping_path, "wb") as f:
         pickle.dump(mapping, f, protocol=pickle.HIGHEST_PROTOCOL)
+        
+    with open(metadata_path, "wb") as f:
+        pickle.dump(metadata, f, protocol=pickle.HIGHEST_PROTOCOL)
 
-    print(f"[saveData] Đã lưu thành công 2 file vào '{out.resolve()}'.\n")
-
+    print(f"[saveData] Đã lưu thành công 3 file (Matrix, Mapping, Metadata) vào '{out.resolve()}'.\n")
 
 # ─────────────────────────────────────────────────────────────────────────────
 # ENTRY POINT — chạy toàn bộ pipeline
@@ -201,10 +194,10 @@ if __name__ == "__main__":
     df_raw = loadData(CSV_PATH)
 
     # Bước 2c + 2d + 3: lọc, dedup, pivot, mapping
-    interaction_matrix, item_mapping = buildMatrix(df_raw, min_ratings=MIN_RATINGS)
+    interaction_matrix, item_mapping, matrix_metadata = buildMatrix(df_raw, min_ratings=MIN_RATINGS)
 
     # Bước 4: xuất file
-    saveData(interaction_matrix, item_mapping, OUTPUT_DIR)
+    saveData(interaction_matrix, item_mapping, matrix_metadata, OUTPUT_DIR)
 
     # ── Tóm tắt kết quả ──────────────────────────────────────────────────────
     print("=" * 60)
