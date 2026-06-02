@@ -3,6 +3,24 @@ Amazon Sales Dataset — Data Engineering Pipeline
 =================================================
 Dataset  : Amazon Sales Dataset (amazon.csv)
 Tác giả  : Data Engineering Team
+amazon.csv
+    │
+    ▼ loadData()
+    ├─ usecols → chỉ đọc 4 cột [Bước 1]
+    ├─ to_numeric + dropna → làm sạch cơ bản [Bước 2a, 2b]
+    └─ str.split + explode → chuẩn hóa 1 hàng/user [Bước 1]
+    │
+    ▼ buildMatrix()
+    ├─ filter ngưỡng ≥ 10 → loại sản phẩm thưa [Bước 2c]
+    ├─ groupby + mean → dedup [Bước 2d]
+    ├─ pivot → Interaction Matrix 91×698 [Bước 3]
+    ├─ fillna(0) → điền ô trống [Bước 3]
+    └─ to_dict → item_mapping [Bước 3]
+    │
+    ▼ saveData()
+    ├─ interaction_matrix.pkl [Bước 4]
+    ├─ item_mapping.pkl [Bước 4]
+    └─ matrix_metadata.pkl [Bước 4]
 """
 
 import pickle
@@ -94,6 +112,7 @@ def buildMatrix(df: pd.DataFrame, min_ratings: int = 10):
         - Xử lý trùng lặp: lấy trung bình rating nếu 1 user rate 1 sản phẩm nhiều lần.
         - Tạo ma trận tương tác (Interaction Matrix): product_id × user_id.
         - Tạo bảng ánh xạ product_id → product_name.
+        - Tạo bảng metadata cho ma trận.
 
     Parameters
     ----------
@@ -104,6 +123,7 @@ def buildMatrix(df: pd.DataFrame, min_ratings: int = 10):
     -------
     interaction_matrix : pd.DataFrame — ma trận (product_id × user_id), NaN → 0.
     item_mapping       : dict          — {product_id: product_name}.
+    matrix_metadata    : dict          — { "product_ids": [...], "user_ids": [...] }.
     """
     print(f"[buildMatrix] Bắt đầu xây dựng ma trận. min_ratings={min_ratings}")
 
@@ -205,5 +225,6 @@ if __name__ == "__main__":
     print(f"  Ma trận : {interaction_matrix.shape[0]} sản phẩm × "
           f"{interaction_matrix.shape[1]} users")
     print(f"  Mapping : {len(item_mapping)} sản phẩm")
+    print(f"  Metadata: {len(matrix_metadata['product_ids'])} sản phẩm, {len(matrix_metadata['user_ids'])} người dùng")
     print(f"  Output  : {Path(OUTPUT_DIR).resolve()}/")
     print("=" * 60)
