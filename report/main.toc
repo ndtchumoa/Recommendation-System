@@ -1,0 +1,19 @@
+\babel@toc {vietnamese}{}\relax 
+\contentsline {chapter}{Lời mở đầu}{1}{chapter*.1}%
+\contentsline {chapter}{\numberline {1}Giới thiệu bài toán}{1}{chapter*.3}%
+\contentsline {section}{\numberline {1.1}Bối cảnh}{1}{section*.4}%
+\contentsline {section}{\numberline {1.2}Vấn đề nghiên cứu}{1}{section*.5}%
+\contentsline {section}{\numberline {1.3}Mục tiêu}{1}{section*.6}%
+\contentsline {section}{\numberline {1.4}Phạm vi và ý nghĩa}{1}{section*.7}%
+\contentsline {chapter}{\numberline {2}Cơ sở lý thuyết}{2}{chapter*.8}%
+\contentsline {section}{\numberline {2.1}Tổng quan về Hệ thống gợi ý sản phẩm}{2}{section*.9}%
+\contentsline {section}{\numberline {2.2}Thuật toán Lọc cộng tác (Collaborative Filtering)}{2}{section*.10}%
+\contentsline {subsection}{\numberline {2.2.1}Lọc cộng tác dựa trên người dùng (User-based Collaborative Filtering)}{2}{subsection*.11}%
+\contentsline {subsection}{\numberline {2.2.2}Lọc cộng tác dựa trên sản phẩm (Item-based Collaborative Filtering)}{2}{subsection*.12}%
+\contentsline {chapter}{\numberline {3}Bộ dữ liệu và Tiền xử lý dữ liệu}{3}{chapter*.13}%
+\contentsline {chapter}{\numberline {4}Phân tích và Thiết kế hệ thống}{4}{chapter*.14}%
+\contentsline {chapter}{\numberline {5}Cài đặt hệ thống}{5}{chapter*.15}%
+\contentsline {chapter}{\numberline {6}Thực nghiệm và đánh giá kết quả}{6}{chapter*.16}%
+\contentsline {chapter}{\numberline {7}Kết luận và Hướng phát triển}{7}{chapter*.17}%
+\contentsline {chapter}{Tài liệu tham khảo}{7}{chapter*.17}%
+\contentsline {chapter}{Phụ lục}{8}{chapter*.18}%
