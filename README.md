@@ -43,7 +43,7 @@ Chương trình thực thi trong file `main.cpp` theo luồng tuần tự sau:
 * **Bước 2:** Lọc và gợi ý thẳng **Top K** sản phẩm có điểm tổng hợp cao nhất để giới thiệu cho người dùng mới.
 
 ## 🌲 Direction Tree
-
+```text
 RECOMMENDATION_SYSTEMS/
 ├── models/                     # Tầng Thực thể (Entities): Định nghĩa cấu trúc dữ liệu nền tảng
 │   ├── User.h                  # Khai báo cấu trúc/lớp User (user_id, name, created_at)
