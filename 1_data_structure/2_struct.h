@@ -1,8 +1,9 @@
-#cấu trúc: user: userid, timestamp
-product: id
-score được tính bằng interation: userid, product id, click, add_cart, purchase, buy, rating
-2_struct.h
-
+//cấu trúc: user: userid, timestamp
+//product: id
+//score được tính bằng interation: userid, product id, click, add_cart, purchase, buy, rating
+#pragma once
+#include <string>       
+using namespace std;
 struct User
 {
     int user_id;
@@ -10,10 +11,12 @@ struct User
     string created_at;
 };
 
-struct Product
+struct Item
 {
-    int product_id;
+    int item_id;
     string name;
+    string category;
+    float price;
 };
 
 struct Interaction

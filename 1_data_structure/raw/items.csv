@@ -1,0 +1,16 @@
+item_id,name,category,price
+I001,Laptop Dell XPS 15,Electronics,32000000
+I002,Tai nghe Sony WH-1000XM5,Electronics,8500000
+I003,Chuot Logitech MX Master 3,Electronics,2200000
+I004,Ban phim co Keychron K2,Electronics,1800000
+I005,Man hinh LG UltraWide 34,Electronics,12000000
+I006,Sach Clean Code,Books,320000
+I007,Sach Design Patterns,Books,280000
+I008,Sach The Pragmatic Programmer,Books,350000
+I009,Ao thun lap trinh Funny Code,Apparel,250000
+I010,Tui deo cheo chong nuoc,Accessories,450000
+I011,Binh nuoc giu nhiet 1L,Lifestyle,320000
+I012,Den ban LED chong loe,Electronics,680000
+I013,Webcam Logitech C920,Electronics,1600000
+I014,Hub USB-C 7-in-1,Electronics,590000
+I015,Sach Atomic Habits,Books,180000
