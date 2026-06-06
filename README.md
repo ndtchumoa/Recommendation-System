@@ -4,9 +4,9 @@ Dự án xây dựng một hệ thống gợi ý sản phẩm (Product Recommend
 
 ## 🌟 Tiêu Chí Đánh Giá & Tính Năng
 Hệ thống tính điểm tương tác (Score) dựa trên việc kết hợp nhiều hành vi của người dùng thay vì chỉ dựa vào số sao đánh giá:
-* **Hành vi đa dạng:** Bao gồm click (xem sản phẩm), thêm vào giỏ hàng (`add_cart`), mua hàng (`purchase`), và đánh giá (`rating`). 
+* **Hành vi đa dạng:** Bao gồm xem sản phẩm (`click`), thêm vào giỏ hàng (`add_cart`), mua hàng (`purchase`), và đánh giá (`rating`). 
 * **Trọng số hành vi:** Các hành vi như click vào xem hay thêm vào giỏ hàng sẽ có mức trọng số thấp hơn so với việc mua hàng hoặc để lại rating. Hệ thống từ đó có thể gợi ý trực tiếp các sản phẩm giống với sản phẩm người dùng hay xem.
-* **Xử lý người dùng mới (Cold Start):** Khi người dùng mới mở web, hệ thống tự động hiển thị các sản phẩm thịnh hành (sản phẩm giống với sản phẩm gần nhất mình xem hoặc sản phẩm mà những người giống mình gần đây đã xem).
+* **Xử lý người dùng mới (Cold Start):** Khi người dùng mới mở web, hệ thống tự động hiển thị các sản phẩm thịnh hành (sản phẩm có nhiều lượt mua, đánh giá cao nhất).
 
 ## 📂 Cấu Trúc Dữ Liệu (Entities)
 Dữ liệu cốt lõi được xây dựng qua các `struct`/`class` sau:
