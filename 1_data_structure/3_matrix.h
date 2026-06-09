@@ -1,8 +1,6 @@
 #tạo 1 matrix rating gồm user id, product id và nd là score- product là hàng ngang
 #chuẩn hóa ma trận,... theo lý thuyết để tính cosine
 #từ mai trận rating tính sum của từng hàng để xem product nào có score cao nhất 
-3_matrix.h
-3_matrix.h include
 
 #include "2_struct.h"
 class Matrix
