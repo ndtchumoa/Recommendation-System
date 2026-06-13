@@ -1,3 +1,4 @@
+#include "RatingMatrix.h"
 #include "../1_models/Interaction.h"
 #include <iostream>
 #include <iomanip>
