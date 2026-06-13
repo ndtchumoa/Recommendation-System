@@ -10,14 +10,19 @@
 
 /**
  * @class CSVLoader
- * @brief Tầng hạ tầng I/O – nạp dữ liệu từ các tệp CSV vào bộ nhớ.
+ * @brief Tầng hạ tầng I/O – nạp/ghi dữ liệu giữa file CSV và bộ nhớ.
  *
- * Lớp này chịu hoàn toàn trách nhiệm đọc file, tách cột (parse),
- * chuyển kiểu dữ liệu và trả về vector của các thực thể tương ứng.
+ * Lớp này chịu hoàn toàn trách nhiệm đọc/viết file, tách cột (parse),
+ * chuyển kiểu dữ liệu và trả về/nhận vector của các thực thể tương ứng.
  * Các lớp thuật toán (RatingMatrix, Recommender...) sẽ nhận dữ liệu
  * đã được parse sạch từ đây.
  *
- * ── Định dạng tệp đầu vào ──────────────────────────────────────────
+ * Các hàm save*() dùng cho luồng "Export DB ra CSV": dữ liệu đọc từ
+ * DatabaseManager (vector<User>/<Item>/<Interaction>) có thể được ghi
+ * lại thành file CSV với cùng định dạng mà loadUsers/loadItems/
+ * loadInteractions() đọc vào, nên có thể nạp lại bằng chính CSVLoader.
+ *
+ * ── Định dạng tệp ──────────────────────────────────────────────────
  *  users.csv       : user_id, name, created_at
  *  items.csv       : item_id, name, category, price
  *  interactions.csv: user_id, item_id, click, add_cart, purchase, rating
@@ -29,6 +34,9 @@
  *   auto users    = loader.loadUsers("datasets/users.csv");
  *   auto items    = loader.loadItems("datasets/items.csv");
  *   auto interact = loader.loadInteractions("datasets/interactions.csv");
+ *
+ *   // Export ngược lại CSV (vd: sau khi loadUsers() từ DatabaseManager)
+ *   loader.saveUsers("datasets/export_users.csv", users);
  * @endcode
  */
 class CSVLoader {
@@ -59,6 +67,31 @@ public:
      */
     std::vector<Interaction> loadInteractions(const std::string& filepath) const;
 
+    // ─────────────────────────────────────────────────────────────────
+    // Ghi dữ liệu ra CSV (dùng cho luồng Export DB -> CSV)
+    // ─────────────────────────────────────────────────────────────────
+
+    /**
+     * @brief Ghi danh sách User ra tệp CSV (có dòng header).
+     * @param filepath Đường dẫn tệp đích (sẽ bị ghi đè nếu đã tồn tại).
+     * @param users    Danh sách người dùng cần ghi.
+     * @return true nếu ghi thành công.
+     */
+    bool saveUsers(const std::string& filepath,
+                   const std::vector<User>& users) const;
+
+    /**
+     * @brief Ghi danh sách Item ra tệp CSV (có dòng header).
+     */
+    bool saveItems(const std::string& filepath,
+                  const std::vector<Item>& items) const;
+
+    /**
+     * @brief Ghi danh sách Interaction ra tệp CSV (có dòng header).
+     */
+    bool saveInteractions(const std::string& filepath,
+                          const std::vector<Interaction>& interactions) const;
+
 private:
     /**
      * @brief Tách một dòng CSV thành các token theo dấu phẩy.
@@ -77,4 +110,14 @@ private:
      * @return Chuỗi đã được trim.
      */
     std::string trim(const std::string& s) const;
+
+    /**
+     * @brief Chuẩn bị một giá trị để ghi an toàn vào một ô CSV.
+     *
+     * Nếu giá trị chứa dấu phẩy, dấu ngoặc kép hoặc ký tự xuống dòng,
+     * hàm sẽ bọc giá trị trong dấu nháy kép và escape các dấu nháy kép
+     * bên trong (theo chuẩn RFC 4180), tương ứng với cách parseLine()
+     * đọc ngược lại.
+     */
+    std::string escapeField(const std::string& field) const;
 };

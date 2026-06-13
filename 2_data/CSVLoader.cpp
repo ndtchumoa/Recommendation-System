@@ -1,10 +1,10 @@
 #include "CSVLoader.h"
-
 #include <fstream>
 #include <sstream>
 #include <iostream>
 #include <stdexcept>
 #include <algorithm>
+#include <iomanip>
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Private Helpers
@@ -49,8 +49,26 @@ std::vector<std::string> CSVLoader::parseLine(const std::string& line) const {
     return tokens;
 }
 
+std::string CSVLoader::escapeField(const std::string& field) const {
+    bool needsQuoting =
+        field.find(',')  != std::string::npos ||
+        field.find('"')  != std::string::npos ||
+        field.find('\n') != std::string::npos ||
+        field.find('\r') != std::string::npos;
+
+    if (!needsQuoting) return field;
+
+    std::string out = "\"";
+    for (char c : field) {
+        if (c == '"') out += "\"\""; // escape dấu nháy kép -> ""
+        else           out += c;
+    }
+    out += "\"";
+    return out;
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
-// Public Methods
+// Public Methods - Load (CSV -> memory)
 // ─────────────────────────────────────────────────────────────────────────────
 
 std::vector<User> CSVLoader::loadUsers(const std::string& filepath) const {
@@ -216,4 +234,72 @@ std::vector<Interaction> CSVLoader::loadInteractions(const std::string& filepath
     std::cout << "[CSVLoader] Da nap " << interactions.size()
               << " tuong tac tu '" << filepath << "'\n";
     return interactions;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Public Methods - Save (memory -> CSV)
+// ─────────────────────────────────────────────────────────────────────────────
+
+bool CSVLoader::saveUsers(const std::string& filepath,
+                          const std::vector<User>& users) const {
+    std::ofstream file(filepath);
+    if (!file.is_open()) {
+        std::cerr << "[CSVLoader][ERROR] Khong the ghi file: " << filepath << "\n";
+        return false;
+    }
+
+    file << "user_id,name,created_at\n";
+    for (const auto& u : users) {
+        file << escapeField(u.user_id) << ","
+             << escapeField(u.name) << ","
+             << escapeField(u.created_at) << "\n";
+    }
+
+    std::cout << "[CSVLoader] Da ghi " << users.size()
+              << " nguoi dung ra '" << filepath << "'\n";
+    return true;
+}
+
+bool CSVLoader::saveItems(const std::string& filepath,
+                         const std::vector<Item>& items) const {
+    std::ofstream file(filepath);
+    if (!file.is_open()) {
+        std::cerr << "[CSVLoader][ERROR] Khong the ghi file: " << filepath << "\n";
+        return false;
+    }
+
+    file << "item_id,name,category,price\n";
+    for (const auto& it : items) {
+        file << escapeField(it.item_id) << ","
+             << escapeField(it.name) << ","
+             << escapeField(it.category) << ","
+             << std::fixed << std::setprecision(0) << it.price << "\n";
+    }
+
+    std::cout << "[CSVLoader] Da ghi " << items.size()
+              << " san pham ra '" << filepath << "'\n";
+    return true;
+}
+
+bool CSVLoader::saveInteractions(const std::string& filepath,
+                                 const std::vector<Interaction>& interactions) const {
+    std::ofstream file(filepath);
+    if (!file.is_open()) {
+        std::cerr << "[CSVLoader][ERROR] Khong the ghi file: " << filepath << "\n";
+        return false;
+    }
+
+    file << "user_id,item_id,click,add_cart,purchase,rating\n";
+    for (const auto& i : interactions) {
+        file << escapeField(i.user_id) << ","
+             << escapeField(i.item_id) << ","
+             << i.click << ","
+             << i.add_cart << ","
+             << i.purchase << ","
+             << std::fixed << std::setprecision(1) << i.rating << "\n";
+    }
+
+    std::cout << "[CSVLoader] Da ghi " << interactions.size()
+              << " tuong tac ra '" << filepath << "'\n";
+    return true;
 }
