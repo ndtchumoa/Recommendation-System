@@ -1,6 +1,15 @@
 #include "CSVLoader.h"
+<<<<<<< HEAD
 
 CSVLoader::CSVLoader() {}
+=======
+#include <fstream>
+#include <sstream>
+#include <iostream>
+#include <stdexcept>
+#include <algorithm>
+#include <iomanip>
+>>>>>>> b8c1ae64c94847b04dee00ae1cc482c9f316487e
 
 // Hàm hỗ trợ xóa khoảng trắng ở đầu và cuối chuỗi
 std::string CSVLoader::trim(const std::string& str) {
@@ -10,10 +19,65 @@ std::string CSVLoader::trim(const std::string& str) {
     return str.substr(first, (last - first + 1));
 }
 
+<<<<<<< HEAD
 // --- Đọc dữ liệu Users ---
 // Format thực tế: user_id,name,created_at
 // (bổ sung email, password mặc định cho các tính năng Auth mới)
 bool CSVLoader::loadUsers(const std::string& filepath) {
+=======
+std::vector<std::string> CSVLoader::parseLine(const std::string& line) const {
+    std::vector<std::string> tokens;
+    std::string token;
+    bool insideQuotes = false;
+
+    for (size_t i = 0; i < line.size(); ++i) {
+        char c = line[i];
+
+        if (c == '"') {
+            // Kiểm tra escaped quote: hai dấu "" liền nhau bên trong quotes
+            if (insideQuotes && i + 1 < line.size() && line[i + 1] == '"') {
+                token += '"';
+                ++i; // bỏ qua dấu nháy thứ hai
+            } else {
+                insideQuotes = !insideQuotes;
+            }
+        } else if (c == ',' && !insideQuotes) {
+            tokens.push_back(trim(token));
+            token.clear();
+        } else {
+            token += c;
+        }
+    }
+
+    // Token cuối cùng (sau dấu phẩy cuối hoặc cuối dòng)
+    tokens.push_back(trim(token));
+    return tokens;
+}
+
+std::string CSVLoader::escapeField(const std::string& field) const {
+    bool needsQuoting =
+        field.find(',')  != std::string::npos ||
+        field.find('"')  != std::string::npos ||
+        field.find('\n') != std::string::npos ||
+        field.find('\r') != std::string::npos;
+
+    if (!needsQuoting) return field;
+
+    std::string out = "\"";
+    for (char c : field) {
+        if (c == '"') out += "\"\""; // escape dấu nháy kép -> ""
+        else           out += c;
+    }
+    out += "\"";
+    return out;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Public Methods - Load (CSV -> memory)
+// ─────────────────────────────────────────────────────────────────────────────
+
+std::vector<User> CSVLoader::loadUsers(const std::string& filepath) const {
+>>>>>>> b8c1ae64c94847b04dee00ae1cc482c9f316487e
     std::ifstream file(filepath);
     if (!file.is_open()) {
         std::cerr << "Loi: Khong the mo file " << filepath << std::endl;
@@ -121,7 +185,77 @@ bool CSVLoader::loadInteractions(const std::string& filepath) {
     return true;
 }
 
+<<<<<<< HEAD
 // --- Getters ---
 const MyVector<User>& CSVLoader::getUsers() const { return users; }
 const MyVector<Item>& CSVLoader::getItems() const { return items; }
 const MyVector<Interaction>& CSVLoader::getInteractions() const { return interactions; }
+=======
+// ─────────────────────────────────────────────────────────────────────────────
+// Public Methods - Save (memory -> CSV)
+// ─────────────────────────────────────────────────────────────────────────────
+
+bool CSVLoader::saveUsers(const std::string& filepath,
+                          const std::vector<User>& users) const {
+    std::ofstream file(filepath);
+    if (!file.is_open()) {
+        std::cerr << "[CSVLoader][ERROR] Khong the ghi file: " << filepath << "\n";
+        return false;
+    }
+
+    file << "user_id,name,created_at\n";
+    for (const auto& u : users) {
+        file << escapeField(u.user_id) << ","
+             << escapeField(u.name) << ","
+             << escapeField(u.created_at) << "\n";
+    }
+
+    std::cout << "[CSVLoader] Da ghi " << users.size()
+              << " nguoi dung ra '" << filepath << "'\n";
+    return true;
+}
+
+bool CSVLoader::saveItems(const std::string& filepath,
+                         const std::vector<Item>& items) const {
+    std::ofstream file(filepath);
+    if (!file.is_open()) {
+        std::cerr << "[CSVLoader][ERROR] Khong the ghi file: " << filepath << "\n";
+        return false;
+    }
+
+    file << "item_id,name,category,price\n";
+    for (const auto& it : items) {
+        file << escapeField(it.item_id) << ","
+             << escapeField(it.name) << ","
+             << escapeField(it.category) << ","
+             << std::fixed << std::setprecision(0) << it.price << "\n";
+    }
+
+    std::cout << "[CSVLoader] Da ghi " << items.size()
+              << " san pham ra '" << filepath << "'\n";
+    return true;
+}
+
+bool CSVLoader::saveInteractions(const std::string& filepath,
+                                 const std::vector<Interaction>& interactions) const {
+    std::ofstream file(filepath);
+    if (!file.is_open()) {
+        std::cerr << "[CSVLoader][ERROR] Khong the ghi file: " << filepath << "\n";
+        return false;
+    }
+
+    file << "user_id,item_id,click,add_cart,purchase,rating\n";
+    for (const auto& i : interactions) {
+        file << escapeField(i.user_id) << ","
+             << escapeField(i.item_id) << ","
+             << i.click << ","
+             << i.add_cart << ","
+             << i.purchase << ","
+             << std::fixed << std::setprecision(1) << i.rating << "\n";
+    }
+
+    std::cout << "[CSVLoader] Da ghi " << interactions.size()
+              << " tuong tac ra '" << filepath << "'\n";
+    return true;
+}
+>>>>>>> b8c1ae64c94847b04dee00ae1cc482c9f316487e

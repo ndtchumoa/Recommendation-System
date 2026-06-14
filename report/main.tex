@@ -1,6 +1,9 @@
-\documentclass{report}
+\documentclass[11pt]{report}
 \usepackage{fontspec} 
-\setmainfont{Times New Roman} 
+\setmainfont{Latin Modern Roman}
+\setsansfont{Latin Modern Sans}
+\setmonofont{Latin Modern Mono}
+\usepackage{tikz}
 \usepackage[vietnamese]{babel}
 \usepackage[most]{tcolorbox}
 \usepackage{parskip}
@@ -14,8 +17,11 @@
 \usepackage{etoolbox}
 \usepackage{tabularx}
 \usepackage{authblk}
+\usepackage{float}
+\usepackage{fancyhdr}
 \patchcmd{\tableofcontents}{\thispagestyle{plain}}{\thispagestyle{empty}}{}{}
-\usepackage[colorlinks=true, allcolors=blue, hypertexnames=false]{hyperref}\usepackage[a4paper,top=2cm,bottom=2cm,left=3cm,right=2cm,marginparwidth=1.75cm,headheight=15pt]{geometry}
+\usepackage[colorlinks=true, allcolors=blue, hypertexnames=false]{hyperref}
+\usepackage[a4paper,top=2cm,bottom=2cm,left=3cm,right=2cm,marginparwidth=1.75cm,headheight=18pt]{geometry}
 
 % ============================================================
 \newcommand{\vekhung}{
@@ -30,16 +36,17 @@
 }
 
 % ============================================================
-\usepackage{fancyhdr}
-\fancypagestyle{plain}{
-    \fancyhf{} % Xóa hết thiết lập mặc định của plain
-    \lhead{\footnotesize Khoa Toán - Tin | Đại học Bách khoa Hà Nội}
-    %\rhead{\footnotesize Nguyễn Đức Thành - 202419099}
-    \lfoot{\footnotesize Hệ thống Gợi ý Sản phẩm}
-    \rfoot{\thepage}
-    \renewcommand{\headrulewidth}{0.4pt}
-    \renewcommand{\footrulewidth}{0.4pt}
-}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\footnotesize Khoa Toán - Tin | Đại học Bách khoa Hà Nội}
+%\rhead{\footnotesize Nguyễn Đức Thành - 202419099}
+\lfoot{\footnotesize Xây dựng Hệ thống gợi ý sản phẩm | Recommendation System}
+\rfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\makeatletter
+\let\ps@plain\ps@fancy
+\makeatother
 
 % ============================================================
 \begin{document}
@@ -53,31 +60,33 @@
     \vspace{18pt}
     \includegraphics[width=0.3\textwidth]{LogoHUST.png} \\
     \vspace{30pt}
-    \textbf{\huge Báo cáo Bài tập lớn} \\
+    \textbf{\Large BÁO CÁO BÀI TẬP LỚN} \\
     \vspace{12pt}
     \textbf{\huge CẤU TRÚC DỮ LIỆU \& GIẢI THUẬT} \\
+    \vspace{12pt}
+    \textbf{\huge (MI3060)} \\
+    \vspace{12pt}
+    \textbf{\large Đề tài:} \\
     \vspace{6pt}
-    \textbf{\huge (MI3090)} \\
-    \vspace{12pt}
-    \textbf{\huge Đề tài:} \\
-    \vspace{12pt}
-    \textbf{\huge Xây dựng Hệ thống gợi ý sản phẩm \\ (Recommendation System)} \\
+    \textbf{\LARGE Xây dựng Hệ thống gợi ý sản phẩm \\ (Recommendation System)} \\
     \vspace{18pt}
     \begin{tabular}{ll}
-        \textbf{Giảng viên hướng dẫn:} & Lê Quang Hòa \\
+        \textbf{Giảng viên hướng dẫn:} & ThS. Lê Quang Hòa \\
         \textbf{Mã lớp học:} & 169308 \\
         \textbf{Nhóm sinh viên thực hiện:} \\
     \end{tabular} \\
+    \vspace{6pt}
     \begin{tabular}{llll}
-        1 & Đoàn Đức Anh & 202419033 & Hệ thống thông tin quản lý 02 \\
+        1 & Đoàn Đức Anh       & 202419033 & Hệ thống thông tin quản lý 02 \\
         2 & Ngô Thị Thùy Duyên & 202419051 & Hệ thống thông tin quản lý 02 \\
-        3 & Nguyễn Đức Thành & 202419099 & Hệ thống thông tin quản lý 02 \\
-        4 & Phan Thị Hải Yến & 202419124 & Hệ thống thông tin quản lý 01 \\
+        3 & Nguyễn Đức Thành   & 202419099 & Hệ thống thông tin quản lý 02 \\
+        4 & Phan Thị Hải Yến   & 202419124 & Hệ thống thông tin quản lý 01 \\
     \end{tabular} \\
-    \vspace{81pt}
-    \textbf{\large Hà Nội, Tháng 6 2026}
+    \vspace{99pt}
+    \textbf{Hà Nội, Tháng 6 2026}
 \end{center}
 \end{titlepage}
+    
 % ============================================================
 %\newpage
 %\title{Xây dựng hệ thống gợi ý sản phẩm (Recommendation System)}
@@ -92,28 +101,279 @@
 
 % ============================================================
 \clearpage
-\tableofcontents     
+\makeatletter
+\let\ps@plain\ps@empty
+\makeatother
+\addcontentsline{toc}{chapter}{Danh sách hình vẽ}
+\listoffigures
+\makeatletter
+\let\ps@plain\ps@empty
+\makeatother
 \clearpage
 
 % ============================================================
-\pagenumbering{arabic}
+\clearpage
+\makeatletter
+\let\ps@plain\ps@empty
+\makeatother
+\addcontentsline{toc}{chapter}{Danh sách bảng}
+\listoftables
+\makeatletter
+\let\ps@plain\ps@empty
+\makeatother
+\clearpage
+
+% ============================================================
+\clearpage
+\makeatletter
+\let\ps@plain\ps@empty
+\makeatother
+\pagestyle{empty}
+\tableofcontents
+\thispagestyle{empty}
+\makeatletter
+\let\ps@plain\ps@fancy
+\makeatother
+\clearpage
+
+% ============================================================
 \pagestyle{fancy}
 
 \newpage
 \chapter{Giới thiệu bài toán}
 \label{chap:gioithieu}
+
 \section{Bối cảnh}
+
+Trong những năm gần đây, sự phát triển mạnh mẽ của công nghệ thông tin và Internet đã thúc đẩy sự bùng nổ của thương mại điện tử trên phạm vi toàn cầu. Các nền tảng mua sắm trực tuyến như Shopee, Lazada, Tiki, Amazon hay Alibaba hiện đang cung cấp hàng triệu sản phẩm thuộc nhiều ngành hàng khác nhau, từ thời trang, điện tử, gia dụng cho đến thực phẩm và dịch vụ số.
+
+Sự gia tăng nhanh chóng về số lượng sản phẩm mang lại nhiều lựa chọn hơn cho người tiêu dùng. Tuy nhiên, điều này cũng tạo ra một thách thức mới: người dùng phải đối mặt với lượng thông tin khổng lồ và khó có thể tìm được sản phẩm phù hợp trong thời gian ngắn. Hiện tượng này được gọi là \textit{Information Overload} (quá tải thông tin).
+
+Trước đây, người dùng chỉ cần lựa chọn trong vài chục hoặc vài trăm sản phẩm. Ngày nay, khi tìm kiếm một từ khóa đơn giản như ``áo sơ mi nam'', hệ thống có thể trả về hàng chục nghìn kết quả khác nhau. Việc phải liên tục lọc, so sánh và đánh giá sản phẩm khiến quá trình mua sắm trở nên khó khăn hơn.
+
+Không chỉ ảnh hưởng đến người dùng, vấn đề này còn tác động trực tiếp đến hiệu quả kinh doanh của doanh nghiệp. Khi người dùng không tìm được sản phẩm phù hợp hoặc mất quá nhiều thời gian tìm kiếm, khả năng từ bỏ phiên mua sắm sẽ tăng lên, làm giảm tỷ lệ chuyển đổi và doanh thu của nền tảng.
+
+Trong bối cảnh đó, các hệ thống gợi ý sản phẩm (Recommendation System) đã trở thành thành phần không thể thiếu của các nền tảng thương mại điện tử hiện đại. Thay vì hiển thị cùng một danh sách sản phẩm cho tất cả người dùng, hệ thống gợi ý giúp cá nhân hóa trải nghiệm mua sắm bằng cách dự đoán những sản phẩm mà mỗi người dùng có khả năng quan tâm.
+
 \section{Vấn đề nghiên cứu}
+
+Qua khảo sát thực tế trên các nền tảng thương mại điện tử, nhóm nhận thấy tồn tại nhiều vấn đề cần được giải quyết.
+
+\subsection*{Đối với người dùng}
+
+Thứ nhất, người dùng thường gặp khó khăn trong việc lựa chọn sản phẩm khi số lượng lựa chọn quá lớn. Nhiều nghiên cứu cho thấy càng có nhiều lựa chọn, người dùng càng mất nhiều thời gian ra quyết định và dễ rơi vào trạng thái mệt mỏi khi lựa chọn (\textit{Decision Fatigue}).
+
+Thứ hai, người dùng khó khám phá các sản phẩm mới thực sự phù hợp với nhu cầu cá nhân. Phần lớn người dùng chỉ xem các kết quả đầu tiên hoặc các sản phẩm nổi bật được hiển thị trên trang chủ, trong khi rất nhiều sản phẩm tiềm năng khác không được tiếp cận.
+
+Thứ ba, trải nghiệm mua sắm hiện nay vẫn chưa được cá nhân hóa hoàn toàn. Nếu hệ thống chỉ hiển thị các sản phẩm bán chạy hoặc phổ biến, mọi người dùng sẽ nhận được nội dung tương tự nhau mặc dù nhu cầu và sở thích là khác nhau.
+
+\subsection*{Đối với doanh nghiệp}
+
+Đối với doanh nghiệp, việc không cá nhân hóa trải nghiệm mua sắm dẫn đến nhiều hệ quả tiêu cực:
+
+\begin{itemize}
+\item Tỷ lệ chuyển đổi (Conversion Rate) thấp.
+\item Thời gian người dùng lưu lại trên nền tảng giảm.
+\item Doanh thu từ các giao dịch mua bổ sung chưa được khai thác hiệu quả.
+\item Khả năng giữ chân khách hàng thấp.
+\item Chi phí marketing và quảng cáo tăng cao.
+\end{itemize}
+
+Do đó, bài toán đặt ra là xây dựng một hệ thống có khả năng phân tích hành vi người dùng, học từ dữ liệu lịch sử và tự động đề xuất các sản phẩm phù hợp với từng cá nhân.
+
 \section{Mục tiêu}
+
+Mục tiêu tổng quát của đề tài là xây dựng một hệ thống gợi ý sản phẩm cá nhân hóa dựa trên dữ liệu tương tác của người dùng.
+
+Để đạt được mục tiêu trên, đề tài tập trung thực hiện các nhiệm vụ sau:
+
+\begin{enumerate}
+\item Nghiên cứu các phương pháp xây dựng hệ thống gợi ý hiện nay.
+\item Xây dựng mô hình dữ liệu biểu diễn mối quan hệ giữa người dùng và sản phẩm.
+\item Thiết kế cấu trúc lưu trữ dữ liệu phù hợp với dữ liệu thương mại điện tử có tính thưa cao.
+\item Áp dụng thuật toán Collaborative Filtering để xác định mức độ tương đồng.
+\item Xây dựng cơ chế sinh danh sách sản phẩm gợi ý theo thời gian thực.
+\item Đánh giá hiệu quả của hệ thống thông qua các kịch bản thực nghiệm.
+\end{enumerate}
+
+Ngoài mục tiêu về mặt ứng dụng, đề tài còn hướng tới việc vận dụng các kiến thức của học phần Cấu trúc dữ liệu và Giải thuật trong một bài toán thực tế.
+
 \section{Phạm vi và ý nghĩa}
 
-% ============================================================
+Trong phạm vi của đề tài, dữ liệu được sử dụng bao gồm các hành vi cơ bản của người dùng đối với sản phẩm như:
+
+\begin{itemize}
+\item Xem sản phẩm.
+\item Thêm vào giỏ hàng.
+\item Mua hàng.
+\item Đánh giá sản phẩm.
+\end{itemize}
+
+Đề tài tập trung nghiên cứu phương pháp Item-Based Collaborative Filtering thay vì các mô hình học sâu hoặc Hybrid Recommendation phức tạp.
+
+Về mặt học thuật, đề tài minh họa việc ứng dụng các cấu trúc dữ liệu như Hash Map, Sparse Matrix, Heap và Priority Queue vào việc giải quyết bài toán Recommendation System.
+
+Về mặt thực tiễn, hệ thống có thể hỗ trợ người dùng tìm kiếm sản phẩm phù hợp nhanh hơn, đồng thời giúp doanh nghiệp nâng cao trải nghiệm khách hàng và gia tăng doanh thu.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \chapter{Cơ sở lý thuyết}
 \label{chap:lythuyet}
+
 \section{Tổng quan về Hệ thống gợi ý sản phẩm}
+
+Hệ thống gợi ý sản phẩm (Recommendation System) là một hệ thống thông minh có khả năng dự đoán mức độ quan tâm của người dùng đối với các đối tượng như sản phẩm, dịch vụ hoặc nội dung số.
+
+Mục tiêu chính của Recommendation System là giảm khoảng cách giữa người dùng và sản phẩm bằng cách tự động lựa chọn những mục có khả năng phù hợp nhất để đề xuất.
+
+Trong thương mại điện tử, hệ thống gợi ý thường xuất hiện dưới nhiều hình thức:
+
+\begin{itemize}
+\item Sản phẩm dành riêng cho bạn.
+\item Có thể bạn cũng thích.
+\item Sản phẩm tương tự.
+\item Khách hàng cũng mua.
+\item Gợi ý sau khi thanh toán.
+\end{itemize}
+
+Một hệ thống gợi ý hiệu quả mang lại nhiều lợi ích:
+
+\begin{enumerate}
+\item Giảm thời gian tìm kiếm sản phẩm.
+\item Cá nhân hóa trải nghiệm người dùng.
+\item Tăng tỷ lệ chuyển đổi.
+\item Tăng giá trị đơn hàng trung bình.
+\item Nâng cao mức độ hài lòng của khách hàng.
+\end{enumerate}
+
+Hiện nay, Recommendation System là thành phần cốt lõi của hầu hết các nền tảng thương mại điện tử lớn trên thế giới.
+
 \section{Thuật toán Lọc cộng tác (Collaborative Filtering)}
-\subsection{Lọc cộng tác dựa trên người dùng (User-based Collaborative Filtering)}
-\subsection{Lọc cộng tác dựa trên sản phẩm (Item-based Collaborative Filtering)}
+
+Collaborative Filtering là phương pháp gợi ý phổ biến nhất hiện nay. Ý tưởng cơ bản của phương pháp này là khai thác hành vi của cộng đồng người dùng để dự đoán sở thích của từng cá nhân.
+
+Giả định trung tâm của Collaborative Filtering là:
+
+\begin{quote}
+Những người dùng có hành vi tương tự trong quá khứ sẽ có xu hướng thích những sản phẩm giống nhau trong tương lai.
+\end{quote}
+
+Dữ liệu đầu vào thường được biểu diễn dưới dạng ma trận User--Item:
+
+\[
+R =
+\begin{bmatrix}
+r_{11} & r_{12} & \cdots & r_{1n} \\
+r_{21} & r_{22} & \cdots & r_{2n} \\
+\vdots & \vdots & \ddots & \vdots \\
+r_{m1} & r_{m2} & \cdots & r_{mn}
+\end{bmatrix}
+\]
+Trong đó:
+
+\begin{itemize}
+\item $m$ là số lượng người dùng.
+\item $n$ là số lượng sản phẩm.
+\item $r_{ij}$ biểu diễn mức độ quan tâm của người dùng $i$ đối với sản phẩm $j$.
+\end{itemize}
+
+\subsection{Lọc cộng tác dựa trên người dùng (User-Based Collaborative Filtering)}
+
+User-Based Collaborative Filtering tập trung tìm kiếm những người dùng có hành vi tương đồng.
+
+Quy trình thực hiện gồm:
+
+\begin{enumerate}
+\item Xây dựng ma trận User--Item.
+\item Tính độ tương đồng giữa các người dùng.
+\item Tìm nhóm người dùng gần nhất.
+\item Dự đoán sở thích của người dùng hiện tại.
+\item Sinh danh sách gợi ý.
+\end{enumerate}
+
+Ưu điểm:
+
+\begin{itemize}
+\item Dễ hiểu.
+\item Dễ triển khai.
+\item Có khả năng giải thích kết quả.
+\end{itemize}
+
+Nhược điểm:
+
+\begin{itemize}
+\item Chi phí tính toán cao khi số lượng người dùng lớn.
+\item Khó mở rộng trên hệ thống thực tế.
+\item Độ ổn định thấp khi dữ liệu thưa.
+\end{itemize}
+
+\subsection{Lọc cộng tác dựa trên sản phẩm (Item-Based Collaborative Filtering)}
+
+Khác với phương pháp User-Based Collaborative Filtering tập trung vào sự tương đồng giữa các người dùng, Item-Based Collaborative Filtering tập trung vào mối quan hệ giữa các sản phẩm.
+
+Giả định cơ bản của phương pháp này là:
+
+\begin{quote}
+Nếu nhiều người dùng đã từng tương tác với hai sản phẩm giống nhau thì hai sản phẩm đó có xu hướng tương đồng.
+\end{quote}
+
+Do đó, khi một người dùng đã quan tâm hoặc mua một sản phẩm nào đó, hệ thống có thể đề xuất các sản phẩm tương tự dựa trên lịch sử tương tác của cộng đồng người dùng.
+
+Để xác định mức độ tương đồng giữa hai sản phẩm $i$ và $j$, đề tài sử dụng độ đo Cosine Similarity. Công thức được xác định như sau:
+
+\[
+sim(i,j)
+=
+\frac
+{\sum\limits_{u \in U} R_{u,i}R_{u,j}}
+{\sqrt{\sum\limits_{u \in U} R_{u,i}^{2}}
+ \times
+ \sqrt{\sum\limits_{u \in U} R_{u,j}^{2}}}
+\]
+
+Trong đó:
+
+\begin{itemize}
+\item $sim(i,j)$: độ tương đồng giữa sản phẩm $i$ và sản phẩm $j$.
+\item $U$: tập tất cả người dùng.
+\item $R_{u,i}$: mức độ tương tác của người dùng $u$ với sản phẩm $i$.
+\item $R_{u,j}$: mức độ tương tác của người dùng $u$ với sản phẩm $j$.
+\end{itemize}
+
+Giá trị của độ tương đồng nằm trong khoảng từ 0 đến 1.
+
+\begin{itemize}
+\item Nếu $sim(i,j)$ gần bằng 1 thì hai sản phẩm rất giống nhau.
+\item Nếu $sim(i,j)$ gần bằng 0 thì hai sản phẩm ít liên quan.
+\end{itemize}
+
+Sau khi tính toán độ tương đồng cho tất cả các cặp sản phẩm, hệ thống xây dựng ma trận tương đồng sản phẩm (Item Similarity Matrix). Đây là bước huấn luyện được thực hiện ngoại tuyến (offline) nhằm giảm chi phí tính toán trong quá trình gợi ý.
+
+Đối với mỗi sản phẩm, hệ thống chỉ lưu lại $K$ sản phẩm có độ tương đồng cao nhất (Top-K Neighbors). Việc lưu trữ này giúp giảm đáng kể bộ nhớ sử dụng cũng như thời gian truy xuất khi sinh danh sách gợi ý.
+Sau khi tính toán độ tương đồng, hệ thống lưu lại Top-K sản phẩm giống nhất đối với mỗi sản phẩm.
+
+Khi người dùng truy cập hệ thống:
+
+\begin{enumerate}
+\item Lấy lịch sử tương tác của người dùng.
+\item Truy xuất các sản phẩm tương tự từ bảng Top-K.
+\item Tính điểm gợi ý.
+\item Sắp xếp theo điểm giảm dần.
+\item Chọn Top-N sản phẩm để hiển thị.
+\end{enumerate}
+
+Ưu điểm của Item-Based Collaborative Filtering:
+
+\begin{itemize}
+\item Phù hợp với dữ liệu thương mại điện tử.
+\item Ma trận sản phẩm ổn định hơn ma trận người dùng.
+\item Dễ mở rộng khi số lượng người dùng tăng.
+\item Có thể tiền xử lý offline.
+\item Được sử dụng rộng rãi trong các hệ thống thực tế.
+\end{itemize}
+
+Từ các phân tích trên, nhóm lựa chọn Item-Based Collaborative Filtering làm thuật toán cốt lõi cho hệ thống gợi ý sản phẩm của đề tài.
+
 
 % ============================================================
 \chapter{Bộ dữ liệu và Tiền xử lý dữ liệu}
