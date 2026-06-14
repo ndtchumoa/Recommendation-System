@@ -1,8 +1,4 @@
 #include "RatingMatrix.h"
-<<<<<<< HEAD
-=======
-#include "../1_models/Interaction.h"
->>>>>>> b8c1ae64c94847b04dee00ae1cc482c9f316487e
 #include <iostream>
 #include <iomanip>
 #include <cmath>

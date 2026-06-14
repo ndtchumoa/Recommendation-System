@@ -21,7 +21,6 @@ public:
     MyVector<MyPair<std::string, double>> topK(const std::string& item_id, int k) const;
 
     void printMatrix() const;
-    void sortPairDescByScore(MyVector<MyPair<std::string, double>>& arr);
 };
 
 #endif // SIMILARITY_MATRIX_H
