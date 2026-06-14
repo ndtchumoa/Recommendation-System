@@ -16,7 +16,7 @@
  * - image_url: Đường dẫn ảnh (tùy chọn)
  */
 class Item {
-private:
+public:
     std::string item_id;
     std::string name;
     std::string category;

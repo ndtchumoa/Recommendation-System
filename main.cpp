@@ -1,41 +1,26 @@
-<<<<<<< HEAD
-=======
-// ═══════════════════════════════════════════════════════════════════════
-// main.cpp  —  Hệ thống gợi ý sản phẩm Item-Based CF  (C++)
-//
-// Quy trình:
-//   1. Load CSV  →  2. Build Rating Matrix  →  3. Calculate Similarity
-//   →  4. Recommend  →  5. Print Top-N
-//
-// Ngoài ra, main.cpp còn cung cấp menu để đồng bộ 2 chiều với MySQL:
-//   - Import: đọc users/items/interactions.csv  ->  ghi vào MySQL
-//   - Export: đọc users/items/interactions từ MySQL  ->  ghi ra CSV
-//
-// Compile (g++, xem chi tiết trong SETUP_MYSQL_CONNECTOR.md):
-//   g++ -std=c++17 -O2 -Wall -Ithird_party/mysql/include
-//       main.cpp 1_models/*.cpp 2_data/*.cpp 3_core/*.cpp
-//       -Lthird_party/mysql/lib -llibmysql -o recommendation.exe
-//
-// Chạy:
-//   ./recommendation.exe
-// ═══════════════════════════════════════════════════════════════════════
-
->>>>>>> b8c1ae64c94847b04dee00ae1cc482c9f316487e
 #include <iostream>
 #include <iomanip>
-<<<<<<< HEAD
 #include <string>
-=======
+#include <thread> 
+#include <vector>
 #include <limits>
->>>>>>> b8c1ae64c94847b04dee00ae1cc482c9f316487e
 
+// Khai báo thư viện Crow (API)
+#define ASIO_STANDALONE
+#include "include/crow.h"
+
+// Khai báo các class của dự án
 #include "1_models/Item.h"
 #include "2_data/MyDataStructures.h"
 #include "2_data/CSVLoader.h"
-<<<<<<< HEAD
 #include "6_services/ItemManager.h"
 #include "6_services/InteractionManager.h"
 #include "6_services/UserManager.h"
+
+// Khai báo Core Recommender
+#include "3_core/RatingMatrix.h"
+#include "3_core/SimilarityMatrix.h"
+#include "3_core/Recommender.h"
 
 int main() {
     std::cout << "==============================================\n";
@@ -46,38 +31,6 @@ int main() {
     // 1. NẠP DỮ LIỆU
     // ─────────────────────────────────────────────────────────────
     std::cout << "[1] Dang doc du lieu tu thu muc 4_dataset...\n";
-=======
-#include "2_data/DatabaseManager.h"
-#include "3_core/RatingMatrix.h"
-#include "3_core/SimilarityMatrix.h"
-#include "3_core/Recommender.h"
-
-// ─────────────────────────────────────────────────────────────────────
-// Cấu hình kết nối MySQL — đọc từ "2_data/db_config.h"
-//
-// File "db_config.h" KHÔNG được commit lên Git (xem .gitignore).
-// Nếu chưa có file này, hãy copy "2_data/db_config.example.h" thành
-// "2_data/db_config.h" rồi sửa DB_USER/DB_PASS/DB_NAME cho khớp máy bạn.
-// (Xem hướng dẫn chi tiết trong README.md, phần "Hướng dẫn cho thành
-//  viên nhóm").
-// ─────────────────────────────────────────────────────────────────────
-#include "2_data/db_config.h"
-
-// Đường dẫn các tệp CSV gốc (dùng cho chạy gợi ý + import vào DB)
-static const std::string USERS_CSV        = "4_dataset/users.csv";
-static const std::string ITEMS_CSV        = "4_dataset/items.csv";
-static const std::string INTERACTIONS_CSV = "4_dataset/interactions.csv";
-
-// Đường dẫn các tệp CSV xuất ra (export từ DB, không ghi đè dữ liệu gốc)
-static const std::string EXPORT_USERS_CSV        = "4_dataset/export_users.csv";
-static const std::string EXPORT_ITEMS_CSV        = "4_dataset/export_items.csv";
-static const std::string EXPORT_INTERACTIONS_CSV = "4_dataset/export_interactions.csv";
-
-// ─────────────────────────────────────────────────────────────────────
-// Chức năng 1: Chạy hệ thống gợi ý từ dữ liệu CSV (luồng gốc)
-// ─────────────────────────────────────────────────────────────────────
-void runRecommendationFromCSV() {
->>>>>>> b8c1ae64c94847b04dee00ae1cc482c9f316487e
     CSVLoader loader;
     loader.loadUsers("4_dataset/users.csv");
     loader.loadItems("4_dataset/items.csv");
@@ -86,9 +39,52 @@ void runRecommendationFromCSV() {
     const MyVector<User>& users = loader.getUsers();
     const MyVector<Item>& items = loader.getItems();
 
-<<<<<<< HEAD
     std::cout << "   Users: " << users.size()
               << " | Items: " << items.size() << "\n\n";
+
+
+    // ─────────────────────────────────────────────────────────────
+    // 2. KHỞI TẠO RECOMMENDER ENGINE (Dành cho API)
+    // ─────────────────────────────────────────────────────────────
+    const MyVector<Interaction>& interactions = loader.getInteractions();
+    RatingMatrix rm; 
+    rm.buildMatrix(interactions);
+    
+    SimilarityMatrix sm; 
+    sm.build(rm);
+    
+    // Khởi tạo Engine chung
+    Recommender engine(rm, sm, loader.loadItems("4_dataset/items.csv")); 
+
+    // ─────────────────────────────────────────────────────────────
+    // 3. KHỞI TẠO VÀ CHẠY API SERVER SONG SONG
+    // ─────────────────────────────────────────────────────────────
+    crow::SimpleApp app;
+    app.loglevel(crow::LogLevel::Warning);
+
+    CROW_ROUTE(app, "/recommend/<string>")([&engine](std::string userId){
+        auto results = engine.forUser(userId, 5); // Lấy top 5
+        
+        crow::json::wvalue res;
+        res["status"] = "success";
+        res["user_id"] = userId;
+        
+        crow::json::wvalue::list items_list;
+        for (const auto& pair : results) {
+            items_list.push_back(pair.first); // Lấy Item ID
+        }
+        res["recommendations"] = std::move(items_list);
+        
+        crow::response r(res);
+        r.add_header("Access-Control-Allow-Origin", "*");
+        return r;
+    });
+
+    // Chạy server API trên luồng riêng để không làm khựng phần Demo bên dưới
+    std::thread server_thread([&](){ app.port(8080).run(); });
+    // server_thread.detach();
+
+    std::cout << ">>> Server API da khoi dong tai http://localhost:8080/recommend/<user_id>\n\n";
 
     // ─────────────────────────────────────────────────────────────
     // 2. KHỞI TẠO CÁC MANAGER
@@ -100,9 +96,9 @@ void runRecommendationFromCSV() {
     // ─────────────────────────────────────────────────────────────
     // 3. DEMO: AUTH (UserManager)
     // ─────────────────────────────────────────────────────────────
-    std::cout << "══════════════════════════════════════════════\n";
+    std::cout << "==============================================\n";
     std::cout << "   AUTH: Dang ky & Dang nhap & Dang xuat\n";
-    std::cout << "══════════════════════════════════════════════\n";
+    std::cout << "==============================================\n";
 
     std::cout << "\n--- DANG KY ---\n";
     MyPair<bool, std::string> regResult = userMgr.Register("Nguyen Van Teo", "teo@email.com", "123456");
@@ -127,9 +123,9 @@ void runRecommendationFromCSV() {
     // ─────────────────────────────────────────────────────────────
     // 4. DEMO: ITEM (ItemManager)
     // ─────────────────────────────────────────────────────────────
-    std::cout << "══════════════════════════════════════════════\n";
+    std::cout << "==============================================\n";
     std::cout << "   ITEM: Tim kiem & Loc & Xem chi tiet\n";
-    std::cout << "══════════════════════════════════════════════\n";
+    std::cout << "==============================================\n";
 
     std::cout << "\n--- TIM KIEM: 'sach' ---\n";
     MyVector<Item> searchResult = itemMgr.SearchProducts("sach");
@@ -155,9 +151,9 @@ void runRecommendationFromCSV() {
     // ─────────────────────────────────────────────────────────────
     // 5. DEMO: CART & ORDER (InteractionManager)
     // ─────────────────────────────────────────────────────────────
-    std::cout << "\n══════════════════════════════════════════════\n";
+    std::cout << "\n==============================================\n";
     std::cout << "   CART: Them, cap nhat, xem, xoa\n";
-    std::cout << "══════════════════════════════════════════════\n";
+    std::cout << "==============================================\n";
 
     std::string demoUser = "U001";
 
@@ -217,193 +213,7 @@ void runRecommendationFromCSV() {
     std::cout << "\n==============================================\n";
     std::cout << "=  KET THUC DEMO                           =\n";
     std::cout << "==============================================\n";
-=======
-    try {
-        users        = loader.loadUsers(USERS_CSV);
-        items        = loader.loadItems(ITEMS_CSV);
-        interactions = loader.loadInteractions(INTERACTIONS_CSV);
-    } catch (const std::exception& e) {
-        std::cerr << "[ERROR] " << e.what() << "\n";
-        return;
-    }
-
-    std::cout << "\n>>> Build Rating Matrix\n";
-    RatingMatrix ratingMatrix;
-    ratingMatrix.build(interactions);
-    ratingMatrix.print();
-
-    std::cout << ">>> Tinh Item Similarity (Cosine)\n";
-    SimilarityMatrix simMatrix;
-    simMatrix.build(ratingMatrix);
-    simMatrix.print();
-
-    std::cout << ">>> Recommendation\n";
-    Recommender engine(ratingMatrix, simMatrix, items);
-    const int TOP_N = 5;
-
-    std::cout << "\n--- Nguoi dung cu ---\n";
-    for (const auto& u : users) {
-        auto result = engine.forUser(u.user_id, TOP_N);
-        engine.printResult(u.user_id, result);
-    }
-
-    std::cout << "\n--- Nguoi dung moi (chua co lich su) ---\n";
-    auto trending = engine.coldStart(TOP_N);
-    engine.printResult("NEW_USER", trending);
-
-    std::cout << "\n--- San pham tuong tu voi I001 ---\n";
-    auto similar = simMatrix.topK("I001", 5);
-    std::cout << "Top 5 san pham tuong tu I001:\n";
-    int rank = 1;
-    for (const auto& [iid, sim] : similar) {
-        std::cout << "  " << rank++ << ". " << iid
-                  << "  sim=" << std::fixed << std::setprecision(4) << sim << "\n";
-    }
-
-    std::cout << "\n[DONE] Chay goi y tu CSV hoan tat.\n";
-}
-
-// ─────────────────────────────────────────────────────────────────────
-// Chức năng 2: Import CSV -> MySQL Database
-// ─────────────────────────────────────────────────────────────────────
-void importCsvToDatabase() {
-    CSVLoader loader;
-    DatabaseManager db;
-
-    std::cout << "\n>>> Ket noi MySQL (" << DB_HOST << ":" << DB_PORT
-              << ", db=" << DB_NAME << ")...\n";
-    if (!db.connect(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT)) {
-        std::cerr << "[ERROR] Khong the ket noi MySQL. "
-                     "Kiem tra cau hinh DB_HOST/DB_USER/DB_PASS/DB_NAME.\n";
-        return;
-    }
-
-    std::cout << ">>> Tao bang (neu chua co)...\n";
-    if (!db.createTables()) {
-        std::cerr << "[ERROR] Tao bang that bai.\n";
-        db.disconnect();
-        return;
-    }
-
-    try {
-        // Thứ tự QUAN TRỌNG: users, items phải được insert TRƯỚC
-        // interactions vì interactions có FOREIGN KEY tham chiếu tới
-        // users(user_id) và items(item_id).
-        std::cout << ">>> Doc users.csv va import...\n";
-        auto users = loader.loadUsers(USERS_CSV);
-        int okUsers = 0;
-        for (const auto& u : users)
-            if (db.insertUser(u)) ++okUsers;
-        std::cout << "    -> Import thanh cong " << okUsers << "/"
-                  << users.size() << " users.\n";
-
-        std::cout << ">>> Doc items.csv va import...\n";
-        auto items = loader.loadItems(ITEMS_CSV);
-        int okItems = 0;
-        for (const auto& it : items)
-            if (db.insertItem(it)) ++okItems;
-        std::cout << "    -> Import thanh cong " << okItems << "/"
-                  << items.size() << " items.\n";
-
-        std::cout << ">>> Doc interactions.csv va import...\n";
-        auto interactions = loader.loadInteractions(INTERACTIONS_CSV);
-        int okInter = 0;
-        for (const auto& i : interactions)
-            if (db.insertInteraction(i)) ++okInter;
-        std::cout << "    -> Import thanh cong " << okInter << "/"
-                  << interactions.size() << " interactions.\n";
-
-    } catch (const std::exception& e) {
-        std::cerr << "[ERROR] " << e.what() << "\n";
-    }
-
-    db.disconnect();
-    std::cout << "[DONE] Import CSV -> MySQL hoan tat.\n";
-}
-
-// ─────────────────────────────────────────────────────────────────────
-// Chức năng 3: Export MySQL Database -> CSV
-// ─────────────────────────────────────────────────────────────────────
-void exportDatabaseToCsv() {
-    CSVLoader loader;
-    DatabaseManager db;
-
-    std::cout << "\n>>> Ket noi MySQL (" << DB_HOST << ":" << DB_PORT
-              << ", db=" << DB_NAME << ")...\n";
-    if (!db.connect(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT)) {
-        std::cerr << "[ERROR] Khong the ket noi MySQL. "
-                     "Kiem tra cau hinh DB_HOST/DB_USER/DB_PASS/DB_NAME.\n";
-        return;
-    }
-
-    std::cout << ">>> Doc du lieu tu MySQL...\n";
-    auto users        = db.loadUsers();
-    auto items        = db.loadItems();
-    auto interactions = db.loadInteractions();
-
-    std::cout << ">>> Ghi ra cac tep CSV...\n";
-    loader.saveUsers(EXPORT_USERS_CSV, users);
-    loader.saveItems(EXPORT_ITEMS_CSV, items);
-    loader.saveInteractions(EXPORT_INTERACTIONS_CSV, interactions);
-
-    db.disconnect();
-    std::cout << "[DONE] Export MySQL -> CSV hoan tat. Xem cac tep:\n"
-              << "    " << EXPORT_USERS_CSV << "\n"
-              << "    " << EXPORT_ITEMS_CSV << "\n"
-              << "    " << EXPORT_INTERACTIONS_CSV << "\n";
-}
-
-// ─────────────────────────────────────────────────────────────────────
-// Menu chính
-// ─────────────────────────────────────────────────────────────────────
-void printMenu() {
-    std::cout << "\n========================================================\n";
-    std::cout << "  HE THONG GOI Y SAN PHAM - MENU\n";
-    std::cout << "========================================================\n";
-    std::cout << "  1. Chay he thong goi y (doc tu CSV)\n";
-    std::cout << "  2. Import CSV -> MySQL Database\n";
-    std::cout << "  3. Export MySQL Database -> CSV\n";
-    std::cout << "  0. Thoat\n";
-    std::cout << "========================================================\n";
-    std::cout << "Chon: ";
-}
-
-int main() {
-    std::cout << "+--------------------------------------------------+\n";
-    std::cout << "|     He Thong Goi Y San Pham - Item-Based CF       |\n";
-    std::cout << "+--------------------------------------------------+\n";
-
-    while (true) {
-        printMenu();
-
-        int choice;
-        if (!(std::cin >> choice)) {
-            // Input không hợp lệ (vd: nhập chữ) -> xóa buffer và thử lại
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << "[WARN] Vui long nhap mot so.\n";
-            continue;
-        }
-
-        switch (choice) {
-            case 1:
-                runRecommendationFromCSV();
-                break;
-            case 2:
-                importCsvToDatabase();
-                break;
-            case 3:
-                exportDatabaseToCsv();
-                break;
-            case 0:
-                std::cout << "Tam biet!\n";
-                return 0;
-            default:
-                std::cout << "[WARN] Lua chon khong hop le.\n";
-                break;
-        }
-    }
-
->>>>>>> b8c1ae64c94847b04dee00ae1cc482c9f316487e
+    std::cout << "\n>>> API Server van dang hoat dong. Nhan Ctrl+C de tat server.\n";
+    server_thread.join();
     return 0;
 }

@@ -189,11 +189,17 @@ std::vector<User> DatabaseManager::loadUsers()
 
     while ((row = mysql_fetch_row(result)))
     {
+        std::string id = row[0] ? row[0] : "";
+        std::string name = row[1] ? row[1] : "";
+        std::string created_at = row[2] ? row[2] : "";
+        
         users.push_back(
             User(
-                row[0] ? row[0] : "",
-                row[1] ? row[1] : "",
-                row[2] ? row[2] : ""
+                id,
+                name,
+                id + "@email.com", // tự động tạo email
+                "password123",     // tự động tạo password
+                created_at
             )
         );
     }
@@ -235,12 +241,30 @@ std::vector<Item> DatabaseManager::loadItems()
 
     while ((row = mysql_fetch_row(result)))
     {
+        std::string id = row[0] ? row[0] : "";
+        std::string name = row[1] ? row[1] : "";
+        std::string category = row[2] ? row[2] : "";
+        double price = row[3] ? std::stod(row[3]) : 0.0;
+
+        // Sinh tự động các tham số còn thiếu cho Item
+        std::string badge = "";
+        if (price >= 10000000) badge = "Hot";
+        else if (category == "Books") badge = "Sale";
+        
+        double star = 4.0;
+        int sold = 100;
+        std::string img = category + "/" + id + ".jpg";
+
         items.push_back(
             Item(
-                row[0] ? row[0] : "",
-                row[1] ? row[1] : "",
-                row[2] ? row[2] : "",
-                row[3] ? std::stod(row[3]) : 0.0
+                id,
+                name,
+                category,
+                badge,
+                price,
+                star,
+                sold,
+                img
             )
         );
     }
@@ -359,9 +383,9 @@ bool DatabaseManager::insertInteraction(
         " VALUES('"
         + escapeString(interaction.user_id) + "','"
         + escapeString(interaction.item_id) + "',"
-        + std::to_string(interaction.click) + ","
-        + std::to_string(interaction.add_cart) + ","
-        + std::to_string(interaction.purchase) + ","
+        + std::to_string(interaction.click_count) + ","
+        + std::to_string(interaction.add_cart_count) + ","
+        + std::to_string(interaction.purchase_count) + ","
         + doubleToSql(interaction.rating)
         + ")";
 
