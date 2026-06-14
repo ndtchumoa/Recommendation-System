@@ -1,26 +1,40 @@
-#pragma once
+#ifndef USER_H
+#define USER_H
+
 #include <string>
+#include <iostream>
 
-/**
- * @struct User
- * @brief Đại diện cho một tài khoản người dùng trong hệ thống.
- *
- * Lưu trữ thông tin định danh cơ bản của người dùng.
- * Dữ liệu được nạp từ tệp datasets/users.csv.
- */
-struct User {
-    std::string user_id;    // Mã định danh duy nhất (vd: "U001")
-    std::string name;       // Tên hiển thị của người dùng
-    std::string created_at; // Ngày tạo tài khoản (định dạng YYYY-MM-DD)
+class User {
+private:
+    std::string user_id;
+    std::string name;
+    std::string email;
+    std::string password;   // Lưu ý: Trong thực tế cần mã hóa password
+    std::string created_at;
 
-    // Constructor mặc định
-    User() = default;
+public:
+    // 1. Khởi tạo
+    User();
+    User(std::string id, std::string n, std::string e, std::string pwd, std::string date);
 
-    // Constructor khởi tạo đầy đủ
-    User(const std::string& id,
-         const std::string& name,
-         const std::string& created_at);
+    // 2. Getters
+    std::string getUserId() const;
+    std::string getName() const;
+    std::string getEmail() const;
+    std::string getPassword() const;   // Dùng để xác thực
+    std::string getCreatedAt() const;
 
-    // In thông tin người dùng ra console (dùng để debug)
-    void print() const;
+    // 3. Setters
+    void setName(const std::string& n);
+    void setEmail(const std::string& e);
+    void setPassword(const std::string& pwd);
+    void setCreatedAt(const std::string& date);
+
+    // 4. Hỗ trợ xác thực
+    bool checkPassword(const std::string& pwd) const;
+
+    // 5. Xuất thông tin
+    void displayInfo() const;
 };
+
+#endif // USER_H

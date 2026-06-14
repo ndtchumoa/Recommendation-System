@@ -1,25 +1,30 @@
 #include "CSVLoader.h"
+<<<<<<< HEAD
+
+CSVLoader::CSVLoader() {}
+=======
 #include <fstream>
 #include <sstream>
 #include <iostream>
 #include <stdexcept>
 #include <algorithm>
 #include <iomanip>
+>>>>>>> b8c1ae64c94847b04dee00ae1cc482c9f316487e
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Private Helpers
-// ─────────────────────────────────────────────────────────────────────────────
-
-std::string CSVLoader::trim(const std::string& s) const {
-    // Tìm vị trí ký tự đầu tiên không phải whitespace
-    size_t start = s.find_first_not_of(" \t\r\n");
-    if (start == std::string::npos) return "";
-
-    // Tìm vị trí ký tự cuối cùng không phải whitespace
-    size_t end = s.find_last_not_of(" \t\r\n");
-    return s.substr(start, end - start + 1);
+// Hàm hỗ trợ xóa khoảng trắng ở đầu và cuối chuỗi
+std::string CSVLoader::trim(const std::string& str) {
+    size_t first = str.find_first_not_of(" \t\r\n");
+    if (std::string::npos == first) return "";
+    size_t last = str.find_last_not_of(" \t\r\n");
+    return str.substr(first, (last - first + 1));
 }
 
+<<<<<<< HEAD
+// --- Đọc dữ liệu Users ---
+// Format thực tế: user_id,name,created_at
+// (bổ sung email, password mặc định cho các tính năng Auth mới)
+bool CSVLoader::loadUsers(const std::string& filepath) {
+=======
 std::vector<std::string> CSVLoader::parseLine(const std::string& line) const {
     std::vector<std::string> tokens;
     std::string token;
@@ -72,170 +77,120 @@ std::string CSVLoader::escapeField(const std::string& field) const {
 // ─────────────────────────────────────────────────────────────────────────────
 
 std::vector<User> CSVLoader::loadUsers(const std::string& filepath) const {
+>>>>>>> b8c1ae64c94847b04dee00ae1cc482c9f316487e
     std::ifstream file(filepath);
     if (!file.is_open()) {
-        throw std::runtime_error("[CSVLoader] Khong mo duoc file: " + filepath);
+        std::cerr << "Loi: Khong the mo file " << filepath << std::endl;
+        return false;
     }
 
-    std::vector<User> users;
     std::string line;
+    std::getline(file, line); // Bỏ qua dòng tiêu đề
 
-    // Bỏ qua dòng header (dòng đầu tiên)
-    std::getline(file, line);
-
-    int lineNum = 1;
     while (std::getline(file, line)) {
-        ++lineNum;
-        line = trim(line);
-        if (line.empty()) continue; // bỏ qua dòng trống
-
-        std::vector<std::string> cols = parseLine(line);
-
-        // Kiểm tra số lượng cột tối thiểu: user_id, name, created_at
-        if (cols.size() < 3) {
-            std::cerr << "[CSVLoader][WARN] users.csv dong " << lineNum
-                      << ": thieu cot, bo qua.\n";
-            continue;
-        }
-
-        users.emplace_back(
-            cols[0], // user_id
-            cols[1], // name
-            cols[2]  // created_at
-        );
-    }
-
-    std::cout << "[CSVLoader] Da nap " << users.size()
-              << " nguoi dung tu '" << filepath << "'\n";
-    return users;
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-
-std::vector<Item> CSVLoader::loadItems(const std::string& filepath) const {
-    std::ifstream file(filepath);
-    if (!file.is_open()) {
-        throw std::runtime_error("[CSVLoader] Khong mo duoc file: " + filepath);
-    }
-
-    std::vector<Item> items;
-    std::string line;
-
-    // Bỏ qua dòng header
-    std::getline(file, line);
-
-    int lineNum = 1;
-    while (std::getline(file, line)) {
-        ++lineNum;
-        line = trim(line);
         if (line.empty()) continue;
 
-        std::vector<std::string> cols = parseLine(line);
+        std::stringstream ss(line);
+        std::string id, name, date;
 
-        // Kiểm tra số lượng cột tối thiểu: item_id, name, category, price
-        if (cols.size() < 4) {
-            std::cerr << "[CSVLoader][WARN] items.csv dong " << lineNum
-                      << ": thieu cot, bo qua.\n";
-            continue;
-        }
+        std::getline(ss, id, ',');
+        std::getline(ss, name, ',');
+        std::getline(ss, date, ',');
 
-        double price = 0.0;
-        try {
-            price = std::stod(cols[3]);
-        } catch (const std::exception&) {
-            std::cerr << "[CSVLoader][WARN] items.csv dong " << lineNum
-                      << ": gia khong hop le ('" << cols[3] << "'), dat = 0.\n";
-        }
+        // Tạo email & password mặc định dựa trên id
+        std::string email    = id + "@email.com";
+        std::string password = "password123";
 
-        items.emplace_back(
-            cols[0], // item_id
-            cols[1], // name
-            cols[2], // category
-            price    // price
-        );
+        users.push_back(User(trim(id), trim(name), trim(email), password, trim(date)));
     }
-
-    std::cout << "[CSVLoader] Da nap " << items.size()
-              << " san pham tu '" << filepath << "'\n";
-    return items;
+    file.close();
+    return true;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-
-std::vector<Interaction> CSVLoader::loadInteractions(const std::string& filepath) const {
+// --- Đọc dữ liệu Items ---
+// Format thực tế: item_id,name,category,price
+// (bổ sung badge, star, sold, image_url mặc định)
+bool CSVLoader::loadItems(const std::string& filepath) {
     std::ifstream file(filepath);
     if (!file.is_open()) {
-        throw std::runtime_error("[CSVLoader] Khong mo duoc file: " + filepath);
+        std::cerr << "Loi: Khong the mo file " << filepath << std::endl;
+        return false;
     }
 
-    std::vector<Interaction> interactions;
     std::string line;
+    std::getline(file, line); // Bỏ qua dòng tiêu đề
 
-    // Bỏ qua dòng header
-    std::getline(file, line);
-
-    int lineNum = 1;
     while (std::getline(file, line)) {
-        ++lineNum;
-        line = trim(line);
         if (line.empty()) continue;
 
-        std::vector<std::string> cols = parseLine(line);
+        std::stringstream ss(line);
+        std::string id, name, category, price_str;
 
-        // Kiểm tra số lượng cột tối thiểu:
-        // user_id, item_id, click, add_cart, purchase, rating
-        if (cols.size() < 6) {
-            std::cerr << "[CSVLoader][WARN] interactions.csv dong " << lineNum
-                      << ": thieu cot, bo qua.\n";
-            continue;
-        }
+        std::getline(ss, id, ',');
+        std::getline(ss, name, ',');
+        std::getline(ss, category, ',');
+        std::getline(ss, price_str, ',');
 
-        // ── Parse từng cột số, xử lý lỗi nhẹ nhàng ──────────────────
-        int click = 0, add_cart = 0, purchase = 0;
-        double rating = 0.0;
+        double price = price_str.empty() ? 0.0 : std::stod(trim(price_str));
 
-        try { click    = std::stoi(cols[2]); } catch (...) {
-            std::cerr << "[CSVLoader][WARN] interactions.csv dong " << lineNum
-                      << ": click khong hop le, dat = 0.\n";
-        }
-        try { add_cart = std::stoi(cols[3]); } catch (...) {
-            std::cerr << "[CSVLoader][WARN] interactions.csv dong " << lineNum
-                      << ": add_cart khong hop le, dat = 0.\n";
-        }
-        try { purchase = std::stoi(cols[4]); } catch (...) {
-            std::cerr << "[CSVLoader][WARN] interactions.csv dong " << lineNum
-                      << ": purchase khong hop le, dat = 0.\n";
-        }
-        try { rating   = std::stod(cols[5]); } catch (...) {
-            std::cerr << "[CSVLoader][WARN] interactions.csv dong " << lineNum
-                      << ": rating khong hop le, dat = 0.\n";
-        }
+        // Gán badge dựa trên category và price (mô phỏng)
+        std::string badge = "";
+        if (price >= 10000000) badge = "Hot";
+        else if (category == "Books") badge = "Sale";
 
-        // ── Validate khoảng giá trị hợp lệ ───────────────────────────
-        if (click    < 0) click    = 0;
-        if (add_cart < 0) add_cart = 0;
-        if (purchase < 0) purchase = 0;
-        if (rating   < 0.0 || rating > 5.0) {
-            std::cerr << "[CSVLoader][WARN] interactions.csv dong " << lineNum
-                      << ": rating=" << rating << " ngoai khoang [0,5], dat = 0.\n";
-            rating = 0.0;
-        }
+        // star, sold, image_url mặc định
+        double star = 4.0;
+        int sold = 100;
+        std::string img = category + "/" + id + ".jpg";
 
-        interactions.emplace_back(
-            cols[0],   // user_id
-            cols[1],   // item_id
-            click,
-            add_cart,
-            purchase,
-            rating
-        );
+        items.push_back(Item(trim(id), trim(name), trim(category), badge,
+                             price, star, sold, img));
     }
-
-    std::cout << "[CSVLoader] Da nap " << interactions.size()
-              << " tuong tac tu '" << filepath << "'\n";
-    return interactions;
+    file.close();
+    return true;
 }
 
+// --- Đọc dữ liệu Interactions ---
+bool CSVLoader::loadInteractions(const std::string& filepath) {
+    std::ifstream file(filepath);
+    if (!file.is_open()) {
+        std::cerr << "Loi: Khong the mo file " << filepath << std::endl;
+        return false;
+    }
+
+    std::string line;
+    std::getline(file, line); // Bỏ qua dòng tiêu đề
+
+    while (std::getline(file, line)) {
+        if (line.empty()) continue;
+
+        std::stringstream ss(line);
+        std::string u_id, i_id, click_str, cart_str, purchase_str, rating_str;
+
+        std::getline(ss, u_id, ',');
+        std::getline(ss, i_id, ',');
+        std::getline(ss, click_str, ',');
+        std::getline(ss, cart_str, ',');
+        std::getline(ss, purchase_str, ',');
+        std::getline(ss, rating_str, ',');
+
+        int clicks     = click_str.empty()    ? 0 : std::stoi(trim(click_str));
+        int carts      = cart_str.empty()     ? 0 : std::stoi(trim(cart_str));
+        int purchases  = purchase_str.empty() ? 0 : std::stoi(trim(purchase_str));
+        double rating  = rating_str.empty()   ? 0.0 : std::stod(trim(rating_str));
+
+        interactions.push_back(Interaction(trim(u_id), trim(i_id), clicks, carts, purchases, rating));
+    }
+    file.close();
+    return true;
+}
+
+<<<<<<< HEAD
+// --- Getters ---
+const MyVector<User>& CSVLoader::getUsers() const { return users; }
+const MyVector<Item>& CSVLoader::getItems() const { return items; }
+const MyVector<Interaction>& CSVLoader::getInteractions() const { return interactions; }
+=======
 // ─────────────────────────────────────────────────────────────────────────────
 // Public Methods - Save (memory -> CSV)
 // ─────────────────────────────────────────────────────────────────────────────
@@ -303,3 +258,4 @@ bool CSVLoader::saveInteractions(const std::string& filepath,
               << " tuong tac ra '" << filepath << "'\n";
     return true;
 }
+>>>>>>> b8c1ae64c94847b04dee00ae1cc482c9f316487e

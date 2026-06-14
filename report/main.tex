@@ -1,6 +1,9 @@
-\documentclass{report}
+\documentclass[11pt]{report}
 \usepackage{fontspec} 
-\setmainfont{Times New Roman} 
+\setmainfont{Latin Modern Roman}
+\setsansfont{Latin Modern Sans}
+\setmonofont{Latin Modern Mono}
+\usepackage{tikz}
 \usepackage[vietnamese]{babel}
 \usepackage[most]{tcolorbox}
 \usepackage{parskip}
@@ -14,9 +17,11 @@
 \usepackage{etoolbox}
 \usepackage{tabularx}
 \usepackage{authblk}
-\usepackage{tikz}
+\usepackage{float}
+\usepackage{fancyhdr}
 \patchcmd{\tableofcontents}{\thispagestyle{plain}}{\thispagestyle{empty}}{}{}
-\usepackage[colorlinks=true, allcolors=blue, hypertexnames=false]{hyperref}\usepackage[a4paper,top=2cm,bottom=2cm,left=3cm,right=2cm,marginparwidth=1.75cm,headheight=15pt]{geometry}
+\usepackage[colorlinks=true, allcolors=blue, hypertexnames=false]{hyperref}
+\usepackage[a4paper,top=2cm,bottom=2cm,left=3cm,right=2cm,marginparwidth=1.75cm,headheight=18pt]{geometry}
 
 % ============================================================
 \newcommand{\vekhung}{
@@ -31,63 +36,56 @@
 }
 
 % ============================================================
-\usepackage{fancyhdr}
-\fancypagestyle{plain}{
-    \fancyhf{} % Xóa hết thiết lập mặc định của plain
-    \lhead{\footnotesize Khoa Toán - Tin | Đại học Bách khoa Hà Nội}
-    %\rhead{\footnotesize Nguyễn Đức Thành - 202419099}
-    \lfoot{\footnotesize Hệ thống Gợi ý Sản phẩm}
-    \rfoot{\thepage}
-    \renewcommand{\headrulewidth}{0.4pt}
-    \renewcommand{\footrulewidth}{0.4pt}
-}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\footnotesize Khoa Toán - Tin | Đại học Bách khoa Hà Nội}
+%\rhead{\footnotesize Nguyễn Đức Thành - 202419099}
+\lfoot{\footnotesize Xây dựng Hệ thống gợi ý sản phẩm | Recommendation System}
+\rfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\makeatletter
+\let\ps@plain\ps@fancy
+\makeatother
 
 % ============================================================
-
 \begin{document}
 \begin{titlepage}
     \AddToShipoutPicture*{\vekhung} 
 \begin{center}
-    \vspace*{10pt}
+    \vspace*{6pt}
     \textbf{\Large ĐẠI HỌC BÁCH KHOA HÀ NỘI} \\
-    \vspace{10pt}
+    \vspace{6pt}
     \textbf{\large Khoa Toán - Tin} \\ 
     \vspace{18pt}
     \includegraphics[width=0.3\textwidth]{LogoHUST.png} \\
     \vspace{30pt}
-    \textbf{\huge Báo cáo Bài tập lớn} \\
+    \textbf{\Large BÁO CÁO BÀI TẬP LỚN} \\
     \vspace{12pt}
     \textbf{\huge CẤU TRÚC DỮ LIỆU \& GIẢI THUẬT} \\
+    \vspace{12pt}
+    \textbf{\huge (MI3060)} \\
+    \vspace{12pt}
+    \textbf{\large Đề tài:} \\
     \vspace{6pt}
-    \textbf{\huge (MI3090)} \\
-    \vspace{9pt}
-    \textbf{\huge Đề tài: Xây dựng Hệ thống gợi ý sản phẩm \\ (Recommendation System)} \\
+    \textbf{\LARGE Xây dựng Hệ thống gợi ý sản phẩm \\ (Recommendation System)} \\
     \vspace{18pt}
-    \begin{flushleft}
-\hspace*{2.3cm}
-\begin{tabular}{p{5cm} p{7cm}}
-Giảng viên hướng dẫn: & Lê Quang Hòa \\[0.4cm]
-
-Mã lớp: & 169308 \\[0.4cm]
-
-Nhóm sinh viên thực hiện: \\[0.4cm]
-
-Đoàn Đức Anh & 202419033 \\[0.4cm]
-
-Ngô Thị Thùy Duyên & 202419051 \\[0.4cm]
-
-Nguyễn Đức Thành & 202419099 \\[0.4cm]
-
-Phan Thị Hải Yến & 202419124 \\[0.4cm]
-
-\end{tabular}
-\end{flushleft}
-\vspace{0pt}
-Hà Nội, tháng 06/2026
-
+    \begin{tabular}{ll}
+        \textbf{Giảng viên hướng dẫn:} & ThS. Lê Quang Hòa \\
+        \textbf{Mã lớp học:} & 169308 \\
+        \textbf{Nhóm sinh viên thực hiện:} \\
+    \end{tabular} \\
+    \vspace{6pt}
+    \begin{tabular}{llll}
+        1 & Đoàn Đức Anh       & 202419033 & Hệ thống thông tin quản lý 02 \\
+        2 & Ngô Thị Thùy Duyên & 202419051 & Hệ thống thông tin quản lý 02 \\
+        3 & Nguyễn Đức Thành   & 202419099 & Hệ thống thông tin quản lý 02 \\
+        4 & Phan Thị Hải Yến   & 202419124 & Hệ thống thông tin quản lý 01 \\
+    \end{tabular} \\
+    \vspace{99pt}
+    \textbf{Hà Nội, Tháng 6 2026}
 \end{center}
 \end{titlepage}
-\newpage
     
 % ============================================================
 %\newpage
@@ -103,11 +101,42 @@ Hà Nội, tháng 06/2026
 
 % ============================================================
 \clearpage
-\tableofcontents     
+\makeatletter
+\let\ps@plain\ps@empty
+\makeatother
+\addcontentsline{toc}{chapter}{Danh sách hình vẽ}
+\listoffigures
+\makeatletter
+\let\ps@plain\ps@empty
+\makeatother
 \clearpage
 
 % ============================================================
-\pagenumbering{arabic}
+\clearpage
+\makeatletter
+\let\ps@plain\ps@empty
+\makeatother
+\addcontentsline{toc}{chapter}{Danh sách bảng}
+\listoftables
+\makeatletter
+\let\ps@plain\ps@empty
+\makeatother
+\clearpage
+
+% ============================================================
+\clearpage
+\makeatletter
+\let\ps@plain\ps@empty
+\makeatother
+\pagestyle{empty}
+\tableofcontents
+\thispagestyle{empty}
+\makeatletter
+\let\ps@plain\ps@fancy
+\makeatother
+\clearpage
+
+% ============================================================
 \pagestyle{fancy}
 
 \newpage
@@ -231,16 +260,15 @@ Những người dùng có hành vi tương tự trong quá khứ sẽ có xu h�
 
 Dữ liệu đầu vào thường được biểu diễn dưới dạng ma trận User--Item:
 
-
+\[
 R =
 \begin{bmatrix}
-r_{11} & r_{12} & \cdots & r_{1n} \
-r_{21} & r_{22} & \cdots & r_{2n} \
-\vdots & \vdots & \ddots & \vdots \
+r_{11} & r_{12} & \cdots & r_{1n} \\
+r_{21} & r_{22} & \cdots & r_{2n} \\
+\vdots & \vdots & \ddots & \vdots \\
 r_{m1} & r_{m2} & \cdots & r_{mn}
 \end{bmatrix}
-
-
+\]
 Trong đó:
 
 \begin{itemize}

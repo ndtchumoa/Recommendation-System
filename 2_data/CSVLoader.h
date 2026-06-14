@@ -1,13 +1,22 @@
-#pragma once
-#include <string>
-#include <vector>
-#include <stdexcept>
+#ifndef CSV_LOADER_H
+#define CSV_LOADER_H
 
-// Forward-include các thực thể (entity) cần nạp
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+
+// Nhúng các cấu trúc dữ liệu tự cài đặt (thay thế STL)
+#include "MyDataStructures.h"
+
+// Nhúng các thực thể đã tạo từ tầng Models
 #include "../1_models/User.h"
 #include "../1_models/Item.h"
 #include "../1_models/Interaction.h"
 
+<<<<<<< HEAD
+class CSVLoader {
+=======
 /**
  * @class CSVLoader
  * @brief Tầng hạ tầng I/O – nạp/ghi dữ liệu giữa file CSV và bộ nhớ.
@@ -92,18 +101,32 @@ public:
     bool saveInteractions(const std::string& filepath,
                           const std::vector<Interaction>& interactions) const;
 
+>>>>>>> b8c1ae64c94847b04dee00ae1cc482c9f316487e
 private:
-    /**
-     * @brief Tách một dòng CSV thành các token theo dấu phẩy.
-     *
-     * Hỗ trợ trường hợp giá trị được bọc trong dấu nháy kép (quoted fields)
-     * để xử lý các trường chứa dấu phẩy bên trong (vd: tên sản phẩm).
-     *
-     * @param line   Dòng văn bản thô từ file CSV.
-     * @return vector<string> danh sách các token đã tách.
-     */
-    std::vector<std::string> parseLine(const std::string& line) const;
+    MyVector<User> users;
+    MyVector<Item> items;
+    MyVector<Interaction> interactions;
 
+<<<<<<< HEAD
+    // Hàm hỗ trợ để cắt khoảng trắng thừa (trim) nếu dữ liệu CSV bị lỗi format
+    std::string trim(const std::string& str);
+
+public:
+    CSVLoader();
+
+    // 1. Các hàm đọc dữ liệu từ file
+    bool loadUsers(const std::string& filepath);
+    bool loadItems(const std::string& filepath);
+    bool loadInteractions(const std::string& filepath);
+
+    // 2. Getters — trả về tham chiếu hằng để tránh sao chép
+    const MyVector<User>& getUsers() const;
+    const MyVector<Item>& getItems() const;
+    const MyVector<Interaction>& getInteractions() const;
+};
+
+#endif // CSV_LOADER_H
+=======
     /**
      * @brief Loại bỏ khoảng trắng và ký tự xuống dòng ở đầu/cuối chuỗi.
      * @param s  Chuỗi cần trim.
@@ -121,3 +144,4 @@ private:
      */
     std::string escapeField(const std::string& field) const;
 };
+>>>>>>> b8c1ae64c94847b04dee00ae1cc482c9f316487e
