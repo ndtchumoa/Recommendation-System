@@ -2,16 +2,121 @@
 \contentsline {chapter}{Lời mở đầu}{1}{chapter*.1}%
 \contentsline {chapter}{Danh sách hình vẽ}{2}{chapter*.1}%
 \contentsline {chapter}{Danh sách bảng}{3}{chapter*.2}%
-\contentsline {chapter}{\numberline {1}Giới thiệu bài toán}{5}{chapter*.5}%
-\contentsline {section}{\numberline {1.1}Bối cảnh}{5}{section*.6}%
-\contentsline {section}{\numberline {1.2}Vấn đề nghiên cứu}{5}{section*.7}%
-\contentsline {section}{\numberline {1.3}Mục tiêu}{6}{section*.10}%
-\contentsline {section}{\numberline {1.4}Phạm vi và ý nghĩa}{6}{section*.17}%
-\contentsline {chapter}{\numberline {2}Phân tích Yêu cầu hệ thống}{8}{chapter*.18}%
-\contentsline {chapter}{\numberline {3}Thiết kế hệ thống}{9}{chapter*.19}%
-\contentsline {chapter}{\numberline {4}Cài đặt và xây dựng chương trình}{10}{chapter*.20}%
-\contentsline {chapter}{\numberline {5}Kiểm thử và Đánh giá kết quả}{11}{chapter*.21}%
-\contentsline {chapter}{\numberline {6}Kết luận và hướng phát triển}{12}{chapter*.22}%
-\contentsline {chapter}{\numberline {A}Mã nguồn hàm main()}{14}{chapter*.24}%
-\contentsline {chapter}{\numberline {B}Mô tả các hàm xử lý chính}{15}{chapter*.25}%
-\contentsline {chapter}{\numberline {C}Hướng dẫn cài đặt và sử dụng chương trình}{16}{chapter*.26}%
+\contentsline {chapter}{\numberline {1}Giới thiệu bài toán}{7}{chapter*.5}%
+\contentsline {section}{\numberline {1.1}Bối cảnh}{7}{section*.6}%
+\contentsline {section}{\numberline {1.2}Vấn đề nghiên cứu}{7}{section*.7}%
+\contentsline {section}{\numberline {1.3}Mục tiêu}{8}{section*.10}%
+\contentsline {section}{\numberline {1.4}Phạm vi và ý nghĩa}{8}{section*.17}%
+\contentsline {chapter}{\numberline {2}Phân tích Yêu cầu hệ thống}{10}{chapter*.18}%
+\contentsline {section}{\numberline {2.1}Yêu cầu chức năng}{10}{section*.19}%
+\contentsline {subsection}{\numberline {2.1.1}Quản lý người dùng}{10}{subsection*.20}%
+\contentsline {subsection}{\numberline {2.1.2}Quản lý sản phẩm}{10}{subsection*.21}%
+\contentsline {subsection}{\numberline {2.1.3}Quản lý tương tác}{10}{subsection*.22}%
+\contentsline {subsection}{\numberline {2.1.4}Sinh danh sách gợi ý}{10}{subsection*.23}%
+\contentsline {subsection}{\numberline {2.1.5}Quản lý dữ liệu}{10}{subsection*.24}%
+\contentsline {section}{\numberline {2.2}Yêu cầu phi chức năng}{11}{section*.25}%
+\contentsline {subsection}{\numberline {2.2.1}Hiệu năng}{11}{subsection*.26}%
+\contentsline {subsection}{\numberline {2.2.2}Khả năng mở rộng}{11}{subsection*.27}%
+\contentsline {subsection}{\numberline {2.2.3}Độ tin cậy}{11}{subsection*.28}%
+\contentsline {section}{\numberline {2.3}Ràng buộc kỹ thuật}{11}{section*.29}%
+\contentsline {section}{\numberline {2.4}Trường hợp sử dụng}{11}{section*.30}%
+\contentsline {subsection}{\numberline {2.4.1}UC1: Thêm người dùng mới}{11}{subsection*.31}%
+\contentsline {subsection}{\numberline {2.4.2}UC2: Ghi nhận tương tác}{11}{subsection*.32}%
+\contentsline {subsection}{\numberline {2.4.3}UC3: Sinh danh sách gợi ý}{11}{subsection*.33}%
+\contentsline {subsection}{\numberline {2.4.4}UC4: Cập nhật sản phẩm}{11}{subsection*.34}%
+\contentsline {chapter}{\numberline {3}Thiết kế hệ thống}{12}{chapter*.35}%
+\contentsline {section}{\numberline {3.1}Kiến trúc tổng thể}{12}{section*.36}%
+\contentsline {section}{\numberline {3.2}Mô hình dữ liệu}{12}{section*.41}%
+\contentsline {subsection}{\numberline {3.2.1}Entity-Relationship Diagram}{12}{subsection*.42}%
+\contentsline {subsection}{\numberline {3.2.2}Cấu trúc lớp User}{12}{subsection*.43}%
+\contentsline {subsection}{\numberline {3.2.3}Cấu trúc lớp Item}{12}{subsection*.44}%
+\contentsline {subsection}{\numberline {3.2.4}Cấu trúc lớp Interaction}{13}{subsection*.45}%
+\contentsline {section}{\numberline {3.3}Thuật toán Collaborative Filtering}{13}{section*.46}%
+\contentsline {subsection}{\numberline {3.3.1}Item-Based Collaborative Filtering}{13}{subsection*.47}%
+\contentsline {subsection}{\numberline {3.3.2}Công thức tính độ tương đồng (Cosine Similarity)}{13}{subsection*.51}%
+\contentsline {section}{\numberline {3.4}Cấu trúc dữ liệu chính}{13}{section*.52}%
+\contentsline {subsection}{\numberline {3.4.1}Rating Matrix (Sparse)}{13}{subsection*.53}%
+\contentsline {subsection}{\numberline {3.4.2}Similarity Matrix}{13}{subsection*.54}%
+\contentsline {subsection}{\numberline {3.4.3}Hash Map}{13}{subsection*.55}%
+\contentsline {subsection}{\numberline {3.4.4}Priority Queue}{13}{subsection*.56}%
+\contentsline {section}{\numberline {3.5}Các dịch vụ chính}{13}{section*.57}%
+\contentsline {subsection}{\numberline {3.5.1}UserManager}{13}{subsection*.58}%
+\contentsline {subsection}{\numberline {3.5.2}ItemManager}{14}{subsection*.59}%
+\contentsline {subsection}{\numberline {3.5.3}InteractionManager}{14}{subsection*.60}%
+\contentsline {subsection}{\numberline {3.5.4}Recommender}{14}{subsection*.61}%
+\contentsline {section}{\numberline {3.6}Luồng xử lý chính}{14}{section*.62}%
+\contentsline {subsection}{\numberline {3.6.1}Luồng khởi tạo hệ thống}{14}{subsection*.63}%
+\contentsline {subsection}{\numberline {3.6.2}Luồng sinh gợi ý}{14}{subsection*.69}%
+\contentsline {chapter}{\numberline {4}Cài đặt và xây dựng chương trình}{15}{chapter*.74}%
+\contentsline {section}{\numberline {4.1}Môi trường phát triển}{15}{section*.75}%
+\contentsline {subsection}{\numberline {4.1.1}Công cụ và thư viện}{15}{subsection*.76}%
+\contentsline {subsection}{\numberline {4.1.2}Yêu cầu hệ thống}{15}{subsection*.77}%
+\contentsline {section}{\numberline {4.2}Cấu trúc dự án}{15}{section*.78}%
+\contentsline {section}{\numberline {4.3}Chi tiết cài đặt các module chính}{16}{section*.79}%
+\contentsline {subsection}{\numberline {4.3.1}Module Models (1\_models/)}{16}{subsection*.80}%
+\contentsline {subsection}{\numberline {4.3.2}Module Data (2\_data/)}{16}{subsection*.81}%
+\contentsline {subsubsection}{CSVLoader}{16}{section*.82}%
+\contentsline {subsubsection}{DatabaseManager}{16}{section*.83}%
+\contentsline {subsection}{\numberline {4.3.3}Module Core (3\_core/)}{16}{subsection*.84}%
+\contentsline {subsubsection}{RatingMatrix}{16}{section*.85}%
+\contentsline {subsubsection}{SimilarityMatrix}{16}{section*.86}%
+\contentsline {subsubsection}{Recommender}{16}{section*.87}%
+\contentsline {subsection}{\numberline {4.3.4}Module Services (6\_services/)}{17}{subsection*.88}%
+\contentsline {subsubsection}{UserManager}{17}{section*.89}%
+\contentsline {subsubsection}{ItemManager}{17}{section*.90}%
+\contentsline {subsubsection}{InteractionManager}{17}{section*.91}%
+\contentsline {section}{\numberline {4.4}Luồng xử lý chương trình}{17}{section*.92}%
+\contentsline {subsection}{\numberline {4.4.1}Khởi tạo}{17}{subsection*.93}%
+\contentsline {subsection}{\numberline {4.4.2}Xử lý yêu cầu gợi ý}{17}{subsection*.94}%
+\contentsline {section}{\numberline {4.5}Xử lý lỗi và ngoại lệ}{17}{section*.95}%
+\contentsline {chapter}{\numberline {5}Kiểm thử và Đánh giá kết quả}{18}{chapter*.96}%
+\contentsline {section}{\numberline {5.1}Chiến lược kiểm thử}{18}{section*.97}%
+\contentsline {subsection}{\numberline {5.1.1}Kiểm thử đơn vị (Unit Testing)}{18}{subsection*.98}%
+\contentsline {subsection}{\numberline {5.1.2}Kiểm thử tích hợp (Integration Testing)}{18}{subsection*.99}%
+\contentsline {subsection}{\numberline {5.1.3}Kiểm thử hiệu năng (Performance Testing)}{18}{subsection*.100}%
+\contentsline {subsection}{\numberline {5.1.4}Kiểm thử chức năng (Functional Testing)}{19}{subsection*.101}%
+\contentsline {section}{\numberline {5.2}Trường hợp kiểm thử}{19}{section*.102}%
+\contentsline {subsection}{\numberline {5.2.1}TC1: Tải dữ liệu từ CSV}{19}{subsection*.103}%
+\contentsline {subsection}{\numberline {5.2.2}TC2: Tính độ tương đồng giữa 2 sản phẩm}{19}{subsection*.107}%
+\contentsline {subsection}{\numberline {5.2.3}TC3: Sinh danh sách gợi ý cho người dùng}{19}{subsection*.111}%
+\contentsline {subsection}{\numberline {5.2.4}TC4: Xử lý người dùng không tồn tại}{20}{subsection*.117}%
+\contentsline {section}{\numberline {5.3}Kết quả thực nghiệm}{20}{section*.120}%
+\contentsline {subsection}{\numberline {5.3.1}Thử nghiệm với dataset nhỏ}{20}{subsection*.121}%
+\contentsline {subsection}{\numberline {5.3.2}Thử nghiệm với dataset trung bình}{20}{subsection*.122}%
+\contentsline {subsection}{\numberline {5.3.3}Đánh giá chất lượng gợi ý}{20}{subsection*.123}%
+\contentsline {section}{\numberline {5.4}Nhận xét và rút ra}{20}{section*.124}%
+\contentsline {chapter}{\numberline {6}Kết luận và hướng phát triển}{21}{chapter*.125}%
+\contentsline {section}{\numberline {6.1}Kết luận}{21}{section*.126}%
+\contentsline {subsection}{\numberline {6.1.1}Những đạt được}{21}{subsection*.127}%
+\contentsline {subsection}{\numberline {6.1.2}Ứng dụng thực tiễn}{21}{subsection*.134}%
+\contentsline {subsection}{\numberline {6.1.3}Đóng góp học thuật}{21}{subsection*.135}%
+\contentsline {section}{\numberline {6.2}Hạn chế}{22}{section*.136}%
+\contentsline {section}{\numberline {6.3}Hướng phát triển}{22}{section*.142}%
+\contentsline {subsection}{\numberline {6.3.1}Ngắn hạn}{22}{subsection*.143}%
+\contentsline {subsection}{\numberline {6.3.2}Trung hạn}{22}{subsection*.148}%
+\contentsline {subsection}{\numberline {6.3.3}Dài hạn}{22}{subsection*.153}%
+\contentsline {section}{\numberline {6.4}Khuyến nghị}{23}{section*.158}%
+\contentsline {chapter}{\numberline {A}Mã nguồn hàm main()}{25}{chapter*.160}%
+\contentsline {chapter}{\numberline {B}Mô tả các hàm xử lý chính}{26}{chapter*.161}%
+\contentsline {section}{\numberline {B.1}RatingMatrix::buildMatrix()}{26}{section*.162}%
+\contentsline {section}{\numberline {B.2}SimilarityMatrix::computeSimilarity()}{26}{section*.163}%
+\contentsline {section}{\numberline {B.3}Recommender::getRecommendations()}{27}{section*.164}%
+\contentsline {chapter}{\numberline {C}Hướng dẫn cài đặt và sử dụng chương trình}{28}{chapter*.165}%
+\contentsline {section}{\numberline {C.1}Yêu cầu hệ thống}{28}{section*.166}%
+\contentsline {section}{\numberline {C.2}Bước cài đặt}{28}{section*.167}%
+\contentsline {subsection}{\numberline {C.2.1}Bước 1: Clone Repository}{28}{subsection*.168}%
+\contentsline {subsection}{\numberline {C.2.2}Bước 2: Cài đặt MySQL}{28}{subsection*.169}%
+\contentsline {subsection}{\numberline {C.2.3}Bước 3: Cấu hình kết nối Database}{28}{subsection*.174}%
+\contentsline {subsection}{\numberline {C.2.4}Bước 4: Biên dịch chương trình}{29}{subsection*.175}%
+\contentsline {subsubsection}{Windows (sử dụng PowerShell)}{29}{section*.176}%
+\contentsline {subsubsection}{Linux/macOS}{29}{section*.177}%
+\contentsline {subsection}{\numberline {C.2.5}Bước 5: Chạy chương trình}{29}{subsection*.178}%
+\contentsline {subsubsection}{Windows}{29}{section*.179}%
+\contentsline {subsubsection}{Linux/macOS}{29}{section*.180}%
+\contentsline {section}{\numberline {C.3}Sử dụng chương trình}{29}{section*.181}%
+\contentsline {subsection}{\numberline {C.3.1}Tải dữ liệu từ CSV}{29}{subsection*.182}%
+\contentsline {subsection}{\numberline {C.3.2}Sinh gợi ý}{29}{subsection*.183}%
+\contentsline {section}{\numberline {C.4}Khắc phục sự cố}{30}{section*.184}%
+\contentsline {subsection}{\numberline {C.4.1}Lỗi kết nối MySQL}{30}{subsection*.185}%
+\contentsline {subsection}{\numberline {C.4.2}Lỗi file CSV không tìm thấy}{30}{subsection*.189}%
+\contentsline {subsection}{\numberline {C.4.3}Lỗi biên dịch}{30}{subsection*.192}%

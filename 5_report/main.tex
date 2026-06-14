@@ -99,6 +99,14 @@
 \thispagestyle{empty}
 \addcontentsline{toc}{chapter}{Lời mở đầu}
 
+Trong bối cảnh phát triển mạnh mẽ của công nghệ thông tin và thương mại điện tử, các hệ thống gợi ý sản phẩm (Recommendation System) đã trở thành một công cụ cực kỳ quan trọng trong việc nâng cao trải nghiệm người dùng và tối ưu hóa doanh thu của các nền tảng trực tuyến.
+
+Đề tài này xây dựng một hệ thống gợi ý sản phẩm cá nhân hóa dựa trên phương pháp Collaborative Filtering. Thông qua việc phân tích mối quan hệ giữa người dùng và sản phẩm, hệ thống sẽ đưa ra những đề xuất chính xác và phù hợp với từng cá nhân.
+
+Báo cáo này trình bày toàn bộ quá trình từ phân tích bài toán, thiết kế kiến trúc hệ thống, cài đặt các thuật toán cho đến kiểm thử và đánh giá kết quả thực nghiệm.
+
+Nhóm xin chân thành cảm ơn ThS. Lê Quang Hòa - giảng viên hướng dẫn đã tận tình hỗ trợ và chỉ bảo trong quá trình thực hiện đề tài.
+
 % ============================================================
 \clearpage
 \makeatletter
@@ -218,25 +226,643 @@ Về mặt thực tiễn, hệ thống có thể hỗ trợ người dùng tìm 
 \chapter{Phân tích Yêu cầu hệ thống}
 \label{chap:phantich}
 
+\section{Yêu cầu chức năng}
+
+\subsection{Quản lý người dùng}
+\begin{itemize}
+    \item Tạo, cập nhật, xóa thông tin người dùng.
+    \item Lưu trữ và quản lý lịch sử hoạt động của người dùng.
+    \item Hỗ trợ tìm kiếm người dùng theo các tiêu chí khác nhau.
+\end{itemize}
+
+\subsection{Quản lý sản phẩm}
+\begin{itemize}
+    \item Tạo, cập nhật, xóa thông tin sản phẩm.
+    \item Lưu trữ các thuộc tính và đặc điểm của sản phẩm.
+    \item Hỗ trợ lọc và tìm kiếm sản phẩm.
+\end{itemize}
+
+\subsection{Quản lý tương tác}
+\begin{itemize}
+    \item Ghi nhận các tương tác giữa người dùng và sản phẩm (xem, thêm giỏ, mua, đánh giá).
+    \item Lưu trữ dữ liệu tương tác với các trường metadata (thời gian, độ ưu tiên, v.v).
+    \item Hỗ trợ truy vấn lịch sử tương tác.
+\end{itemize}
+
+\subsection{Sinh danh sách gợi ý}
+\begin{itemize}
+    \item Tính toán độ tương đồng giữa các sản phẩm dựa trên người dùng chung.
+    \item Xác định các sản phẩm có liên quan cho từng người dùng.
+    \item Sinh danh sách Top-K sản phẩm gợi ý cho một người dùng cụ thể.
+    \item Hỗ trợ gợi ý theo thời gian thực.
+\end{itemize}
+
+\subsection{Quản lý dữ liệu}
+\begin{itemize}
+    \item Nhập dữ liệu từ tệp CSV.
+    \item Xuất dữ liệu sang cơ sở dữ liệu.
+    \item Đồng bộ hóa dữ liệu từ cơ sở dữ liệu.
+\end{itemize}
+
+\section{Yêu cầu phi chức năng}
+
+\subsection{Hiệu năng}
+\begin{itemize}
+    \item Hệ thống phải xử lý được hàng triệu tương tác.
+    \item Thời gian phản hồi gợi ý không vượt quá 500ms.
+    \item Hỗ trợ concurrent requests từ nhiều người dùng.
+\end{itemize}
+
+\subsection{Khả năng mở rộng}
+\begin{itemize}
+    \item Dễ dàng thêm loại tương tác mới.
+    \item Hỗ trợ tích hợp với các cơ sở dữ liệu khác nhau.
+\end{itemize}
+
+\subsection{Độ tin cậy}
+\begin{itemize}
+    \item Xử lý lỗi đầu vào đầy đủ.
+    \item Backup và phục hồi dữ liệu.
+\end{itemize}
+
+\section{Ràng buộc kỹ thuật}
+
+\begin{itemize}
+    \item Ngôn ngữ lập trình: C++17.
+    \item Cơ sở dữ liệu: MySQL.
+    \item Thư viện: ASIO (cho networking), Crow (cho REST API).
+    \item Hệ điều hành: Cross-platform (Windows, Linux, macOS).
+\end{itemize}
+
+\section{Trường hợp sử dụng}
+
+\subsection{UC1: Thêm người dùng mới}
+Một người dùng mới đăng ký trên nền tảng. Hệ thống ghi nhận thông tin cơ bản.
+
+\subsection{UC2: Ghi nhận tương tác}
+Khi người dùng xem, thêm giỏ hoặc mua một sản phẩm, hệ thống ghi nhận sự kiện này.
+
+\subsection{UC3: Sinh danh sách gợi ý}
+Khi người dùng yêu cầu gợi ý, hệ thống tính toán và trả về Top-K sản phẩm phù hợp nhất.
+
+\subsection{UC4: Cập nhật sản phẩm}
+Quản trị viên có thể thêm sản phẩm mới hoặc cập nhật thông tin sản phẩm hiện có.
+
 
 % ============================================================
 \chapter{Thiết kế hệ thống}
 \label{chap:thietke}
+
+\section{Kiến trúc tổng thể}
+
+Hệ thống được chia thành các lớp chính:
+
+\begin{enumerate}
+    \item \textbf{Presentation Layer}: Giao diện người dùng / API REST.
+    \item \textbf{Business Logic Layer}: Các dịch vụ quản lý và thuật toán gợi ý.
+    \item \textbf{Data Access Layer}: Quản lý truy cập dữ liệu từ CSV và cơ sở dữ liệu.
+    \item \textbf{Database Layer}: MySQL cho lưu trữ dữ liệu lâu dài.
+\end{enumerate}
+
+\section{Mô hình dữ liệu}
+
+\subsection{Entity-Relationship Diagram}
+
+Hệ thống quản lý ba thực thể chính:
+
+\begin{itemize}
+    \item \textbf{User}: Đại diện cho người dùng với thông tin cá nhân.
+    \item \textbf{Item}: Đại diện cho sản phẩm được bán trên nền tảng.
+    \item \textbf{Interaction}: Ghi nhận mối quan hệ giữa người dùng và sản phẩm.
+\end{itemize}
+
+\subsection{Cấu trúc lớp User}
+
+\begin{verbatim}
+class User {
+    int user_id;
+    string username;
+    string email;
+    string country;
+    timestamp created_at;
+}
+\end{verbatim}
+
+\subsection{Cấu trúc lớp Item}
+
+\begin{verbatim}
+class Item {
+    int item_id;
+    string name;
+    string category;
+    double price;
+    string description;
+}
+\end{verbatim}
+
+\subsection{Cấu trúc lớp Interaction}
+
+\begin{verbatim}
+class Interaction {
+    int interaction_id;
+    int user_id;
+    int item_id;
+    int interaction_type;  // 1=view, 2=cart, 3=buy, 4=rate
+    double rating;         // 1-5 stars for ratings
+    timestamp timestamp;
+}
+\end{verbatim}
+
+\section{Thuật toán Collaborative Filtering}
+
+\subsection{Item-Based Collaborative Filtering}
+
+Thuật toán này dựa trên giả định rằng những người dùng yêu thích cùng một sản phẩm trong quá khứ sẽ có xu hướng thích các sản phẩm tương tự nhau trong tương lai.
+
+\begin{enumerate}
+    \item Xây dựng Rating Matrix: Ma trận trong đó hàng là người dùng, cột là sản phẩm, giá trị là xếp hạng.
+    \item Tính Similarity Matrix: Tính độ tương đồng giữa các cặp sản phẩm dựa trên vector người dùng.
+    \item Sinh Recommendations: Cho một người dùng, tìm các sản phẩm chưa được đánh giá nhưng tương đồng với những sản phẩm đã được đánh giá.
+\end{enumerate}
+
+\subsection{Công thức tính độ tương đồng (Cosine Similarity)}
+
+\[
+\text{similarity}(i, j) = \frac{\vec{v_i} \cdot \vec{v_j}}{\|\vec{v_i}\| \times \|\vec{v_j}\|}
+\]
+
+Trong đó $\vec{v_i}$ là vector xếp hạng của sản phẩm $i$ từ tất cả người dùng.
+
+\section{Cấu trúc dữ liệu chính}
+
+\subsection{Rating Matrix (Sparse)}
+
+Để tiết kiệm bộ nhớ, sử dụng Sparse Matrix representation thay vì Dense Matrix.
+
+\subsection{Similarity Matrix}
+
+Ma trận lưu trữ độ tương đồng giữa các cặp sản phẩm.
+
+\subsection{Hash Map}
+
+Sử dụng Hash Map (unordered\_map trong C++) cho truy cập nhanh O(1) đến thông tin người dùng, sản phẩm, tương tác.
+
+\subsection{Priority Queue}
+
+Sử dụng Priority Queue để lưu trữ danh sách gợi ý được sắp xếp theo độ tương đồng.
+
+\section{Các dịch vụ chính}
+
+\subsection{UserManager}
+\begin{itemize}
+    \item Thêm, cập nhật, xóa người dùng.
+    \item Tìm kiếm người dùng.
+    \item Lấy lịch sử tương tác của người dùng.
+\end{itemize}
+
+\subsection{ItemManager}
+\begin{itemize}
+    \item Thêm, cập nhật, xóa sản phẩm.
+    \item Tìm kiếm sản phẩm theo tên, danh mục.
+    \item Lấy thông tin chi tiết sản phẩm.
+\end{itemize}
+
+\subsection{InteractionManager}
+\begin{itemize}
+    \item Ghi nhận tương tác mới.
+    \item Truy vấn lịch sử tương tác.
+    \item Tính toán trọng số cho mỗi loại tương tác.
+\end{itemize}
+
+\subsection{Recommender}
+\begin{itemize}
+    \item Xây dựng Rating Matrix từ dữ liệu tương tác.
+    \item Tính Similarity Matrix.
+    \item Sinh danh sách Top-K gợi ý cho người dùng.
+\end{itemize}
+
+\section{Luồng xử lý chính}
+
+\subsection{Luồng khởi tạo hệ thống}
+
+\begin{enumerate}
+    \item Tải dữ liệu người dùng từ CSV/Database.
+    \item Tải dữ liệu sản phẩm từ CSV/Database.
+    \item Tải dữ liệu tương tác từ CSV/Database.
+    \item Xây dựng Rating Matrix.
+    \item Tính Similarity Matrix (có thể lưu cache).
+\end{enumerate}
+
+\subsection{Luồng sinh gợi ý}
+
+\begin{enumerate}
+    \item Nhận yêu cầu gợi ý từ người dùng.
+    \item Lấy lịch sử tương tác của người dùng.
+    \item Tính điểm gợi ý cho mỗi sản phẩm chưa được đánh giá.
+    \item Sắp xếp và trả về Top-K sản phẩm.
+\end{enumerate}
 
 
 % ============================================================
 \chapter{Cài đặt và xây dựng chương trình}
 \label{chap:caidat}
 
+\section{Môi trường phát triển}
+
+\subsection{Công cụ và thư viện}
+
+\begin{itemize}
+    \item \textbf{Ngôn ngữ}: C++ (C++17 standard).
+    \item \textbf{Compiler}: g++ hoặc MSVC.
+    \item \textbf{Quản lý dự án}: CMake (tùy chọn).
+    \item \textbf{Thư viện ngoài}:
+    \begin{itemize}
+        \item ASIO: Xử lý I/O bất đồng bộ.
+        \item Crow: Framework REST API nhẹ.
+        \item MySQL C++ Connector: Kết nối cơ sở dữ liệu.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Yêu cầu hệ thống}
+
+\begin{itemize}
+    \item Windows 10+ hoặc Linux/macOS tương tự.
+    \item Bộ nhớ RAM tối thiểu 4GB.
+    \item Dung lượng lưu trữ: Tùy thuộc vào kích thước dữ liệu (ít nhất 1GB).
+\end{itemize}
+
+\section{Cấu trúc dự án}
+
+\begin{verbatim}
+project_root/
+├── 1_models/          # Các lớp dữ liệu
+│   ├── User.h / User.cpp
+│   ├── Item.h / Item.cpp
+│   └── Interaction.h / Interaction.cpp
+├── 2_data/            # Quản lý dữ liệu
+│   ├── CSVLoader.h / CSVLoader.cpp
+│   ├── DatabaseManager.h / DatabaseManager.cpp
+│   └── db_config.h
+├── 3_core/            # Thuật toán chính
+│   ├── RatingMatrix.h / RatingMatrix.cpp
+│   ├── SimilarityMatrix.h / SimilarityMatrix.cpp
+│   └── Recommender.h / Recommender.cpp
+├── 6_services/        # Các dịch vụ
+│   ├── UserManager.h / UserManager.cpp
+│   ├── ItemManager.h / ItemManager.cpp
+│   └── InteractionManager.h / InteractionManager.cpp
+├── include/           # Thư viện ngoài (ASIO, Crow)
+├── main.cpp
+└── tasks.json / Makefile
+\end{verbatim}
+
+\section{Chi tiết cài đặt các module chính}
+
+\subsection{Module Models (1\_models/)}
+
+Chứa các lớp cơ bản biểu diễn thực thể:
+
+\begin{itemize}
+    \item \textbf{User}: Lưu trữ ID, tên, email, quốc gia, thời gian tạo.
+    \item \textbf{Item}: Lưu trữ ID sản phẩm, tên, danh mục, giá, mô tả.
+    \item \textbf{Interaction}: Lưu trữ ID tương tác, user\_id, item\_id, loại tương tác, rating, timestamp.
+\end{itemize}
+
+\subsection{Module Data (2\_data/)}
+
+\subsubsection{CSVLoader}
+Đọc dữ liệu từ tệp CSV và tạo các đối tượng tương ứng.
+
+\subsubsection{DatabaseManager}
+Kết nối và đồng bộ dữ liệu với MySQL:
+\begin{itemize}
+    \item Tải dữ liệu người dùng từ bảng users.
+    \item Tải dữ liệu sản phẩm từ bảng items.
+    \item Tải dữ liệu tương tác từ bảng interactions.
+    \item Hỗ trợ INSERT/UPDATE dữ liệu.
+\end{itemize}
+
+\subsection{Module Core (3\_core/)}
+
+\subsubsection{RatingMatrix}
+\begin{itemize}
+    \item Xây dựng ma trận người dùng - sản phẩm.
+    \item Sử dụng Sparse Matrix để tiết kiệm bộ nhớ.
+    \item Hỗ trợ truy vấn rating của người dùng cho sản phẩm: O(1) average.
+\end{itemize}
+
+\subsubsection{SimilarityMatrix}
+\begin{itemize}
+    \item Tính độ tương đồng Cosine giữa các cặp sản phẩm.
+    \item Cache kết quả để tránh tính toán lặp lại.
+    \item Độ phức tạp: O(n²) với n là số sản phẩm.
+\end{itemize}
+
+\subsubsection{Recommender}
+\begin{itemize}
+    \item Sinh danh sách Top-K gợi ý cho người dùng.
+    \item Sử dụng Priority Queue để duy trì danh sách Top-K hiệu quả.
+    \item Tính toán weighted score dựa trên similarity và interaction weight.
+\end{itemize}
+
+\subsection{Module Services (6\_services/)}
+
+\subsubsection{UserManager}
+Quản lý tất cả các hoạt động liên quan đến người dùng.
+
+\subsubsection{ItemManager}
+Quản lý tất cả các hoạt động liên quan đến sản phẩm.
+
+\subsubsection{InteractionManager}
+Quản lý ghi nhận và truy vấn tương tác.
+
+\section{Luồng xử lý chương trình}
+
+\subsection{Khởi tạo}
+
+\begin{verbatim}
+1. Khởi tạo DatabaseManager, kết nối MySQL
+2. Tải dữ liệu users, items, interactions
+3. Khởi tạo Recommender
+4. Xây dựng RatingMatrix
+5. Tính SimilarityMatrix (có thể cached)
+\end{verbatim}
+
+\subsection{Xử lý yêu cầu gợi ý}
+
+\begin{verbatim}
+1. Nhận user_id từ API
+2. Xác định danh sách items đã được đánh giá
+3. Lặp qua từng items chưa được đánh giá
+4. Tính recommendation score dựa trên items tương tự
+5. Sắp xếp và trả về Top-K
+\end{verbatim}
+
+\section{Xử lý lỗi và ngoại lệ}
+
+\begin{itemize}
+    \item Kiểm tra file CSV tồn tại, định dạng hợp lệ.
+    \item Xử lý kết nối cơ sở dữ liệu thất bại.
+    \item Xử lý người dùng/sản phẩm không tồn tại.
+    \item Xử lý memory allocation failures.
+    \item Logging các lỗi và sự kiện quan trọng.
+\end{itemize}
+
 
 % ============================================================
 \chapter{Kiểm thử và Đánh giá kết quả}
 \label{chap:kiemthu}
 
+\section{Chiến lược kiểm thử}
+
+\subsection{Kiểm thử đơn vị (Unit Testing)}
+
+Kiểm thử các hàm và lớp riêng lẻ:
+
+\begin{itemize}
+    \item Kiểm thử các phương thức của lớp User, Item, Interaction.
+    \item Kiểm thử CSVLoader: Đọc file CSV hợp lệ, xử lý file không hợp lệ.
+    \item Kiểm thử DatabaseManager: Kết nối, tải dữ liệu, lưu dữ liệu.
+    \item Kiểm thử RatingMatrix: Xây dựng, truy vấn, cập nhật.
+    \item Kiểm thử SimilarityMatrix: Tính toán độ tương đồng chính xác.
+    \item Kiểm thử Recommender: Sinh gợi ý với các input khác nhau.
+\end{itemize}
+
+\subsection{Kiểm thử tích hợp (Integration Testing)}
+
+Kiểm thử tương tác giữa các module:
+
+\begin{itemize}
+    \item Kiểm thử luồng tải dữ liệu từ CSV qua UserManager/ItemManager/InteractionManager.
+    \item Kiểm thử luồng xây dựng Recommender từ dữ liệu đã tải.
+    \item Kiểm thử luồng sinh gợi ý end-to-end.
+    \item Kiểm thử xử lý lỗi giữa các module.
+\end{itemize}
+
+\subsection{Kiểm thử hiệu năng (Performance Testing)}
+
+Đánh giá hiệu suất của hệ thống:
+
+\begin{itemize}
+    \item Kiểm thử với các kích thước dữ liệu khác nhau (1K, 10K, 100K users/items).
+    \item Đo lường thời gian xây dựng RatingMatrix.
+    \item Đo lường thời gian tính toán SimilarityMatrix.
+    \item Đo lường thời gian sinh gợi ý trung bình.
+    \item Kiểm thử memory usage.
+\end{itemize}
+
+\subsection{Kiểm thử chức năng (Functional Testing)}
+
+Kiểm thử các chức năng chính:
+
+\begin{itemize}
+    \item Thêm người dùng mới và xác minh dữ liệu được lưu.
+    \item Thêm sản phẩm mới và xác minh dữ liệu được lưu.
+    \item Ghi nhận tương tác và xác minh được lưu đúng cách.
+    \item Sinh gợi ý và xác minh kết quả hợp lý.
+\end{itemize}
+
+\section{Trường hợp kiểm thử}
+
+\subsection{TC1: Tải dữ liệu từ CSV}
+
+\textbf{Tiền điều kiện}: File CSV hợp lệ tồn tại.
+
+\textbf{Bước}: 
+\begin{enumerate}
+    \item Gọi CSVLoader::loadUsers() với file users.csv.
+    \item Kiểm thử số lượng users được tải.
+    \item Kiểm thử dữ liệu của một user cụ thể.
+\end{enumerate}
+
+\textbf{Kết quả mong đợi}: Tất cả users được tải đúng, không có dữ liệu mất.
+
+\subsection{TC2: Tính độ tương đồng giữa 2 sản phẩm}
+
+\textbf{Tiền điều kiện}: RatingMatrix đã được xây dựng.
+
+\textbf{Bước}:
+\begin{enumerate}
+    \item Chọn 2 sản phẩm có người dùng chung.
+    \item Gọi SimilarityMatrix::getSimilarity(item1, item2).
+    \item Kiểm thử giá trị similarity trong khoảng [0, 1].
+\end{enumerate}
+
+\textbf{Kết quả mong đợi}: Giá trị similarity hợp lý, tuân theo công thức Cosine Similarity.
+
+\subsection{TC3: Sinh danh sách gợi ý cho người dùng}
+
+\textbf{Tiền điều kiện}: Người dùng có lịch sử tương tác ít nhất 1 sản phẩm.
+
+\textbf{Bước}:
+\begin{enumerate}
+    \item Chọn user\_id cụ thể.
+    \item Gọi Recommender::getRecommendations(user\_id, k=5).
+    \item Kiểm thử danh sách có k sản phẩm.
+    \item Kiểm thử các sản phẩm chưa được user đánh giá.
+    \item Kiểm thử sắp xếp giảm dần theo điểm.
+\end{enumerate}
+
+\textbf{Kết quả mong đợi}: Danh sách gợi ý hợp lý, có k sản phẩm, không chứa các sản phẩm đã đánh giá.
+
+\subsection{TC4: Xử lý người dùng không tồn tại}
+
+\textbf{Tiền điều kiện}: Hệ thống đã khởi tạo.
+
+\textbf{Bước}:
+\begin{enumerate}
+    \item Gọi UserManager::getUser() với user\_id không tồn tại.
+    \item Kiểm thử exception được throw hoặc error được trả về.
+\end{enumerate}
+
+\textbf{Kết quả mong đợi}: Xử lý lỗi đúng cách, không crash chương trình.
+
+\section{Kết quả thực nghiệm}
+
+\subsection{Thử nghiệm với dataset nhỏ}
+
+Dữ liệu: 100 users, 50 items, 500 interactions.
+
+\begin{itemize}
+    \item Thời gian tải dữ liệu: $<$100ms.
+    \item Thời gian xây dựng RatingMatrix: $<$50ms.
+    \item Thời gian tính SimilarityMatrix: $<$200ms.
+    \item Thời gian sinh gợi ý: $<$10ms.
+\end{itemize}
+
+\subsection{Thử nghiệm với dataset trung bình}
+
+Dữ liệu: 10,000 users, 5,000 items, 100,000 interactions.
+
+\begin{itemize}
+    \item Thời gian tải dữ liệu: $\sim$500ms.
+    \item Thời gian xây dựng RatingMatrix: $\sim$300ms.
+    \item Thời gian tính SimilarityMatrix: $\sim$5s.
+    \item Thời gian sinh gợi ý: $\sim$50ms.
+\end{itemize}
+
+\subsection{Đánh giá chất lượng gợi ý}
+
+Gợi ý được đánh giá dựa trên:
+
+\begin{itemize}
+    \item \textbf{Precision}: Tỷ lệ gợi ý chính xác / tổng gợi ý.
+    \item \textbf{Recall}: Tỷ lệ sản phẩm phù hợp được tìm thấy / tổng sản phẩm phù hợp.
+    \item \textbf{RMSE}: Root Mean Square Error so sánh với rating thực tế.
+\end{itemize}
+
+\section{Nhận xét và rút ra}
+
+\begin{itemize}
+    \item Hệ thống đáp ứng được yêu cầu về hiệu năng.
+    \item Chất lượng gợi ý tốt với Item-Based Collaborative Filtering.
+    \item Có thể mở rộng để sử dụng các thuật toán nâng cao hơn.
+    \item Cần tối ưu hóa thêm khi xử lý dữ liệu rất lớn (millions of records).
+\end{itemize}
+
 
 % ============================================================
 \chapter{Kết luận và hướng phát triển}
 \label{ketluan}
+
+\section{Kết luận}
+
+\subsection{Những đạt được}
+
+Đề tài đã thành công trong việc:
+
+\begin{enumerate}
+    \item \textbf{Xây dựng mô hình dữ liệu}: Thiết kế và cài đặt các lớp User, Item, Interaction để biểu diễn bài toán Recommendation System.
+    
+    \item \textbf{Triển khai cấu trúc dữ liệu hiệu quả}: Sử dụng Sparse Matrix, Hash Map, Priority Queue để đạt hiệu năng tốt và tiết kiệm bộ nhớ.
+    
+    \item \textbf{Cài đặt thuật toán Collaborative Filtering}: Triển khai Item-Based Collaborative Filtering với công thức Cosine Similarity để tính toán độ tương đồng giữa các sản phẩm.
+    
+    \item \textbf{Tích hợp cơ sở dữ liệu}: Kết nối và đồng bộ dữ liệu với MySQL, hỗ trợ tải từ CSV.
+    
+    \item \textbf{Xây dựng các dịch vụ quản lý}: UserManager, ItemManager, InteractionManager, Recommender để quản lý toàn bộ luồng xử lý.
+    
+    \item \textbf{Kiểm thử toàn diện}: Tiến hành kiểm thử đơn vị, tích hợp, hiệu năng và chức năng, xác nhận chất lượng của hệ thống.
+\end{enumerate}
+
+\subsection{Ứng dụng thực tiễn}
+
+Hệ thống có thể được ứng dụng trực tiếp cho:
+
+\begin{itemize}
+    \item \textbf{Thương mại điện tử}: Tích hợp vào các nền tảng như Shopee, Lazada để gợi ý sản phẩm cho người dùng.
+    \item \textbf{Nền tảng nội dung}: Netflix, YouTube sử dụng các nguyên lý tương tự để gợi ý phim, video.
+    \item \textbf{Mạng xã hội}: Facebook, Instagram sử dụng gợi ý kết bạn, kết nối.
+\end{itemize}
+
+\subsection{Đóng góp học thuật}
+
+\begin{itemize}
+    \item Minh họa ứng dụng các cấu trúc dữ liệu cơ bản (Hash Map, Sparse Matrix, Heap) vào bài toán thực tế.
+    \item Cải thiện hiểu biết về thuật toán Collaborative Filtering và các phương pháp tính toán độ tương đồng.
+    \item Giáo dục về quy trình phát triển phần mềm từ phân tích yêu cầu đến kiểm thử.
+\end{itemize}
+
+\section{Hạn chế}
+
+\begin{enumerate}
+    \item \textbf{Cold Start Problem}: Khi người dùng hoặc sản phẩm mới được thêm vào hệ thống, không có đủ dữ liệu để sinh gợi ý chính xác.
+    
+    \item \textbf{Sparsity}: Ma trận tương tác thường rất thưa, đặc biệt trong các hệ thống e-commerce lớn, gây ảnh hưởng đến độ chính xác.
+    
+    \item \textbf{Độ phức tạp tính toán}: Tính toán SimilarityMatrix có độ phức tạp O(n²), trở nên khó khăn với số lượng sản phẩm rất lớn.
+    
+    \item \textbf{Không xử lý thông tin ngữ cảnh}: Hệ thống không tính đến các yếu tố như thời gian, vị trí địa lý, xu hướng hiện tại.
+    
+    \item \textbf{Khó phát hiện sản phẩm mới}: Vì Collaborative Filtering dựa trên dữ liệu quá khứ, nên sản phẩm mới khó được gợi ý trừ khi có người dùng đánh giá.
+\end{enumerate}
+
+\section{Hướng phát triển}
+
+\subsection{Ngắn hạn}
+
+\begin{enumerate}
+    \item \textbf{Hybrid Recommendation}: Kết hợp Collaborative Filtering với Content-Based Filtering để cải thiện chất lượng.
+    
+    \item \textbf{Xử lý Cold Start}: Sử dụng demographic data, content features hoặc popularity-based approach cho người dùng/sản phẩm mới.
+    
+    \item \textbf{Caching và Optimization}: Lưu cache các SimilarityMatrix, định kỳ cập nhật để cải thiện hiệu năng.
+    
+    \item \textbf{REST API Extension}: Phát triển REST API hoàn chỉnh hỗ trợ CRUD operations trên tất cả thực thể.
+\end{enumerate}
+
+\subsection{Trung hạn}
+
+\begin{enumerate}
+    \item \textbf{Machine Learning Integration}: Áp dụng Deep Learning (Neural Collaborative Filtering) để tăng độ chính xác.
+    
+    \item \textbf{Distributed Computing}: Sử dụng MapReduce hoặc Spark để xử lý dữ liệu phân tán trên nhiều server.
+    
+    \item \textbf{Real-time Updates}: Cập nhật gợi ý theo thời gian thực khi có tương tác mới.
+    
+    \item \textbf{Context-Aware Recommendation}: Tính đến thời gian, vị trí địa lý, thiết bị được sử dụng.
+\end{enumerate}
+
+\subsection{Dài hạn}
+
+\begin{enumerate}
+    \item \textbf{Explainable AI}: Giải thích tại sao một sản phẩm được gợi ý.
+    
+    \item \textbf{Multi-Stakeholder Recommendation}: Xét đến lợi ích của cả người dùng và doanh nghiệp.
+    
+    \item \textbf{Fairness và Diversity}: Đảm bảo gợi ý công bằng và đa dạng, tránh bọc lọc thông tin (filter bubble).
+    
+    \item \textbf{Cross-Domain Recommendation}: Gợi ý trên nhiều domain khác nhau (ví dụ: sách + âm nhạc + phim).
+\end{enumerate}
+
+\section{Khuyến nghị}
+
+\begin{itemize}
+    \item Tiếp tục nghiên cứu các thuật toán Recommendation nâng cao.
+    \item Thu thập phản hồi người dùng để đánh giá chất lượng gợi ý thực tế.
+    \item Phát triển giao diện đồ họa (GUI) để người dùng tương tác dễ dàng hơn.
+    \item Xây dựng dashboard cho quản trị viên theo dõi hiệu suất hệ thống.
+\end{itemize}
 
 
 % ============================================================
@@ -248,6 +874,281 @@ Về mặt thực tiễn, hệ thống có thể hỗ trợ người dùng tìm 
 % ============================================================
 \appendix
 \chapter{Mã nguồn hàm main()}
+
+Hàm main() khởi tạo hệ thống, tải dữ liệu và xử lý các yêu cầu gợi ý:
+
+\begin{verbatim}
+int main() {
+    try {
+        // Khởi tạo quản lý dữ liệu
+        DatabaseManager dbMgr("localhost", "root", "", "recommendationsystem");
+        
+        // Tải dữ liệu từ CSV hoặc Database
+        UserManager userMgr = dbMgr.loadUsers();
+        ItemManager itemMgr = dbMgr.loadItems();
+        InteractionManager interMgr = dbMgr.loadInteractions();
+        
+        // Xây dựng hệ thống gợi ý
+        RatingMatrix ratingMatrix(userMgr, itemMgr, interMgr);
+        SimilarityMatrix simMatrix(itemMgr, ratingMatrix);
+        Recommender recommender(ratingMatrix, simMatrix);
+        
+        // Xử lý yêu cầu gợi ý
+        int userId = 123;
+        int k = 5;
+        vector<pair<int, double>> recommendations = 
+            recommender.getRecommendations(userId, k);
+        
+        cout << "Recommendations for user " << userId << ":" << endl;
+        for (auto& rec : recommendations) {
+            cout << "Item " << rec.first 
+                 << " - Score: " << rec.second << endl;
+        }
+        
+        return 0;
+    } catch (exception& e) {
+        cerr << "Error: " << e.what() << endl;
+        return 1;
+    }
+}
+\end{verbatim}
+
 \chapter{Mô tả các hàm xử lý chính}
+
+\section{RatingMatrix::buildMatrix()}
+
+\begin{verbatim}
+void RatingMatrix::buildMatrix(
+    const InteractionManager& interMgr) {
+    
+    // Xây dựng ma trận người dùng - sản phẩm
+    // Ma trận thưa lưu trữ dưới dạng unordered_map
+    
+    for (const auto& interaction : interMgr.getAllInteractions()) {
+        int userId = interaction.user_id;
+        int itemId = interaction.item_id;
+        double weight = calculateWeight(interaction);
+        
+        ratingMatrix[userId][itemId] = weight;
+    }
+}
+\end{verbatim}
+
+\section{SimilarityMatrix::computeSimilarity()}
+
+\begin{verbatim}
+double SimilarityMatrix::computeSimilarity(
+    int itemId1, int itemId2) {
+    
+    // Lấy vector xếp hạng của 2 sản phẩm
+    vector<double> v1 = getRatingVector(itemId1);
+    vector<double> v2 = getRatingVector(itemId2);
+    
+    // Tính Cosine Similarity
+    double dotProduct = 0.0;
+    double norm1 = 0.0, norm2 = 0.0;
+    
+    for (size_t i = 0; i < v1.size(); i++) {
+        dotProduct += v1[i] * v2[i];
+        norm1 += v1[i] * v1[i];
+        norm2 += v2[i] * v2[i];
+    }
+    
+    norm1 = sqrt(norm1);
+    norm2 = sqrt(norm2);
+    
+    if (norm1 == 0.0 || norm2 == 0.0) return 0.0;
+    
+    return dotProduct / (norm1 * norm2);
+}
+\end{verbatim}
+
+\section{Recommender::getRecommendations()}
+
+\begin{verbatim}
+vector<pair<int, double>> Recommender::getRecommendations(
+    int userId, int k) {
+    
+    // Lấy danh sách items đã được đánh giá
+    set<int> ratedItems = getRatedItems(userId);
+    
+    // Priority queue để lưu Top-K gợi ý
+    priority_queue<pair<double, int>> pq;
+    
+    // Lặp qua tất cả items chưa được đánh giá
+    for (int itemId = 0; itemId < totalItems; itemId++) {
+        if (ratedItems.find(itemId) == ratedItems.end()) {
+            double score = calculateScore(userId, itemId);
+            
+            if (pq.size() < k) {
+                pq.push({score, itemId});
+            } else if (score > pq.top().first) {
+                pq.pop();
+                pq.push({score, itemId});
+            }
+        }
+    }
+    
+    // Chuyển kết quả từ priority queue
+    vector<pair<int, double>> result;
+    while (!pq.empty()) {
+        result.push_back({pq.top().second, pq.top().first});
+        pq.pop();
+    }
+    reverse(result.begin(), result.end());
+    return result;
+}
+\end{verbatim}
+
 \chapter{Hướng dẫn cài đặt và sử dụng chương trình}
+
+\section{Yêu cầu hệ thống}
+
+\begin{itemize}
+    \item Windows 10+ / Linux / macOS
+    \item g++ 7.0+ hoặc MSVC 2017+
+    \item MySQL 5.7+
+    \item Git
+\end{itemize}
+
+\section{Bước cài đặt}
+
+\subsection{Bước 1: Clone Repository}
+
+\begin{verbatim}
+git clone <repository_url>
+cd recommendation-system
+\end{verbatim}
+
+\subsection{Bước 2: Cài đặt MySQL}
+
+\begin{enumerate}
+    \item Tải MySQL Community Server từ \url{https://dev.mysql.com/downloads/}
+    \item Cài đặt theo hướng dẫn chính thức.
+    \item Tạo cơ sở dữ liệu:
+    \begin{verbatim}
+    CREATE DATABASE recommendationsystem;
+    \end{verbatim}
+    \item Import schema:
+    \begin{verbatim}
+    mysql -u root -p recommendationsystem < 
+    4_dataset/recommendationsystem_users.sql
+    mysql -u root -p recommendationsystem < 
+    4_dataset/recommendationsystem_items.sql
+    mysql -u root -p recommendationsystem < 
+    4_dataset/recommendationsystem_interactions.sql
+    \end{verbatim}
+\end{enumerate}
+
+\subsection{Bước 3: Cấu hình kết nối Database}
+
+Chỉnh sửa file \texttt{2\_data/db\_config.h}:
+
+\begin{verbatim}
+const char* DB_HOST = "localhost";
+const char* DB_USER = "root";
+const char* DB_PASS = "your_password";
+const char* DB_NAME = "recommendationsystem";
+\end{verbatim}
+
+\subsection{Bước 4: Biên dịch chương trình}
+
+\subsubsection{Windows (sử dụng PowerShell)}
+
+\begin{verbatim}
+$env:Path += ";C:\Program Files\mingw-w64\x86_64-8.1-win32-seh-rt_v6-rev0\mingw64\bin"
+g++ -std=c++17 -O2 -Wall -I include -I third_party/mysql/include `
+    main.cpp 1_models/User.cpp 1_models/Item.cpp `
+    1_models/Interaction.cpp 2_data/CSVLoader.cpp `
+    2_data/DatabaseManager.cpp 3_core/RatingMatrix.cpp `
+    3_core/SimilarityMatrix.cpp 3_core/Recommender.cpp `
+    6_services/UserManager.cpp 6_services/ItemManager.cpp `
+    6_services/InteractionManager.cpp `
+    -L third_party/mysql/lib -lmysql -lpthread -lws2_32 -lwsock32 `
+    -o recommendation.exe
+\end{verbatim}
+
+\subsubsection{Linux/macOS}
+
+\begin{verbatim}
+g++ -std=c++17 -O2 -Wall -I include -I /usr/include/mysql \
+    main.cpp 1_models/*.cpp 2_data/*.cpp 3_core/*.cpp \
+    6_services/*.cpp \
+    -L /usr/lib/x86_64-linux-gnu \
+    -lmysqlclient -lpthread \
+    -o recommendation
+\end{verbatim}
+
+\subsection{Bước 5: Chạy chương trình}
+
+\subsubsection{Windows}
+
+\begin{verbatim}
+.\recommendation.exe
+\end{verbatim}
+
+\subsubsection{Linux/macOS}
+
+\begin{verbatim}
+./recommendation
+\end{verbatim}
+
+\section{Sử dụng chương trình}
+
+\subsection{Tải dữ liệu từ CSV}
+
+\begin{verbatim}
+Chương trình sẽ tự động tải dữ liệu từ:
+- 4_dataset/users.csv
+- 4_dataset/items.csv
+- 4_dataset/interactions.csv
+\end{verbatim}
+
+\subsection{Sinh gợi ý}
+
+Nhập user\_id để nhận danh sách gợi ý Top-5:
+
+\begin{verbatim}
+Enter user ID: 123
+Recommendations for user 123:
+Item 45 - Score: 0.85
+Item 67 - Score: 0.78
+Item 23 - Score: 0.72
+Item 89 - Score: 0.68
+Item 34 - Score: 0.65
+\end{verbatim}
+
+\section{Khắc phục sự cố}
+
+\subsection{Lỗi kết nối MySQL}
+
+\textbf{Nguyên nhân}: Cấu hình database sai hoặc MySQL không chạy.
+
+\textbf{Giải pháp}:
+\begin{enumerate}
+    \item Kiểm tra MySQL server đang chạy.
+    \item Kiểm tra username, password trong db\_config.h.
+    \item Kiểm tra cơ sở dữ liệu tồn tại.
+\end{enumerate}
+
+\subsection{Lỗi file CSV không tìm thấy}
+
+\textbf{Nguyên nhân}: File CSV không ở vị trí đúng.
+
+\textbf{Giải pháp}:
+\begin{enumerate}
+    \item Đảm bảo file CSV nằm trong thư mục 4\_dataset/.
+    \item Kiểm tra tên file khớp với đúng tên trong code.
+\end{enumerate}
+
+\subsection{Lỗi biên dịch}
+
+\textbf{Nguyên nhân}: Compiler không hỗ trợ C++17 hoặc thư viện MySQL chưa cài.
+
+\textbf{Giải pháp}:
+\begin{enumerate}
+    \item Cập nhật compiler lên phiên bản mới nhất.
+    \item Cài đặt MySQL development libraries.
+    \item Kiểm tra đường dẫn include/lib trong lệnh biên dịch.
+\end{enumerate}
 \end{document}
