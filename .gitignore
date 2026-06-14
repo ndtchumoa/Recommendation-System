@@ -1,0 +1,43 @@
+# ═══════════════════════════════════════════════════════════════════════
+# .gitignore — Recommendation System (C++ / MySQL)
+# ═══════════════════════════════════════════════════════════════════════
+
+# ─── Cấu hình DB cá nhân (chứa mật khẩu MySQL) ─────────────────────────
+# Mỗi người tự tạo từ db_config.example.h, KHÔNG commit lên repo chung.
+2_data/db_config.h
+
+# ─── File build / binary ───────────────────────────────────────────────
+*.exe
+*.o
+*.obj
+*.out
+*.dll
+build/
+*/build/
+outDebug
+outRelease
+
+# ─── Dữ liệu xuất ra (sinh lại được bằng menu "Export") ────────────────
+4_dataset/export_*.csv
+
+# ─── File tạm / log của IDE, OS ────────────────────────────────────────
+*.log
+.DS_Store
+Thumbs.db
+
+# ─── Report build artifacts (LaTeX) ────────────────────────────────────
+report/*.aux
+report/*.bbl
+report/*.blg
+report/*.fdb_latexmk
+report/*.fls
+report/*.log
+report/*.out
+report/*.synctex.gz
+report/*.toc
+report/*.xdv
+
+# Lưu ý: thư mục third_party/mysql/ (chứa mysql.h, libmysql.dll, libmysql.a)
+# NÊN được commit (không ignore) để các thành viên khác không phải tự
+# build lại file .a từ MinGW — xem README phần "Hướng dẫn cho thành viên
+# nhóm" để biết lý do và cách thay thế nếu nhóm muốn làm khác.

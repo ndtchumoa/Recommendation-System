@@ -31,13 +31,15 @@
 #include "3_core/Recommender.h"
 
 // ─────────────────────────────────────────────────────────────────────
-// Cấu hình kết nối MySQL — SỬA LẠI cho khớp với máy của bạn
+// Cấu hình kết nối MySQL — đọc từ "2_data/db_config.h"
+//
+// File "db_config.h" KHÔNG được commit lên Git (xem .gitignore).
+// Nếu chưa có file này, hãy copy "2_data/db_config.example.h" thành
+// "2_data/db_config.h" rồi sửa DB_USER/DB_PASS/DB_NAME cho khớp máy bạn.
+// (Xem hướng dẫn chi tiết trong README.md, phần "Hướng dẫn cho thành
+//  viên nhóm").
 // ─────────────────────────────────────────────────────────────────────
-static const std::string DB_HOST = "127.0.0.1";
-static const std::string DB_USER = "root";
-static const std::string DB_PASS = "#Ndt11032006";              // mật khẩu MySQL của bạn
-static const std::string DB_NAME = "recommendationsystem";
-static const unsigned int DB_PORT = 3306;
+#include "2_data/db_config.h"
 
 // Đường dẫn các tệp CSV gốc (dùng cho chạy gợi ý + import vào DB)
 static const std::string USERS_CSV        = "4_dataset/users.csv";

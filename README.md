@@ -4,9 +4,9 @@ Dự án xây dựng một hệ thống gợi ý sản phẩm (Product Recommend
 
 ## 🌟 Tiêu Chí Đánh Giá & Tính Năng
 Hệ thống tính điểm tương tác (Score) dựa trên việc kết hợp nhiều hành vi của người dùng thay vì chỉ dựa vào số sao đánh giá:
-* **Hành vi đa dạng:** Bao gồm xem sản phẩm (`click`), thêm vào giỏ hàng (`add_cart`), mua hàng (`purchase`), và đánh giá (`rating`). 
+* **Hành vi đa dạng:** Bao gồm click (xem sản phẩm), thêm vào giỏ hàng (`add_cart`), mua hàng (`purchase`), và đánh giá (`rating`).
 * **Trọng số hành vi:** Các hành vi như click vào xem hay thêm vào giỏ hàng sẽ có mức trọng số thấp hơn so với việc mua hàng hoặc để lại rating. Hệ thống từ đó có thể gợi ý trực tiếp các sản phẩm giống với sản phẩm người dùng hay xem.
-* **Xử lý người dùng mới (Cold Start):** Khi người dùng mới mở web, hệ thống tự động hiển thị các sản phẩm thịnh hành (sản phẩm có nhiều lượt mua, đánh giá cao nhất).
+* **Xử lý người dùng mới (Cold Start):** Khi người dùng mới mở web, hệ thống tự động hiển thị các sản phẩm thịnh hành (sản phẩm giống với sản phẩm gần nhất mình xem hoặc sản phẩm mà những người giống mình gần đây đã xem).
 
 ## 📂 Cấu Trúc Dữ Liệu (Entities)
 Dữ liệu cốt lõi được xây dựng qua các `struct`/`class` sau:
@@ -45,26 +45,119 @@ Chương trình thực thi trong file `main.cpp` theo luồng tuần tự sau:
 ## 🌲 Direction Tree
 ```text
 RECOMMENDATION_SYSTEMS/
-├── models/                     # Tầng Thực thể (Entities): Định nghĩa cấu trúc dữ liệu nền tảng
-│   ├── User.h                  # Khai báo cấu trúc/lớp User (user_id, name, created_at)
-│   ├── User.cpp                # Định nghĩa phương thức bổ trợ của User (nếu có)
-│   ├── Item.h                  # Khai báo cấu trúc/lớp Item (item_id, name)
-│   ├── Item.cpp                # Định nghĩa phương thức bổ trợ của Item (nếu có)
-│   ├── Interaction.h           # Khai báo hành vi người dùng (click, add_cart, purchase, rating)
-│   └── Interaction.cpp         # Định nghĩa hàm computeScore() tính toán điểm tổng hợp có trọng số
-├── data/                       # Tầng Hạ tầng (Infrastructure): Quản lý nạp dữ liệu thô từ file
-│   ├── CSVLoader.h             # Khai báo lớp CSVLoader đọc dữ liệu từ các file CSV
-│   └── CSVLoader.cpp           # Cài đặt logic parse chuỗi, nạp danh sách Users, Items, Interactions
-├── core/                       # Tầng Giải thuật (Algorithms): Xử lý tính toán và logic gợi ý cốt lõi
-│   ├── RatingMatrix.h          # Khai báo lớp quản lý ma trận điểm tương tác (User-Item Sparse Matrix)
-│   ├── RatingMatrix.cpp        # Triển khai xây dựng ma trận từ danh sách Interactions (dùng Hash Map lồng)
-│   ├── SimilarityMatrix.h      # Khai báo lớp quản lý ma trận độ tương đồng giữa các sản phẩm (Item-Item)
-│   ├── SimilarityMatrix.cpp    # Triển khai chuẩn hóa ma trận và tính toán Cosine Similarity, lọc Top K
-│   ├── Recommender.h           # Khai báo lớp điều phối gợi ý hệ thống
-│   └── Recommender.cpp         # Cài đặt logic gợi ý cá nhân hóa choUser() và giải quyết Cold Start
-├── datasets/                   # Nơi chứa các tệp dữ liệu đầu vào thực tế
-│   ├── users.csv               # Dữ liệu tài khoản người dùng mẫu
-│   ├── items.csv               # Dữ liệu danh mục sản phẩm mẫu
-│   └── interactions.csv        # Lịch sử tương tác thô của người dùng với sản phẩm
-├── main.cpp                    # Entry Point: Khởi chạy menu Console, điều phối luồng xử lý toàn cục
-└── README.md                   # Tài liệu hướng dẫn, mô tả tổng quan đồ án và phân công nhóm
+├── 1_models/                   # Tầng Thực thể (Entities): Định nghĩa cấu trúc dữ liệu nền tảng
+│   ├── User.h / User.cpp
+│   ├── Item.h / Item.cpp
+│   └── Interaction.h / Interaction.cpp
+├── 2_data/                      # Tầng Hạ tầng (Infrastructure): I/O với CSV và MySQL
+│   ├── CSVLoader.h / CSVLoader.cpp
+│   ├── DatabaseManager.h / DatabaseManager.cpp
+│   ├── db_config.example.h     # File MẪU cấu hình DB — commit lên git
+│   └── db_config.h             # File cấu hình DB THẬT — KHÔNG commit (xem .gitignore)
+├── 3_core/                       # Tầng Giải thuật (Algorithms)
+│   ├── RatingMatrix.h / RatingMatrix.cpp
+│   ├── SimilarityMatrix.h / SimilarityMatrix.cpp
+│   └── Recommender.h / Recommender.cpp
+├── 4_dataset/                    # Dữ liệu CSV đầu vào/đầu ra
+│   ├── users.csv / items.csv / interactions.csv
+│   └── export_users.csv / export_items.csv / export_interactions.csv  (sinh ra khi Export)
+├── third_party/mysql/            # Header + lib MySQL Connector/C cho MinGW (xem mục Setup)
+│   ├── include/                  # mysql.h, ...
+│   └── lib/                       # libmysql.dll, libmysql.a
+├── recommendationsystem_*.sql    # Bản dump schema + dữ liệu mẫu (dùng để seed DB cho team)
+├── main.cpp                       # Entry Point: Menu Console
+└── README.md
+```
+
+---
+
+## 🚀 Hướng Dẫn Cho Thành Viên Nhóm (Setup Lần Đầu Sau Khi `git clone`)
+
+Project dùng MySQL **chạy local trên máy mỗi người**, nên mỗi thành viên cần
+tự cấu hình kết nối DB của riêng mình (mật khẩu KHÔNG được đưa lên GitHub).
+Làm theo các bước sau **một lần** sau khi clone repo:
+
+### Bước 1 — Cài MySQL Server (nếu chưa có)
+Đảm bảo MySQL Server đang chạy trên `127.0.0.1:3306` (hoặc port khác bạn
+tự chọn). Ghi nhớ user/password bạn dùng để đăng nhập (vd: `root`).
+
+### Bước 2 — Tạo Database
+Mở MySQL client (Workbench / CLI) và chạy:
+```sql
+CREATE DATABASE IF NOT EXISTS recommendation_db
+    CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+### Bước 3 — Tạo file cấu hình DB cá nhân (`db_config.h`)
+File này chứa mật khẩu MySQL của riêng bạn, **không được commit**.
+```powershell
+Copy-Item 2_data\db_config.example.h 2_data\db_config.h
+```
+Mở `2_data/db_config.h` vừa tạo, sửa `DB_USER`, `DB_PASS`, `DB_NAME`,
+`DB_PORT` cho khớp với MySQL trên máy bạn.
+
+### Bước 4 — Kiểm tra MySQL Connector/C (libmysql)
+Nếu thư mục `third_party/mysql/` đã có sẵn trong repo (đã được commit
+kèm `include/` và `lib/libmysql.dll`, `lib/libmysql.a`) → **bỏ qua bước
+này**, bạn đã sẵn sàng build.
+
+Nếu chưa có (hoặc bị thiếu) → làm theo hướng dẫn chi tiết trong
+[`SETUP_MYSQL_CONNECTOR.md`](./SETUP_MYSQL_CONNECTOR.md) để tạo
+`libmysql.a` từ MinGW và đặt vào `third_party/mysql/`.
+
+### Bước 5 — Build
+Trong VSCode: nhấn `Ctrl+Shift+B` (chạy task `build`, đã tự copy
+`libmysql.dll` ra thư mục gốc sau khi build).
+
+Hoặc build thủ công bằng terminal MinGW:
+```bash
+g++ -std=c++17 -O2 -Wall -Ithird_party/mysql/include \
+  main.cpp 1_models/*.cpp 2_data/*.cpp 3_core/*.cpp \
+  -Lthird_party/mysql/lib -llibmysql -o recommendation.exe
+
+cp third_party/mysql/lib/libmysql.dll .
+```
+
+### Bước 6 — Đưa dữ liệu mẫu vào MySQL của bạn
+Có 2 cách (chọn 1):
+
+**Cách A — Dùng menu trong chương trình (khuyên dùng):**
+```
+./recommendation.exe
+→ chọn "2. Import CSV -> MySQL Database"
+```
+Chương trình sẽ tự tạo bảng (`createTables()`) và import dữ liệu từ
+`4_dataset/users.csv`, `items.csv`, `interactions.csv`.
+
+**Cách B — Import trực tiếp từ file `.sql` dump (có sẵn dữ liệu mẫu)::**
+```bash
+mysql -u root -p recommendation_db < recommendationsystem_users.sql
+mysql -u root -p recommendation_db < recommendationsystem_items.sql
+mysql -u root -p recommendation_db < recommendationsystem_interactions.sql
+```
+(Thứ tự quan trọng: users, items trước, interactions sau — vì có FOREIGN KEY.)
+
+### Bước 7 — Chạy thử
+```
+./recommendation.exe
+→ chọn "1" để chạy gợi ý từ CSV
+→ chọn "3" để export dữ liệu từ MySQL ra 4_dataset/export_*.csv (kiểm tra đồng bộ)
+```
+
+---
+
+### ⚠️ Lưu ý khi làm việc nhóm với Git
+
+* **Không bao giờ** sửa trực tiếp giá trị trong `db_config.example.h` thành
+  mật khẩu thật của bạn rồi commit — hãy luôn dùng file `db_config.h`
+  (đã bị `.gitignore` chặn).
+* Nếu lỡ commit nhầm `db_config.h` chứa mật khẩu thật, hãy đổi mật khẩu
+  MySQL đó và xoá file khỏi lịch sử git (`git rm --cached`, rồi commit
+  lại + thêm vào `.gitignore`).
+* `4_dataset/export_*.csv` được sinh ra khi chạy menu "Export" — không
+  cần commit, mỗi người tự export từ DB của mình khi cần kiểm tra.
+* Nếu cả nhóm muốn **chia sẻ chung 1 bộ dữ liệu mới nhất** (sau khi ai đó
+  sửa dữ liệu trong DB), hãy: chạy "Export" → commit lại
+  `4_dataset/export_*.csv` hoặc tạo file `.sql` dump mới
+  (`mysqldump -u root -p recommendation_db > recommendationsystem_full.sql`)
+  để người khác import lại.

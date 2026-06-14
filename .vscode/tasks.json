@@ -21,8 +21,27 @@
                 "-llibmysql",
                 "-o", "${workspaceFolder}/recommendation.exe"
             ],
-            "group": { "kind": "build", "isDefault": true },
+            "group": { "kind": "build", "isDefault": false },
             "problemMatcher": ["$gcc"]
+        },
+        {
+            "label": "copy-mysql-dll",
+            "type": "shell",
+            "command": "cmd",
+            "args": [
+                "/c", "copy", "/Y",
+                "${workspaceFolder}\\third_party\\mysql\\lib\\libmysql.dll",
+                "${workspaceFolder}\\libmysql.dll"
+            ],
+            "problemMatcher": [],
+            "presentation": { "reveal": "silent" }
+        },
+        {
+            "label": "build",
+            "dependsOrder": "sequence",
+            "dependsOn": ["build-recommendation", "copy-mysql-dll"],
+            "group": { "kind": "build", "isDefault": true },
+            "problemMatcher": []
         }
     ]
 }
