@@ -5,7 +5,7 @@
 #include <iostream>
 
 class User {
-private:
+public:
     std::string user_id;
     std::string name;
     std::string email;

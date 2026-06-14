@@ -5,7 +5,7 @@
 #include <iostream>
 
 class Interaction {
-private:
+public:
     std::string user_id;
     std::string item_id;
     int click_count;      // Số lần click xem sản phẩm
