@@ -23,6 +23,11 @@
 #include <stdexcept>
 #include <iomanip>
 #include <limits>
+#include <string>
+#include <vector>
+#include <thread> // Cần để chạy Server song song
+#define ASIO_STANDALONE
+#include "include/crow.h"
 
 #include "2_data/CSVLoader.h"
 #include "2_data/DatabaseManager.h"
@@ -48,6 +53,22 @@ static const std::string INTERACTIONS_CSV = "4_dataset/interactions.csv";
 static const std::string EXPORT_USERS_CSV        = "4_dataset/export_users.csv";
 static const std::string EXPORT_ITEMS_CSV        = "4_dataset/export_items.csv";
 static const std::string EXPORT_INTERACTIONS_CSV = "4_dataset/export_interactions.csv";
+
+std::vector<std::string> getRecommendationData(std::string userId) {
+    CSVLoader loader;
+    int id = std::stoi(userId.substr(1));
+    auto interactions = loader.loadInteractions("4_dataset/interactions.csv");
+    auto items = loader.loadItems("4_dataset/items.csv");
+    
+    RatingMatrix rm; rm.build(interactions);
+    SimilarityMatrix sm; sm.build(rm);
+    Recommender engine(rm, sm, items);
+    
+    auto results = engine.forUser(userId, 5); // Lưu ý kiểu dữ liệu ID của bạn
+    std::vector<std::string> itemIds;
+    for(auto& pair : results) itemIds.push_back(pair.first);
+    return itemIds;
+}
 
 // ─────────────────────────────────────────────────────────────────────
 // Chức năng 1: Chạy hệ thống gợi ý từ dữ liệu CSV (luồng gốc)
@@ -210,6 +231,39 @@ void printMenu() {
 }
 
 int main() {
+
+
+    crow::SimpleApp app;
+
+  CROW_ROUTE(app, "/recommend/<string>")([](std::string userId){
+    // Bước 1: Xử lý chuỗi để lấy phần số nếu hàm getRecommendationData của m cần số
+    // Ví dụ: U001 -> 1. Nếu hàm của m nhận string thì m cứ để nguyên userId nhé!
+    // auto items = getRecommendationData(std::stoi(userId.substr(1))); 
+    
+    // Gọi hàm với userId là string (m sửa hàm getRecommendationData nhận string là ổn nhất)
+    auto items = getRecommendationData(userId); 
+    
+    crow::json::wvalue res;
+    res["status"] = "success";
+    res["user_id"] = userId;
+    
+    // Tạo danh sách recommendations
+    crow::json::wvalue::list items_list;
+    for (const auto& item : items) {
+        items_list.push_back(item);
+    }
+    res["recommendations"] = std::move(items_list);
+    
+    crow::response r(res);
+    r.add_header("Access-Control-Allow-Origin", "*");
+    return r;
+});
+    // Chạy server ở luồng riêng (không chặn Menu)
+    std::thread server_thread([&](){ app.port(8080).run(); });
+    server_thread.detach();
+
+    std::cout << ">>> Server API da khoi dong tai port 8080!\n";
+
     std::cout << "+--------------------------------------------------+\n";
     std::cout << "|     He Thong Goi Y San Pham - Item-Based CF       |\n";
     std::cout << "+--------------------------------------------------+\n";
