@@ -84,7 +84,7 @@ tự chọn). Ghi nhớ user/password bạn dùng để đăng nhập (vd: `root
 ### Bước 2 — Tạo Database
 Mở MySQL client (Workbench / CLI) và chạy:
 ```sql
-CREATE DATABASE IF NOT EXISTS recommendation_db
+CREATE DATABASE IF NOT EXISTS recommendationsystem
     CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
@@ -131,9 +131,9 @@ Chương trình sẽ tự tạo bảng (`createTables()`) và import dữ liệu
 
 **Cách B — Import trực tiếp từ file `.sql` dump (có sẵn dữ liệu mẫu)::**
 ```bash
-mysql -u root -p recommendation_db < recommendationsystem_users.sql
-mysql -u root -p recommendation_db < recommendationsystem_items.sql
-mysql -u root -p recommendation_db < recommendationsystem_interactions.sql
+mysql -u root -p recommendationsystem < recommendationsystem_users.sql
+mysql -u root -p recommendationsystem < recommendationsystem_items.sql
+mysql -u root -p recommendationsystem < recommendationsystem_interactions.sql
 ```
 (Thứ tự quan trọng: users, items trước, interactions sau — vì có FOREIGN KEY.)
 
@@ -159,5 +159,5 @@ mysql -u root -p recommendation_db < recommendationsystem_interactions.sql
 * Nếu cả nhóm muốn **chia sẻ chung 1 bộ dữ liệu mới nhất** (sau khi ai đó
   sửa dữ liệu trong DB), hãy: chạy "Export" → commit lại
   `4_dataset/export_*.csv` hoặc tạo file `.sql` dump mới
-  (`mysqldump -u root -p recommendation_db > recommendationsystem_full.sql`)
+  (`mysqldump -u root -p recommendationsystem > recommendationsystem_full.sql`)
   để người khác import lại.
