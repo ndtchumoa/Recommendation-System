@@ -6,41 +6,74 @@
             "type": "shell",
             "command": "g++",
             "args": [
-                "-std=c++17", "-O2", "-Wall",
+                "-std=c++17",
+                "-O2",
+                "-Wall",
+
+                "-I${workspaceFolder}/include",
                 "-I${workspaceFolder}/third_party/mysql/include",
+
                 "${workspaceFolder}/main.cpp",
+
                 "${workspaceFolder}/1_models/User.cpp",
                 "${workspaceFolder}/1_models/Item.cpp",
                 "${workspaceFolder}/1_models/Interaction.cpp",
+
                 "${workspaceFolder}/2_data/CSVLoader.cpp",
                 "${workspaceFolder}/2_data/DatabaseManager.cpp",
+
                 "${workspaceFolder}/3_core/RatingMatrix.cpp",
                 "${workspaceFolder}/3_core/SimilarityMatrix.cpp",
                 "${workspaceFolder}/3_core/Recommender.cpp",
+
+                "${workspaceFolder}/6_services/UserManager.cpp",
+                "${workspaceFolder}/6_services/ItemManager.cpp",
+                "${workspaceFolder}/6_services/InteractionManager.cpp",
+
                 "-L${workspaceFolder}/third_party/mysql/lib",
-                "-llibmysql",
-                "-o", "${workspaceFolder}/recommendation.exe"
+                "-lmysql",
+                "-lpthread",
+                "-lws2_32",
+                "-lwsock32",
+
+                "-o",
+                "${workspaceFolder}/recommendation.exe"
             ],
-            "group": { "kind": "build", "isDefault": false },
-            "problemMatcher": ["$gcc"]
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
         },
         {
             "label": "copy-mysql-dll",
             "type": "shell",
             "command": "cmd",
             "args": [
-                "/c", "copy", "/Y",
+                "/c",
+                "copy",
+                "/Y",
                 "${workspaceFolder}\\third_party\\mysql\\lib\\libmysql.dll",
                 "${workspaceFolder}\\libmysql.dll"
             ],
             "problemMatcher": [],
-            "presentation": { "reveal": "silent" }
+            "presentation": {
+                "reveal": "silent"
+            }
         },
         {
             "label": "build",
             "dependsOrder": "sequence",
-            "dependsOn": ["build-recommendation", "copy-mysql-dll"],
-            "group": { "kind": "build", "isDefault": true },
+            "dependsOn": [
+                "build-recommendation",
+                "copy-mysql-dll"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
             "problemMatcher": []
         }
     ]
