@@ -2,15 +2,11 @@
 
 Dự án xây dựng một hệ thống gợi ý sản phẩm bằng ngôn ngữ **C++**, áp dụng phương pháp **Item-Based Collaborative Filtering**. Hệ thống phân tích hành vi người dùng, đánh giá ma trận tương tác và sử dụng **Cosine Similarity** để đưa ra các gợi ý cá nhân hóa.
 
-<<<<<<< HEAD
-> **Lưu ý:** Toàn bộ dự án **không sử dụng STL** (`<vector>`, `<map>`, `<unordered_map>`, `<algorithm>`). Thay vào đó, các cấu trúc dữ liệu `MyVector`, `MyMap`, `MyPair` được tự cài đặt bằng con trỏ và `new`/`delete`.
-=======
 ## 🌟 Tiêu Chí Đánh Giá & Tính Năng
 Hệ thống tính điểm tương tác (Score) dựa trên việc kết hợp nhiều hành vi của người dùng thay vì chỉ dựa vào số sao đánh giá:
 * **Hành vi đa dạng:** Bao gồm click (xem sản phẩm), thêm vào giỏ hàng (`add_cart`), mua hàng (`purchase`), và đánh giá (`rating`).
 * **Trọng số hành vi:** Các hành vi như click vào xem hay thêm vào giỏ hàng sẽ có mức trọng số thấp hơn so với việc mua hàng hoặc để lại rating. Hệ thống từ đó có thể gợi ý trực tiếp các sản phẩm giống với sản phẩm người dùng hay xem.
 * **Xử lý người dùng mới (Cold Start):** Khi người dùng mới mở web, hệ thống tự động hiển thị các sản phẩm thịnh hành (sản phẩm giống với sản phẩm gần nhất mình xem hoặc sản phẩm mà những người giống mình gần đây đã xem).
->>>>>>> b8c1ae64c94847b04dee00ae1cc482c9f316487e
 
 ---
 
@@ -89,10 +85,12 @@ Recommendation-System/
 │   ├── users.csv
 │   ├── items.csv
 │   └── interactions.csv
-│
-├── report/                           # Báo cáo LaTeX
+│── third_party/mysql/            # Header + lib MySQL Connector/C cho MinGW (xem mục Setup)
+│   ├── include/                  # mysql.h, ...
+│   └── lib/                       # libmysql.dll, libmysql.a
+├── 5_report/                           # Báo cáo LaTeX
 ├── README.md
-└── RUN_GUIDE.md
+
 ```
 
 ---
@@ -109,79 +107,10 @@ Recommendation-System/
 - **Bước 1:** Tính tổng điểm tương tác của từng sản phẩm trên toàn hệ thống.
 - **Bước 2:** Gợi ý thẳng Top-K sản phẩm phổ biến nhất.
 
-<<<<<<< HEAD
-### 3. Cross-sell sau khi mua hàng (GetSuggestedProducts):
-- Dựa vào danh mục sản phẩm đã mua trong đơn hàng → gợi ý sản phẩm cùng danh mục chưa mua.
+
 
 ---
 
-## ⚙️ Cách Biên dịch & Chạy
-
-### Yêu cầu:
-- Trình biên dịch **MinGW-w64 GCC (g++)** phiên bản 12.1.0+
-
-### Biên dịch (PowerShell):
-```powershell
-cd c:\Users\FPT\Downloads\PY\Recommendation-System
-g++ -std=c++11 -o recommendation_system.exe main.cpp 1_models/User.cpp 1_models/Item.cpp 1_models/Interaction.cpp 6_services/UserManager.cpp 2_data/CSVLoader.cpp 6_services/ItemManager.cpp 3_core/RatingMatrix.cpp 3_core/SimilarityMatrix.cpp 3_core/Recommender.cpp 6_services/InteractionManager.cpp
-```
-
-### Chạy:
-```powershell
-.\recommendation_system.exe
-=======
-## 🌲 Direction Tree
-```text
-RECOMMENDATION_SYSTEMS/
-├── 1_models/                   # Tầng Thực thể (Entities): Định nghĩa cấu trúc dữ liệu nền tảng
-│   ├── User.h / User.cpp
-│   ├── Item.h / Item.cpp
-│   └── Interaction.h / Interaction.cpp
-├── 2_data/                      # Tầng Hạ tầng (Infrastructure): I/O với CSV và MySQL
-│   ├── CSVLoader.h / CSVLoader.cpp
-│   ├── DatabaseManager.h / DatabaseManager.cpp
-│   ├── db_config.example.h     # File MẪU cấu hình DB — commit lên git
-│   └── db_config.h             # File cấu hình DB THẬT — KHÔNG commit (xem .gitignore)
-├── 3_core/                       # Tầng Giải thuật (Algorithms)
-│   ├── RatingMatrix.h / RatingMatrix.cpp
-│   ├── SimilarityMatrix.h / SimilarityMatrix.cpp
-│   └── Recommender.h / Recommender.cpp
-├── 4_dataset/                    # Dữ liệu CSV đầu vào/đầu ra
-│   ├── users.csv / items.csv / interactions.csv
-│   └── export_users.csv / export_items.csv / export_interactions.csv  (sinh ra khi Export)
-├── third_party/mysql/            # Header + lib MySQL Connector/C cho MinGW (xem mục Setup)
-│   ├── include/                  # mysql.h, ...
-│   └── lib/                       # libmysql.dll, libmysql.a
-├── recommendationsystem_*.sql    # Bản dump schema + dữ liệu mẫu (dùng để seed DB cho team)
-├── main.cpp                       # Entry Point: Menu Console
-└── README.md
->>>>>>> b8c1ae64c94847b04dee00ae1cc482c9f316487e
-```
-
----
-
-<<<<<<< HEAD
-## 🌟 Tính Năng Chính
-
-- ✅ **Không STL** — Toàn bộ cấu trúc dữ liệu tự cài (`MyVector`, `MyMap`, `MyPair`)
-- ✅ **Quản lý tài khoản** — Đăng ký, đăng nhập, đăng xuất với email/password + session token
-- ✅ **Tìm kiếm sản phẩm** — Theo từ khóa, không phân biệt hoa thường
-- ✅ **Lọc & Sắp xếp** — Theo danh mục, badge, đánh giá, giá (Bubble Sort)
-- ✅ **Giỏ hàng** — Thêm, sửa, xóa, xem giỏ hàng
-- ✅ **Đặt hàng** — Tạo đơn hàng với nhiều phương thức thanh toán
-- ✅ **Cross-sell** — Gợi ý sản phẩm sau khi mua dựa trên danh mục
-- ✅ **Item-Based CF** — Gợi ý cá nhân hóa dựa trên Cosine Similarity
-- ✅ **Cold Start** — Gợi ý sản phẩm phổ biến cho người dùng mới
-- ✅ **Ghi log tương tác** — Ghi nhận click, add_cart, purchase
-
----
-
-## 📊 Cấu Trúc Dữ Liệu Tự Cài (MyDataStructures.h)
-
-| Cấu trúc | Thay thế cho | Mô tả |
-|----------|--------------|-------|
-| `MyPair<K, V>` | `std::pair` | Cặp key-value |
-=======
 ## 🚀 Hướng Dẫn Cho Thành Viên Nhóm (Setup Lần Đầu Sau Khi `git clone`)
 
 Project dùng MySQL **chạy local trên máy mỗi người**, nên mỗi thành viên cần
@@ -272,4 +201,3 @@ mysql -u root -p recommendationsystem < recommendationsystem_interactions.sql
   `4_dataset/export_*.csv` hoặc tạo file `.sql` dump mới
   (`mysqldump -u root -p recommendationsystem > recommendationsystem_full.sql`)
   để người khác import lại.
->>>>>>> b8c1ae64c94847b04dee00ae1cc482c9f316487e
