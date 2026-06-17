@@ -19,19 +19,40 @@ print("Đang sinh dữ liệu...")
 # ==============================
 users = []
 
+import string
+
 for i in range(1, NUM_USERS + 1):
+
+    email = fake.email()
+
+    password = ''.join(
+        random.choices(
+            string.ascii_letters +
+            string.digits,
+            k=12
+        )
+    )
+
     users.append([
         f"U{i:05d}",
         fake.name(),
         fake.date_between(
-            start_date=datetime(2024, 1, 1),
-            end_date=datetime(2026, 1, 1)
-        )
+            start_date=datetime(2024,1,1),
+            end_date=datetime(2026,1,1)
+        ),
+        email,
+        password
     ])
 
 df_users = pd.DataFrame(
     users,
-    columns=["user_id", "name", "created_at"]
+    columns=[
+        "user_id",
+        "name",
+        "created_at",
+        "email",
+        "password"
+    ]
 )
 
 # ==============================
