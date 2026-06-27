@@ -1,3 +1,46 @@
-\begin{thebibliography}{}
+\begin{thebibliography}{10}
+
+\bibitem{forrester2024}
+{Forrester Research}, ``Global retail e-commerce forecast 2024--2028,'' 2024.
+
+\bibitem{gartner2023}
+{Gartner}, ``Information overload and customer abandonment in e-commerce,'' 2023.
+
+\bibitem{mckinsey2025}
+{McKinsey \& Company}, ``The next frontier of personalized marketing,'' 2025.
+
+\bibitem{salesforce2023}
+{Salesforce Research}, ``Personalization, data security, and speed drive customer loyalty,'' 2023.
+
+\bibitem{ekstrand2011collaborative}
+M.~D. Ekstrand, J.~T. Riedl, and J.~A. Konstan, ``Collaborative filtering recommender systems,'' {\em Foundations and Trends in Human--Computer Interaction}, 2011.
+
+\bibitem{linden2003amazon}
+G.~Linden, B.~Smith, and J.~York, ``Amazon.com recommendations: Item-to-item collaborative filtering,'' {\em IEEE Internet Computing}, vol.~17, no.~1, pp.~76--80, 2003.
+
+\bibitem{sarwar2001item}
+B.~Sarwar, G.~Karypis, J.~Konstan, and J.~Riedl, ``Item-based collaborative filtering recommendation algorithms,'' in {\em Proceedings of the 10th International Conference on World Wide Web (WWW '01)}, 2001.
+
+\bibitem{ricci2011introduction}
+F.~Ricci, L.~Rokach, and B.~Shapira, {\em Introduction to Recommender Systems Handbook}.
+\newblock Springer US, 2011.
+
+\bibitem{schein2002methods}
+A.~I. Schein, A.~Popescul, L.~H. Ungar, and D.~M. Pennock, ``Methods and metrics for cold-start recommendations,'' in {\em Proceedings of the 25th Annual International ACM SIGIR Conference}, 2002.
+
+\bibitem{cppcoreguidelines}
+B.~Stroustrup and H.~Sutter, ``C++ core guidelines,'' 2024.
+
+\bibitem{weiss2013}
+M.~A. Weiss, {\em Data Structures and Algorithm Analysis in C++}.
+\newblock Pearson Education, 4th~ed., 2013.
+
+\bibitem{cormen2009}
+T.~H. Cormen, C.~E. Leiserson, R.~L. Rivest, and C.~Stein, {\em Introduction to Algorithms}.
+\newblock MIT Press, 3rd~ed., 2009.
+
+\bibitem{nguyenducnghia2013}
+N.~Đức Nghĩa and T.~Q. Tùng, {\em Giáo trình Cấu trúc dữ liệu và giải thuật}.
+\newblock Nhà xuất bản Bách Khoa Hà Nội, 2013.
 
 \end{thebibliography}

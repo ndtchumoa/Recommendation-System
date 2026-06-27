@@ -1,16 +1,15 @@
-\documentclass[11pt]{report}
-\usepackage{fontspec} 
-\setmainfont{Latin Modern Roman}
-\setsansfont{Latin Modern Sans}
-\setmonofont{Latin Modern Mono}
-\usepackage{tikz}
+\documentclass{report}
+\usepackage[T5]{fontenc}
+\usepackage[utf8]{inputenc}
 \usepackage[vietnamese]{babel}
+% -------------
 \usepackage[most]{tcolorbox}
 \usepackage{parskip}
 \usepackage{eso-pic}
 \usepackage{enumitem}
 \usepackage{amsmath}
 \usepackage{graphicx}
+\usepackage{fancyhdr}
 \usepackage{url}
 \usepackage{cite}
 \usepackage{caption}
@@ -18,19 +17,54 @@
 \usepackage{tabularx}
 \usepackage{authblk}
 \usepackage{float}
-\usepackage{fancyhdr}
-\patchcmd{\tableofcontents}{\thispagestyle{plain}}{\thispagestyle{empty}}{}{}
-\usepackage[colorlinks=true, allcolors=blue, hypertexnames=false]{hyperref}
-\usepackage[a4paper,top=2cm,bottom=2cm,left=3cm,right=2cm,marginparwidth=1.75cm,headheight=18pt]{geometry}
+\usepackage{dirtree}
+\usepackage{array}
+\usepackage{listings}
+\usepackage{tikz}
+\usepackage{booktabs}
+\patchcmd{\tableofcontents}{\thispagestyle{plain}}
+{\thispagestyle{empty}}{}{}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage[a4paper,top=2cm,bottom=2cm,left=3cm,right=2cm,marginparwidth=1.75cm,headheight=15pt]{geometry}
+
+% ============================================================
+% Cấu hình listings cho code C++
+% ============================================================
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.97,0.97,0.97}
+
+\lstdefinestyle{cppstyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{blue}\bfseries,
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\fontsize{10pt}{12pt}\selectfont,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=10pt,
+    xleftmargin=15pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=4,
+    language=C++
+}
+\lstset{style=cppstyle}
 
 % ============================================================
 \newcommand{\vekhung}{
     \begin{tikzpicture}[remember picture, overlay]
-        \draw[line width=1.5pt] 
-            ([shift={(3.0cm,-2.0cm)}]current page.north west) 
+        \draw[line width=1.5pt]
+            ([shift={(3.0cm,-2.0cm)}]current page.north west)
             rectangle ([shift={(-2.0cm,2.0cm)}]current page.south east);
-        \draw[line width=0.5pt] 
-            ([shift={(3.15cm,-2.15cm)}]current page.north west) 
+        \draw[line width=0.5pt]
+            ([shift={(3.15cm,-2.15cm)}]current page.north west)
             rectangle ([shift={(-2.15cm,2.15cm)}]current page.south east);
     \end{tikzpicture}
 }
@@ -39,8 +73,7 @@
 \pagestyle{fancy}
 \fancyhf{}
 \lhead{\footnotesize Khoa Toán - Tin | Đại học Bách khoa Hà Nội}
-%\rhead{\footnotesize Nguyễn Đức Thành - 202419099}
-\lfoot{\footnotesize Xây dựng Hệ thống gợi ý sản phẩm | Recommendation System}
+\lfoot{\footnotesize Xây dựng Hệ thống gợi ý sản phẩm (Recommendation System)}
 \rfoot{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0.4pt}
@@ -51,47 +84,42 @@
 % ============================================================
 \begin{document}
 \begin{titlepage}
-    \AddToShipoutPicture*{\vekhung} 
+    \AddToShipoutPicture*{\vekhung}
 \begin{center}
     \vspace*{6pt}
     \textbf{\Large ĐẠI HỌC BÁCH KHOA HÀ NỘI} \\
     \vspace{6pt}
-    \textbf{\large Khoa Toán - Tin} \\ 
-    \vspace{18pt}
+    \textbf{\large Khoa Toán - Tin} \\
+    \vspace{10pt}
     \includegraphics[width=0.3\textwidth]{LogoHUST.png} \\
-    \vspace{30pt}
-    \textbf{\Large BÁO CÁO BÀI TẬP LỚN} \\
+    \vspace{20pt}
+    \textbf{\huge Báo cáo Bài tập lớn} \\
     \vspace{12pt}
     \textbf{\huge CẤU TRÚC DỮ LIỆU \& GIẢI THUẬT} \\
-    \vspace{12pt}
-    \textbf{\huge (MI3060)} \\
-    \vspace{12pt}
-    \textbf{\large Đề tài:} \\
     \vspace{6pt}
-    \textbf{\LARGE Xây dựng Hệ thống gợi ý sản phẩm \\ (Recommendation System)} \\
+    \textbf{\huge (MI3090)} \\
+    \vspace{12pt}
+    \textbf{\huge Đề tài:} \\
+    \vspace{12pt}
+    \textbf{\huge Xây dựng Hệ thống gợi ý sản phẩm \\ (Recommendation System)} \\
     \vspace{18pt}
-    \begin{tabular}{ll}
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabularx}{0.75\textwidth}{lX}
         \textbf{Giảng viên hướng dẫn:} & ThS. Lê Quang Hòa \\
         \textbf{Mã lớp học:} & 169308 \\
-        \textbf{Nhóm sinh viên thực hiện:} \\
-    \end{tabular} \\
+        \textbf{Nhóm sinh viên thực hiện:} & \\
+    \end{tabularx} \\
     \vspace{6pt}
-    \begin{tabular}{llll}
-        1 & Đoàn Đức Anh       & 202419033 & Hệ thống thông tin quản lý 02 \\
+    \begin{tabularx}{0.75\textwidth}{llXl}
+        1 & Đoàn Đức Anh & 202419033 & Hệ thống thông tin quản lý 02 \\
         2 & Ngô Thị Thùy Duyên & 202419051 & Hệ thống thông tin quản lý 02 \\
-        3 & Nguyễn Đức Thành   & 202419099 & Hệ thống thông tin quản lý 02 \\
-        4 & Phan Thị Hải Yến   & 202419124 & Hệ thống thông tin quản lý 01 \\
-    \end{tabular} \\
-    \vspace{99pt}
-    \textbf{Hà Nội, Tháng 6 2026}
+        3 & Nguyễn Đức Thành & 202419099 & Hệ thống thông tin quản lý 02 \\
+        4 & Phan Thị Hải Yến & 202419124 & Hệ thống thông tin quản lý 01 \\
+    \end{tabularx} \\
+    \vspace{81pt}
+    \textbf{\large Hà Nội, Tháng 6 2026}
 \end{center}
 \end{titlepage}
-    
-% ============================================================
-%\newpage
-%\title{Xây dựng hệ thống gợi ý sản phẩm (Recommendation System)}
-%\author{Đoàn Đức Anh \and Ngô Thị Thùy Duyên \and Nguyễn Đức Thành \and Phan Thị Hải Yến}
-%\maketitle
 
 % ============================================================
 \newpage
@@ -99,1056 +127,1706 @@
 \thispagestyle{empty}
 \addcontentsline{toc}{chapter}{Lời mở đầu}
 
-Trong bối cảnh phát triển mạnh mẽ của công nghệ thông tin và thương mại điện tử, các hệ thống gợi ý sản phẩm (Recommendation System) đã trở thành một công cụ cực kỳ quan trọng trong việc nâng cao trải nghiệm người dùng và tối ưu hóa doanh thu của các nền tảng trực tuyến.
+Trong kỷ nguyên số hóa hiện nay, nền kinh tế thương mại điện tử (E-commerce) đang chứng kiến sự phát triển bùng nổ mạnh mẽ chưa từng có. Cùng với đó là khối lượng thông tin và sản phẩm khổng lồ được cập nhật mỗi ngày. Sự phong phú này mang lại vô vàn lựa chọn cho người tiêu dùng, nhưng đồng thời cũng đặt ra một thách thức lớn: hiện tượng ``quá tải thông tin''. Đối với các doanh nghiệp, việc làm thế nào để cá nhân hóa trải nghiệm người dùng, giúp khách hàng nhanh chóng tìm thấy đúng sản phẩm họ cần giữa hàng triệu lựa chọn, đã trở thành chìa khóa cốt lõi để duy trì tính cạnh tranh. Nhận thức được bức thiết đó, Hệ thống gợi ý (Recommendation System) ra đời như một giải pháp tất yếu. Đóng vai trò là một ``trợ lý ảo'' đắc lực, hệ thống này giúp kết nối sản phẩm với đúng nhu cầu của khách hàng thông qua việc phân tích và khai thác lịch sử tương tác.
 
-Đề tài này xây dựng một hệ thống gợi ý sản phẩm cá nhân hóa dựa trên phương pháp Collaborative Filtering. Thông qua việc phân tích mối quan hệ giữa người dùng và sản phẩm, hệ thống sẽ đưa ra những đề xuất chính xác và phù hợp với từng cá nhân.
+Trong khuôn khổ môn học Cấu trúc Dữ liệu và Giải thuật (DSA), thay vì phụ thuộc vào các thư viện hay framework có sẵn, việc đi sâu vào bản chất và tự tay xây dựng nền móng cho một hệ thống gợi ý là một trải nghiệm mang tính thử thách cao và vô cùng giá trị. Chính vì lý do đó, dự án ``Xây dựng hệ thống gợi ý sản phẩm dựa trên lịch sử tương tác'' đã được lựa chọn và thực hiện. Điểm nhấn đặc biệt của dự án này nằm ở khía cạnh kỹ thuật: cốt lõi của hệ thống (Core Engine) được thiết kế và cài đặt hoàn toàn bằng ngôn ngữ C++. Dự án tập trung ứng dụng linh hoạt các nền tảng cấu trúc dữ liệu như Mảng động (Dynamic Array), Bảng băm (Hash Table) và các thuật toán cơ bản (như Bubble Sort,...). Mục tiêu lớn nhất là tối ưu hóa hiệu năng, đảm bảo tốc độ phản hồi nhanh chóng và hiệu quả về mặt bộ nhớ.
 
-Báo cáo này trình bày toàn bộ quá trình từ phân tích bài toán, thiết kế kiến trúc hệ thống, cài đặt các thuật toán cho đến kiểm thử và đánh giá kết quả thực nghiệm.
+Thông qua dự án này, chúng em không chỉ mong muốn giải quyết một bài toán thực tiễn hấp dẫn, mà còn kỳ vọng củng cố vững chắc tư duy thuật toán -- thứ vũ khí quan trọng nhất của mọi kỹ sư phần mềm. Báo cáo dưới đây sẽ trình bày chi tiết tiến trình thực hiện dự án: từ tổng quan bài toán, cơ sở lý thuyết, thiết kế hệ thống, cho đến quá trình cài đặt và đánh giá kết quả thực tế.
 
-Nhóm xin chân thành cảm ơn ThS. Lê Quang Hòa - giảng viên hướng dẫn đã tận tình hỗ trợ và chỉ bảo trong quá trình thực hiện đề tài.
+Nhân dịp này, chúng em xin gửi lời cảm ơn tới thầy Lê Quang Hòa, với những kiến thức, bài giảng và góp ý nhận xét giúp chúng em có thể hoàn thành dự án này. Mặc dù đã nỗ lực hết sức trong quá trình nghiên cứu và phát triển, song dự án chắc chắn không tránh khỏi những hạn chế và thiếu sót nhất định. Chúng em rất mong nhận được những nhận xét, góp ý quý báu từ quý Thầy để có thể tiếp tục hoàn thiện và phát triển hệ thống trong tương lai.
+
+\bigskip
+\noindent\textit{Nhóm chân thành cảm ơn!}
 
 % ============================================================
 \clearpage
-\makeatletter
-\let\ps@plain\ps@empty
-\makeatother
+\makeatletter\let\ps@plain\ps@empty\makeatother
 \addcontentsline{toc}{chapter}{Danh sách hình vẽ}
 \listoffigures
-\makeatletter
-\let\ps@plain\ps@empty
-\makeatother
 \clearpage
 
-% ============================================================
 \clearpage
-\makeatletter
-\let\ps@plain\ps@empty
-\makeatother
+\makeatletter\let\ps@plain\ps@empty\makeatother
 \addcontentsline{toc}{chapter}{Danh sách bảng}
 \listoftables
-\makeatletter
-\let\ps@plain\ps@empty
-\makeatother
 \clearpage
 
-% ============================================================
 \clearpage
-\makeatletter
-\let\ps@plain\ps@empty
-\makeatother
+\makeatletter\let\ps@plain\ps@empty\makeatother
 \pagestyle{empty}
 \tableofcontents
 \thispagestyle{empty}
-\makeatletter
-\let\ps@plain\ps@fancy
-\makeatother
+\makeatletter\let\ps@plain\ps@fancy\makeatother
 \clearpage
 
 % ============================================================
+\newpage
 \pagestyle{fancy}
 
-\newpage
+% ============================================================  
 \chapter{Giới thiệu bài toán}
 \label{chap:gioithieu}
 
-\section{Bối cảnh}
+\section{Bối cảnh nghiên cứu}
 
-Trong những năm gần đây, sự phát triển mạnh mẽ của công nghệ thông tin và Internet đã thúc đẩy sự bùng nổ của thương mại điện tử trên phạm vi toàn cầu. Các nền tảng mua sắm trực tuyến như Shopee, Lazada, Tiki, Amazon hay Alibaba hiện đang cung cấp hàng triệu sản phẩm thuộc nhiều ngành hàng khác nhau, từ thời trang, điện tử, gia dụng cho đến thực phẩm và dịch vụ số.
+Sự phát triển mạnh mẽ của Internet và các nền tảng số đã thúc đẩy thương mại điện tử trở thành một trong những lĩnh vực tăng trưởng nhanh nhất của nền kinh tế toàn cầu. Theo báo cáo của Forrester Research, doanh thu bán lẻ thương mại điện tử toàn cầu tăng từ 1,3 nghìn tỷ USD năm 2014 lên 4,4 nghìn tỷ USD năm 2023 và dự kiến đạt 6,8 nghìn tỷ USD vào năm 2028~\cite{forrester2024}. Tốc độ tăng trưởng kép hàng năm (CAGR) đạt trên 9\% trong giai đoạn này, vượt xa phần lớn các ngành công nghiệp truyền thống. Tuy nhiên, sự tăng trưởng vượt bậc về quy mô kéo theo một hệ quả tất yếu: số lượng sản phẩm được cung cấp trên các nền tảng trực tuyến ngày càng khổng lồ. Một sàn thương mại điện tử lớn như Amazon hiện có hơn 350 triệu sản phẩm, Shopee Đông Nam Á có hơn 200 triệu sản phẩm đang hoạt động.
 
-Sự gia tăng nhanh chóng về số lượng sản phẩm mang lại nhiều lựa chọn hơn cho người tiêu dùng. Tuy nhiên, điều này cũng tạo ra một thách thức mới: người dùng phải đối mặt với lượng thông tin khổng lồ và khó có thể tìm được sản phẩm phù hợp trong thời gian ngắn. Hiện tượng này được gọi là \textit{Information Overload} (quá tải thông tin).
+Sự bùng nổ về lựa chọn này đẩy người tiêu dùng vào trạng thái \textbf{quá tải thông tin (Information Overload)}: nghiên cứu của Gartner chỉ ra rằng 38\% khách hàng đã từ bỏ một phiên mua sắm vì bị áp đảo bởi quá nhiều lựa chọn không liên quan~\cite{gartner2023}. Trong bối cảnh đó, \textbf{cá nhân hóa trải nghiệm người dùng} đã trở thành yêu cầu chiến lược, không còn là điểm khác biệt tùy chọn. Báo cáo của McKinsey \& Company cho thấy 71\% khách hàng kỳ vọng nhận được trải nghiệm cá nhân hóa, và 76\% trong số họ cảm thấy thất vọng khi doanh nghiệp không đáp ứng được nhu cầu này~\cite{mckinsey2025}. Đáng chú ý hơn, nghiên cứu của Salesforce Research chỉ ra rằng 65\% khách hàng có xu hướng trung thành hơn với thương hiệu khi được cung cấp trải nghiệm cá nhân hóa~\cite{salesforce2023}.
 
-Trước đây, người dùng chỉ cần lựa chọn trong vài chục hoặc vài trăm sản phẩm. Ngày nay, khi tìm kiếm một từ khóa đơn giản như ``áo sơ mi nam'', hệ thống có thể trả về hàng chục nghìn kết quả khác nhau. Việc phải liên tục lọc, so sánh và đánh giá sản phẩm khiến quá trình mua sắm trở nên khó khăn hơn.
-
-Không chỉ ảnh hưởng đến người dùng, vấn đề này còn tác động trực tiếp đến hiệu quả kinh doanh của doanh nghiệp. Khi người dùng không tìm được sản phẩm phù hợp hoặc mất quá nhiều thời gian tìm kiếm, khả năng từ bỏ phiên mua sắm sẽ tăng lên, làm giảm tỷ lệ chuyển đổi và doanh thu của nền tảng.
-
-Trong bối cảnh đó, các hệ thống gợi ý sản phẩm (Recommendation System) đã trở thành thành phần không thể thiếu của các nền tảng thương mại điện tử hiện đại. Thay vì hiển thị cùng một danh sách sản phẩm cho tất cả người dùng, hệ thống gợi ý giúp cá nhân hóa trải nghiệm mua sắm bằng cách dự đoán những sản phẩm mà mỗi người dùng có khả năng quan tâm.
+Về phía doanh nghiệp, tác động kinh tế của cá nhân hóa thông qua hệ thống gợi ý là hoàn toàn có thể đo lường được. McKinsey ước tính rằng cơ chế gợi ý sản phẩm đóng góp khoảng 35\% tổng doanh thu của Amazon, trong khi tại Netflix, hơn 75\% nội dung người dùng xem đều xuất phát từ các đề xuất cá nhân hóa~\cite{mckinsey2025}. Đồng thời, khảo sát của Salesforce cũng cho thấy 52\% khách hàng kỳ vọng các ưu đãi và đề xuất từ thương hiệu phải được cá nhân hóa theo đúng sở thích của họ - nếu hệ thống gợi ý sai nhu cầu, tỷ lệ thoát trang (bounce rate) tăng cao, trực tiếp ảnh hưởng đến doanh thu~\cite{salesforce2023}.
 
 \section{Vấn đề nghiên cứu}
 
-Qua khảo sát thực tế trên các nền tảng thương mại điện tử, nhóm nhận thấy tồn tại nhiều vấn đề cần được giải quyết.
+Dựa trên bối cảnh trên, bài toán được đặt ra có thể phân tách thành hai thách thức cốt lõi:
 
-\subsection*{Đối với người dùng}
+\textbf{Thách thức 1 - Quá tải thông tin (Information Overload):} Khi danh mục sản phẩm lên đến hàng trăm triệu mặt hàng, chiến lược hiển thị ``phổ thông'' (tất cả người dùng nhìn thấy cùng một trang chủ) trở nên hoàn toàn không hiệu quả. Người dùng mất quá nhiều thời gian để tìm kiếm, dẫn đến hành vi bỏ cuộc (cart abandonment), ảnh hưởng tiêu cực đến tỷ lệ chuyển đổi (conversion rate). Bài toán đặt ra là: làm thế nào để từ hàng triệu sản phẩm, hệ thống lọc và đưa ra danh sách chỉ vài chục mặt hàng \textit{thực sự phù hợp} với từng người dùng cụ thể?
 
-Thứ nhất, người dùng thường gặp khó khăn trong việc lựa chọn sản phẩm khi số lượng lựa chọn quá lớn. Nhiều nghiên cứu cho thấy càng có nhiều lựa chọn, người dùng càng mất nhiều thời gian ra quyết định và dễ rơi vào trạng thái mệt mỏi khi lựa chọn (\textit{Decision Fatigue}).
+\textbf{Thách thức 2 - Khai thác dữ liệu hành vi ngầm (Implicit Feedback):} Trong thực tế triển khai, chỉ một phần nhỏ người dùng chủ động để lại đánh giá (rating) bằng số sao. Phần lớn dữ liệu hành vi tồn tại dưới dạng \textit{tín hiệu ngầm}: click xem sản phẩm, thêm vào giỏ hàng, hoàn tất giao dịch. Bài toán đặt ra là: làm thế nào để xây dựng một hàm tính điểm (scoring function) kết hợp nhiều loại tín hiệu hành vi với trọng số phản ánh đúng mức độ quan tâm thực sự của người dùng?
 
-Thứ hai, người dùng khó khám phá các sản phẩm mới thực sự phù hợp với nhu cầu cá nhân. Phần lớn người dùng chỉ xem các kết quả đầu tiên hoặc các sản phẩm nổi bật được hiển thị trên trang chủ, trong khi rất nhiều sản phẩm tiềm năng khác không được tiếp cận.
+Dự án này giải quyết đồng thời cả hai thách thức trên thông qua việc xây dựng một \textbf{Hệ thống gợi ý sản phẩm (Product Recommendation System)} áp dụng phương pháp Lọc cộng tác dựa trên sản phẩm (Item-based Collaborative Filtering) kết hợp đo lường độ tương đồng Cosine (Cosine Similarity), với toàn bộ lõi xử lý được cài đặt bằng C++ thuần không phụ thuộc STL.
 
-Thứ ba, trải nghiệm mua sắm hiện nay vẫn chưa được cá nhân hóa hoàn toàn. Nếu hệ thống chỉ hiển thị các sản phẩm bán chạy hoặc phổ biến, mọi người dùng sẽ nhận được nội dung tương tự nhau mặc dù nhu cầu và sở thích là khác nhau.
+\section{Mục tiêu của dự án}
 
-\subsection*{Đối với doanh nghiệp}
-
-Đối với doanh nghiệp, việc không cá nhân hóa trải nghiệm mua sắm dẫn đến nhiều hệ quả tiêu cực:
-
-\begin{itemize}
-\item Tỷ lệ chuyển đổi (Conversion Rate) thấp.
-\item Thời gian người dùng lưu lại trên nền tảng giảm.
-\item Doanh thu từ các giao dịch mua bổ sung chưa được khai thác hiệu quả.
-\item Khả năng giữ chân khách hàng thấp.
-\item Chi phí marketing và quảng cáo tăng cao.
-\end{itemize}
-
-Do đó, bài toán đặt ra là xây dựng một hệ thống có khả năng phân tích hành vi người dùng, học từ dữ liệu lịch sử và tự động đề xuất các sản phẩm phù hợp với từng cá nhân.
-
-\section{Mục tiêu}
-
-Mục tiêu tổng quát của đề tài là xây dựng một hệ thống gợi ý sản phẩm cá nhân hóa dựa trên dữ liệu tương tác của người dùng.
-
-Để đạt được mục tiêu trên, đề tài tập trung thực hiện các nhiệm vụ sau:
+Dự án đặt ra các mục tiêu cụ thể sau:
 
 \begin{enumerate}
-\item Nghiên cứu các phương pháp xây dựng hệ thống gợi ý hiện nay.
-\item Xây dựng mô hình dữ liệu biểu diễn mối quan hệ giữa người dùng và sản phẩm.
-\item Thiết kế cấu trúc lưu trữ dữ liệu phù hợp với dữ liệu thương mại điện tử có tính thưa cao.
-\item Áp dụng thuật toán Collaborative Filtering để xác định mức độ tương đồng.
-\item Xây dựng cơ chế sinh danh sách sản phẩm gợi ý theo thời gian thực.
-\item Đánh giá hiệu quả của hệ thống thông qua các kịch bản thực nghiệm.
+    \item \textbf{Xây dựng Engine gợi ý cốt lõi:} Cài đặt thuật toán Item-based Collaborative Filtering kết hợp Cosine Similarity hoàn toàn bằng C++ thuần, không sử dụng STL container hay thư viện ML bên ngoài.
+    \item \textbf{Tự triển khai các cấu trúc dữ liệu nền tảng:} Xây dựng \texttt{MyVector} (mảng động), \texttt{MyMap} (bảng băm), \texttt{MyPair} (cặp khóa-giá trị) từ đầu bằng con trỏ và quản lý bộ nhớ thủ công.
+    \item \textbf{Thiết kế hàm tính điểm đa hành vi:} Xây dựng hàm \texttt{computeScore()} kết hợp bốn tín hiệu hành vi (click, add\_cart, purchase, rating) với trọng số phản ánh mức độ cam kết thực sự của người dùng.
+    \item \textbf{Giải quyết bài toán Cold Start:} Xây dựng cơ chế gợi ý dự phòng (fallback) dựa trên độ phổ biến tổng hợp cho người dùng mới chưa có lịch sử tương tác.
+    \item \textbf{Xây dựng REST API:} Tích hợp Crow/ASIO để cung cấp các endpoint API phục vụ giao diện Frontend (ReactJS + Vite).
+    \item \textbf{Tích hợp đa nguồn dữ liệu:} Hỗ trợ đọc/ghi CSV và đồng bộ với MySQL qua \texttt{DatabaseManager}.
 \end{enumerate}
 
-Ngoài mục tiêu về mặt ứng dụng, đề tài còn hướng tới việc vận dụng các kiến thức của học phần Cấu trúc dữ liệu và Giải thuật trong một bài toán thực tế.
+\section{Phạm vi và giới hạn thực hiện}
 
-\section{Phạm vi và ý nghĩa}
-
-Trong phạm vi của đề tài, dữ liệu được sử dụng bao gồm các hành vi cơ bản của người dùng đối với sản phẩm như:
-
+\textbf{Phạm vi trong phạm vi thực hiện:}
 \begin{itemize}
-\item Xem sản phẩm.
-\item Thêm vào giỏ hàng.
-\item Mua hàng.
-\item Đánh giá sản phẩm.
+    \item Xây dựng engine gợi ý dựa trên Item-based Collaborative Filtering với Cosine Similarity, không phụ thuộc vào thư viện ML bên ngoài.
+    \item Tự cài đặt các cấu trúc dữ liệu nền tảng (\texttt{MyVector}, \texttt{MyMap}, \texttt{MyPair}) không dùng STL containers.
+    \item Xây dựng đầy đủ luồng nghiệp vụ: đăng ký/đăng nhập, tìm kiếm sản phẩm, giỏ hàng, đặt hàng và gợi ý chéo.
+    \item Triển khai API server tại \texttt{localhost:8080} để kết nối với giao diện ReactJS.
+    \item Kiểm thử trên tập dữ liệu mẫu: 10.000 người dùng, 500 sản phẩm, 100.000 tương tác.
 \end{itemize}
 
-Đề tài tập trung nghiên cứu phương pháp Item-Based Collaborative Filtering thay vì các mô hình học sâu hoặc Hybrid Recommendation phức tạp.
-
-Về mặt học thuật, đề tài minh họa việc ứng dụng các cấu trúc dữ liệu như Hash Map, Sparse Matrix, Heap và Priority Queue vào việc giải quyết bài toán Recommendation System.
-
-Về mặt thực tiễn, hệ thống có thể hỗ trợ người dùng tìm kiếm sản phẩm phù hợp nhanh hơn, đồng thời giúp doanh nghiệp nâng cao trải nghiệm khách hàng và gia tăng doanh thu.
-% ============================================================
-\chapter{Phân tích Yêu cầu hệ thống}
-\label{chap:phantich}
-
-\section{Yêu cầu chức năng}
-
-\subsection{Quản lý người dùng}
+\textbf{Giới hạn không nằm trong phạm vi:}
 \begin{itemize}
-    \item Tạo, cập nhật, xóa thông tin người dùng.
-    \item Lưu trữ và quản lý lịch sử hoạt động của người dùng.
-    \item Hỗ trợ tìm kiếm người dùng theo các tiêu chí khác nhau.
+    \item Hệ thống chưa triển khai lên môi trường Internet hoặc cloud; mọi thành phần chạy trên localhost.
+    \item Chưa xử lý đồng thời (concurrency) cho lượng truy cập lớn; Crow server đơn giản được dùng để minh họa kiến trúc API.
+    \item Mật khẩu người dùng chưa được băm (hashing); đây là giới hạn có chủ ý trong phạm vi học thuật.
+    \item Chưa xử lý Cold Start cho \textit{sản phẩm mới} (New Item Cold Start), chỉ xử lý New User Cold Start.
 \end{itemize}
 
-\subsection{Quản lý sản phẩm}
-\begin{itemize}
-    \item Tạo, cập nhật, xóa thông tin sản phẩm.
-    \item Lưu trữ các thuộc tính và đặc điểm của sản phẩm.
-    \item Hỗ trợ lọc và tìm kiếm sản phẩm.
-\end{itemize}
+\section{Công nghệ và ngôn ngữ lập trình sử dụng}
 
-\subsection{Quản lý tương tác}
-\begin{itemize}
-    \item Ghi nhận các tương tác giữa người dùng và sản phẩm (xem, thêm giỏ, mua, đánh giá).
-    \item Lưu trữ dữ liệu tương tác với các trường metadata (thời gian, độ ưu tiên, v.v).
-    \item Hỗ trợ truy vấn lịch sử tương tác.
-\end{itemize}
-
-\subsection{Sinh danh sách gợi ý}
-\begin{itemize}
-    \item Tính toán độ tương đồng giữa các sản phẩm dựa trên người dùng chung.
-    \item Xác định các sản phẩm có liên quan cho từng người dùng.
-    \item Sinh danh sách Top-K sản phẩm gợi ý cho một người dùng cụ thể.
-    \item Hỗ trợ gợi ý theo thời gian thực.
-\end{itemize}
-
-\subsection{Quản lý dữ liệu}
-\begin{itemize}
-    \item Nhập dữ liệu từ tệp CSV.
-    \item Xuất dữ liệu sang cơ sở dữ liệu.
-    \item Đồng bộ hóa dữ liệu từ cơ sở dữ liệu.
-\end{itemize}
-
-\section{Yêu cầu phi chức năng}
-
-\subsection{Hiệu năng}
-\begin{itemize}
-    \item Hệ thống phải xử lý được hàng triệu tương tác.
-    \item Thời gian phản hồi gợi ý không vượt quá 500ms.
-    \item Hỗ trợ concurrent requests từ nhiều người dùng.
-\end{itemize}
-
-\subsection{Khả năng mở rộng}
-\begin{itemize}
-    \item Dễ dàng thêm loại tương tác mới.
-    \item Hỗ trợ tích hợp với các cơ sở dữ liệu khác nhau.
-\end{itemize}
-
-\subsection{Độ tin cậy}
-\begin{itemize}
-    \item Xử lý lỗi đầu vào đầy đủ.
-    \item Backup và phục hồi dữ liệu.
-\end{itemize}
-
-\section{Ràng buộc kỹ thuật}
-
-\begin{itemize}
-    \item Ngôn ngữ lập trình: C++17.
-    \item Cơ sở dữ liệu: MySQL.
-    \item Thư viện: ASIO (cho networking), Crow (cho REST API).
-    \item Hệ điều hành: Cross-platform (Windows, Linux, macOS).
-\end{itemize}
-
-\section{Trường hợp sử dụng}
-
-\subsection{UC1: Thêm người dùng mới}
-Một người dùng mới đăng ký trên nền tảng. Hệ thống ghi nhận thông tin cơ bản.
-
-\subsection{UC2: Ghi nhận tương tác}
-Khi người dùng xem, thêm giỏ hoặc mua một sản phẩm, hệ thống ghi nhận sự kiện này.
-
-\subsection{UC3: Sinh danh sách gợi ý}
-Khi người dùng yêu cầu gợi ý, hệ thống tính toán và trả về Top-K sản phẩm phù hợp nhất.
-
-\subsection{UC4: Cập nhật sản phẩm}
-Quản trị viên có thể thêm sản phẩm mới hoặc cập nhật thông tin sản phẩm hiện có.
-
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabularx}{\textwidth}{|l|l|>{\raggedright\arraybackslash}X|}
+        \hline
+        \textbf{Thành phần} & \textbf{Công nghệ} & \textbf{Vai trò} \\ \hline
+        Ngôn ngữ lập trình chính & C++17 & Xây dựng Recommendation Engine \\ \hline
+        Lập trình hướng đối tượng & OOP C++ & Tổ chức các module hệ thống \\ \hline
+        Cấu trúc dữ liệu & MyVector, MyMap, MyPair & Quản lý dữ liệu trong bộ nhớ \\ \hline
+        Thuật toán gợi ý & Item-based CF & Sinh danh sách sản phẩm đề xuất \\ \hline
+        Độ đo tương đồng & Cosine Similarity & Tính mức độ giống nhau giữa các sản phẩm \\ \hline
+        API Framework & Crow C++ & Cung cấp REST API \\ \hline
+        Frontend & ReactJS + Vite & Xây dựng giao diện người dùng \\ \hline
+        Định dạng dữ liệu & JSON & Trao đổi dữ liệu giữa Client và Server \\ \hline
+        Lưu trữ dữ liệu & CSV Files + MySQL & Lưu dữ liệu hệ thống \\ \hline
+        Công cụ phát triển & Visual Studio Code & Lập trình và kiểm thử \\ \hline
+        Quản lý phiên bản & Git/GitHub & Quản lý mã nguồn \\ \hline
+    \end{tabularx}
+    \caption{Bảng công nghệ sử dụng trong dự án}
+    \label{tab:cong_nghe}
+\end{table}
 
 % ============================================================
-\chapter{Thiết kế hệ thống}
-\label{chap:thietke}
+\chapter{Cơ sở lý thuyết}
+\label{chap:lythuyet}
+
+\section{Lý thuyết về Hệ thống gợi ý (Recommendation System)}
+
+Hệ thống gợi ý (Recommendation System) là một phân lớp của hệ thống lọc thông tin, được thiết kế nhằm dự đoán ``độ ưu tiên'' hoặc ``đánh giá'' mà một người dùng sẽ dành cho một vật phẩm (item) \cite{ekstrand2011collaborative}. Trong kỷ nguyên bùng nổ dữ liệu số, hệ thống gợi ý đóng vai trò thiết yếu trong việc giải quyết vấn đề quá tải thông tin, giúp cá nhân hóa trải nghiệm người dùng trên các nền tảng thương mại điện tử và dịch vụ nội dung.
+
+\subsection{Thuật toán Lọc cộng tác dựa trên sản phẩm (Item-based Collaborative Filtering)}
+
+Lọc cộng tác (Collaborative Filtering - CF) là một trong những phương pháp nền tảng và thành công nhất trong lĩnh vực hệ thống gợi ý. Phương pháp này dựa trên giả định cốt lõi: những người dùng từng có sở thích giống nhau trong quá khứ sẽ có xu hướng đánh giá cao những sản phẩm giống nhau trong tương lai \cite{ekstrand2011collaborative}. Thay vì tìm kiếm sự tương đồng giữa các người dùng (User-based CF) vốn tốn nhiều tài nguyên tính toán do số lượng người dùng thường xuyên biến động, hệ thống của dự án áp dụng phương pháp Lọc cộng tác dựa trên sản phẩm (Item-based Collaborative Filtering). Thuật toán này được giới thiệu lần đầu bởi nhóm nghiên cứu tại Đại học Minnesota (2001) và ứng dụng thành công tại Amazon \cite{linden2003amazon}.
+
+Logic hoạt động của Item-based CF bao gồm các bước sau:
+\begin{itemize}
+    \item \textbf{Phân tích tập dữ liệu:} Xây dựng ma trận tương tác User-Item (Người dùng - Sản phẩm), trong đó mỗi ô lưu giá trị đánh giá (rating) hoặc mức độ tương tác (click, thêm vào giỏ hàng, mua hàng).
+    \item \textbf{Tính toán độ tương đồng:} Đánh giá mức độ giống nhau giữa các cặp sản phẩm dựa trên lịch sử tương tác của tất cả người dùng đối với hai sản phẩm đó.
+    \item \textbf{Dự đoán và Gợi ý:} Nếu người dùng $u$ đã tương tác tích cực với tập sản phẩm $S$, hệ thống sẽ tìm kiếm các sản phẩm chưa được tương tác có độ tương đồng cao nhất với các sản phẩm trong tập $S$ để đưa ra danh sách gợi ý.
+\end{itemize}
+
+Ưu điểm nổi bật của Item-based CF là tính ổn định. Tập hợp sản phẩm thường có tính tĩnh cao hơn tập hợp người dùng, do đó ma trận tương đồng sản phẩm có thể được tính toán ngoại tuyến (offline), giúp tăng tốc độ phản hồi của hệ thống theo thời gian thực~\cite{sarwar2001item}.
+
+\subsection{Công thức Toán học: Tính độ tương đồng Cosine (Cosine Similarity)}
+
+Để đo lường mức độ tương đồng giữa hai sản phẩm trong ma trận tương tác, thuật toán sử dụng phép đo Độ tương đồng Cosine (Cosine Similarity). Khái niệm này coi mỗi sản phẩm như một vector đa chiều trong không gian, nơi mỗi chiều biểu diễn mức độ tương tác của một người dùng cụ thể \cite{ricci2011introduction}. Độ tương đồng giữa hai sản phẩm $i$ và $j$ được tính bằng cosin của góc tạo bởi hai vector tương ứng của chúng. Góc càng nhỏ, giá trị cosin càng tiến về 1, thể hiện hai sản phẩm có mức độ đánh giá rất giống nhau. Ngược lại, giá trị tiến về 0 thể hiện sự thiếu tương đồng.
+
+Công thức tổng quát tính độ tương đồng Cosine giữa hai vector sản phẩm $\vec{i}$ và $\vec{j}$ được biểu diễn như sau:
+$$sim(i, j) = \cos(\vec{i}, \vec{j}) = \frac{\vec{i} \cdot \vec{j}}{|\vec{i}| \times |\vec{j}|}$$
+
+Khi triển khai trên ma trận tương tác, công thức trên được khai triển thành:
+$$sim(i, j) = \frac{\sum_{u \in U_{i,j}} R_{u,i} \times R_{u,j}}{\sqrt{\sum_{u \in U_i} R_{u,i}^2} \times \sqrt{\sum_{u \in U_j} R_{u,j}^2}}$$
+
+Trong đó:
+\begin{itemize}
+    \item $sim(i, j)$: Mức độ tương đồng giữa sản phẩm $i$ và sản phẩm $j$.
+    \item $R_{u,i}, R_{u,j}$: Điểm đánh giá (hoặc trọng số tương tác) của người dùng $u$ đối với sản phẩm $i$ và $j$.
+    \item $U_{i,j}$: Tập hợp những người dùng đã tương tác với cả hai sản phẩm $i$ và $j$.
+    \item $U_i, U_j$: Tập hợp những người dùng đã tương tác với sản phẩm $i$ và sản phẩm $j$.
+\end{itemize}
+
+\textbf{Lưu ý triển khai:} Để tối ưu hóa tài nguyên tính toán (như đã thiết kế trong kiến trúc C++ của hệ thống), tử số chỉ thực hiện tính tổng tích vô hướng đối với tập giao $U_{i,j}$ của hai sản phẩm, loại bỏ các phép tính thừa bằng 0.
+
+\subsection{Vấn đề người dùng mới và giải pháp Cold Start}
+
+Cold Start là một trong những thách thức kinh điển và lớn nhất đối với mọi hệ thống lọc cộng tác \cite{schein2002methods}. Vấn đề này xảy ra khi hệ thống không có đủ dữ liệu lịch sử tương tác để đưa ra các suy luận và gợi ý chính xác. Trong khuôn khổ đồ án, hệ thống tập trung giải quyết nhánh New User Cold Start (Người dùng mới): Khi một người dùng vừa đăng ký tài khoản và chưa có bất kỳ thao tác click, mua hàng hay đánh giá nào, thuật toán Item-based CF không thể tìm thấy tập sản phẩm $S$ để làm cơ sở tính toán khoảng cách vector. Nếu không được xử lý, hệ thống sẽ trả về danh sách rỗng, gây ảnh hưởng tiêu cực đến trải nghiệm người dùng (User Experience).
+
+\textbf{Giải pháp tiếp cận của hệ thống:} Để khắc phục vấn đề này, cơ chế gợi ý của chương trình áp dụng phương pháp Fallback (Dự phòng) phi cá nhân hóa. Cụ thể, khi định danh người dùng (\texttt{user\_id}) chưa tồn tại trong ma trận tương tác, hệ thống sẽ tự động chuyển hướng sang hàm xử lý \texttt{coldStart}. Tại đây, hệ thống hoạt động như một thuật toán thống kê đại chúng (Popularity-based Recommendation). Chương trình sẽ duyệt qua toàn bộ tập dữ liệu cấu trúc, tổng hợp tổng điểm tương tác (\texttt{itemTotalScore}) của từng sản phẩm, sau đó tiến hành sắp xếp giảm dần (Sorting) để trích xuất ra Top $N$ sản phẩm thịnh hành nhất. Danh sách này sẽ được dùng làm gợi ý mặc định ban đầu. Ngay khi người dùng mới thực hiện những thao tác tương tác đầu tiên, hệ thống sẽ lập tức kích hoạt lại ma trận Cosine để chuyển đổi sang luồng gợi ý cá nhân hóa thời gian thực.
+
+\section{Cấu trúc dữ liệu}
+
+Căn cứ theo tiêu chuẩn \textit{C++ Core Guidelines} do Bjarne Stroustrup và Herb Sutter biên soạn, khi tự cài đặt các cấu trúc dữ liệu cấp phát động (như \texttt{MyVector}), hệ thống phải tuân thủ nghiêm ngặt ``Quy tắc Tam'' (The Rule of Three). Cụ thể, nếu một lớp (class) tự quản lý tài nguyên thông qua con trỏ thô, lập trình viên bắt buộc phải tự định nghĩa đồng bộ cả 3 thành phần sau:
+\begin{itemize}
+    \item \textbf{Hàm hủy (Destructor):} Đảm bảo giải phóng vùng nhớ (dùng \texttt{delete[]}) khi đối tượng kết thúc phạm vi hoạt động (out-of-scope).
+    \item \textbf{Hàm tạo sao chép (Copy Constructor):} Thực hiện sao chép sâu (deep copy) bằng cách xin cấp phát một vùng nhớ hoàn toàn mới thay vì chỉ copy địa chỉ con trỏ.
+    \item \textbf{Toán tử gán (Copy Assignment Operator):} Phải dọn dẹp vùng nhớ cũ của đối tượng đích trước khi cấp phát và copy dữ liệu mới sang.
+\end{itemize}
+
+Việc thiếu hụt bất kỳ thành phần nào trong bộ ba này sẽ khiến C++ tự động thực hiện sao chép nông (shallow copy). Điều này dẫn đến việc nhiều đối tượng cùng trỏ vào chung một vùng nhớ, gây ra lỗi rò rỉ bộ nhớ (memory leak) hoặc lỗi giải phóng kép (\textit{double-free}) làm sập chương trình \cite{cppcoreguidelines}.
+
+\subsection{Mảng động (Dynamic Array)}
+
+Mảng động (Dynamic Array) là một cấu trúc dữ liệu tuyến tính cho phép lưu trữ một tập hợp các phần tử có cùng kiểu dữ liệu tại các vị trí bộ nhớ liên tiếp nhau. Khác với mảng tĩnh (Static Array) yêu cầu khai báo trước kích thước cố định, mảng động sở hữu khả năng tự động điều chỉnh sức chứa (capacity) trong quá trình thực thi (runtime) \cite{weiss2013}.
+
+\textbf{Cơ chế hoạt động:} Bản chất của mảng động vẫn là một vùng nhớ tĩnh được cấp phát trên bộ nhớ Heap. Theo cấu trúc dữ liệu chuẩn \cite{weiss2013}, nó quản lý ba thuộc tính cốt lõi:
+\begin{itemize}
+    \item \textbf{Con trỏ dữ liệu:} Trỏ đến địa chỉ bắt đầu của vùng nhớ được cấp phát.
+    \item \textbf{Kích thước (Size):} Số lượng phần tử thực tế đang được lưu trữ.
+    \item \textbf{Sức chứa (Capacity):} Tổng số phần tử tối đa mà vùng nhớ hiện tại có thể chứa.
+\end{itemize}
+
+\textbf{Cơ chế mở rộng (Resizing):} Khi thao tác thêm phần tử làm cho kích thước vượt quá sức chứa hiện tại ($\text{Size} = \text{Capacity}$), mảng động sẽ thực hiện chiến lược mở rộng:
+\begin{itemize}
+    \item Cấp phát một vùng nhớ mới có kích thước lớn hơn (thường là gấp đôi, $\text{Capacity} \times 2$).
+    \item Sao chép toàn bộ dữ liệu từ vùng nhớ cũ sang vùng nhớ mới.
+    \item Giải phóng vùng nhớ cũ và cập nhật con trỏ đến vùng nhớ mới.
+\end{itemize}
+
+Nhờ chiến lược cấp phát lại theo cấp số nhân này, phân tích khấu hao (Amortized Analysis) chỉ ra rằng độ phức tạp thời gian trung bình (Amortized Time Complexity) cho thao tác thêm một phần tử vào cuối mảng chỉ là $O(1)$, mang lại hiệu năng tối ưu cho việc đọc/ghi dữ liệu tuần tự với số lượng lớn \cite{weiss2013}.
+
+\subsection{Bảng băm (Hash Table)}
+
+Bảng băm (Hash Table) là cấu trúc dữ liệu chuyên dụng để triển khai kiểu dữ liệu trừu tượng Từ điển (Dictionary) hoặc Bản đồ (Map), cho phép ánh xạ các khóa (Keys) tới các giá trị (Values) tương ứng. Điểm mạnh lớn nhất của Bảng băm là khả năng thực hiện các thao tác tìm kiếm, chèn và xóa với độ phức tạp thời gian trung bình đạt $O(1)$ \cite{cormen2009}.
+
+\textbf{Cơ chế hoạt động:} Bảng băm sử dụng một hàm toán học gọi là Hàm băm (Hash Function) để biến đổi một khóa đầu vào (ví dụ: chuỗi ký tự định danh \texttt{user\_id}) thành một số nguyên. Số nguyên này sau đó được chia lấy dư (modulo) cho kích thước của một mảng chứa (Bucket array) để tạo ra chỉ mục (Index) phân bổ vị trí lưu trữ \cite{cormen2009}.
+
+\textbf{Xử lý đụng độ (Collision Resolution):} Trong thực tế, do không gian của khóa thường lớn hơn rất nhiều so với không gian của mảng chứa, hiện tượng đụng độ (Collision) chắc chắn sẽ xảy ra - tức là hai khóa khác nhau bị hàm băm ánh xạ vào cùng một chỉ mục. Để giải quyết vấn đề này, phương pháp Phân giải bằng danh sách liên kết (Chaining) được sử dụng phổ biến \cite{cormen2009}:
+\begin{itemize}
+    \item Mỗi bucket trong mảng băm không chứa trực tiếp dữ liệu, mà chứa một con trỏ trỏ tới phần tử đầu tiên của một Danh sách liên kết đơn (Singly Linked List).
+    \item Khi có đụng độ xảy ra tại một chỉ mục, phần tử mới sẽ được chèn thêm vào danh sách liên kết tại bucket đó.
+    \item Khi tìm kiếm, hệ thống tính toán chỉ mục, sau đó duyệt qua danh sách liên kết tại bucket tương ứng để trích xuất khóa chính xác.
+\end{itemize}
+
+Hiệu năng của Bảng băm phụ thuộc rất lớn vào khả năng phân phối đều dữ liệu của Hàm băm (Uniform Hashing) và việc duy trì Tỉ lệ tải (Load Factor) ở mức hợp lý.
+
+\subsection{Thuật toán Sắp xếp nổi bọt (Bubble Sort)}
+
+Sắp xếp nổi bọt (Bubble Sort) là một trong những thuật toán sắp xếp cơ bản và trực quan nhất trong khoa học máy tính. Thuật toán thuộc lớp thuật toán sắp xếp tại chỗ (In-place sorting), không đòi hỏi thêm không gian bộ nhớ phụ trợ đáng kể trong quá trình thực thi \cite{nguyenducnghia2013}.
+
+\textbf{Cơ chế hoạt động:} Thuật toán hoạt động dựa trên nguyên lý lặp đi lặp lại việc duyệt qua danh sách cần sắp xếp. Tại mỗi bước duyệt, nó so sánh hai phần tử liền kề nhau và tiến hành hoán đổi (swap) vị trí của chúng nếu chúng đang ở sai thứ tự (ví dụ: phần tử trước lớn hơn phần tử sau trong bài toán sắp xếp tăng dần) \cite{nguyenducnghia2013}. Quá trình này được lặp lại cho đến khi không còn bất kỳ sự hoán đổi nào cần thực hiện trong một vòng duyệt toàn bộ danh sách, báo hiệu rằng mảng đã được sắp xếp hoàn chỉnh. Tên gọi ``nổi bọt'' xuất phát từ việc các phần tử có giá trị lớn nhất (hoặc nhỏ nhất) sẽ dần dần ``nổi'' lên vị trí cuối cùng của danh sách sau mỗi vòng lặp.
+
+\textbf{Đánh giá độ phức tạp \cite{nguyenducnghia2013}:}
+\begin{itemize}
+    \item \textbf{Thời gian:} Do sử dụng hai vòng lặp lồng nhau để so sánh mọi cặp phần tử, độ phức tạp thời gian trong trường hợp trung bình và xấu nhất đều là $O(n^2)$.
+    \item \textbf{Không gian:} Thuật toán chỉ sử dụng một biến tạm thời để thực hiện thao tác hoán đổi, do đó độ phức tạp không gian đạt $O(1)$.
+\end{itemize}
+
+Mặc dù không mang lại hiệu năng cao trên tập dữ liệu lớn so với các thuật toán tối ưu (như Quick Sort hay Merge Sort), Bubble Sort vẫn mang lại giá trị ứng dụng trong các trường hợp tập dữ liệu có kích thước rất nhỏ hoặc mảng gần như đã được sắp xếp sẵn, nhờ vào sự đơn giản trong cài đặt và không phát sinh chi phí gọi hàm đệ quy.
+
+\section{Kiểm thử phần mềm}
+
+\subsection{Kiểm thử hộp đen (Black-Box Testing)}
+
+Kiểm thử hộp đen là phương pháp kiểm thử trong đó người kiểm thử đóng vai trò là người sử dụng cuối (End-user). Quá trình kiểm thử tập trung vào việc xác minh các chức năng của phần mềm thông qua giao diện người dùng mà không cần biết hay quan tâm đến cấu trúc mã nguồn bên trong.
+\begin{itemize}
+    \item \textbf{Kiểm chứng giá trị biên (Boundary Testing):} Kỹ thuật thiết kế các trường hợp kiểm thử (Test case) tập trung vào các điều kiện ở các vùng biên của không gian dữ liệu đầu vào. Ví dụ: Kiểm tra phản ứng của hệ thống khi nhập dữ liệu trống, dữ liệu tối đa, hoặc dữ liệu vượt quá giới hạn cho phép.
+    \item \textbf{Kiểm chứng tải (Stress Testing):} Kỹ thuật đánh giá sức chịu đựng và độ ổn định của hệ thống khi phải hoạt động dưới mức tải tối đa hoặc vượt quá ngưỡng thiết kế. Ví dụ: Cung cấp khối lượng dữ liệu đầu vào khổng lồ hoặc tạo ra số lượng truy cập đồng thời cực lớn để quan sát hiện tượng tràn bộ nhớ hoặc gián đoạn dịch vụ.
+\end{itemize}
+
+\subsection{Kiểm thử hộp trắng (White-Box Testing)}
+
+Kiểm thử hộp trắng là phương pháp kiểm thử phần mềm dựa trên việc phân tích chi tiết cấu trúc bên trong, mã nguồn, thuật toán và luồng điều khiển của chương trình.
+\begin{itemize}
+    \item \textbf{Kiểm tra bất biến (Testing Invariants):} Đảm bảo các cấu trúc dữ liệu và các điều kiện logic cốt lõi của hệ thống luôn được bảo toàn và không bị sai lệch trong quá trình thực thi các thao tác.
+    \item \textbf{Kiểm tra giá trị trả về (Checking function return values):} Kiểm tra và xác minh các giá trị đầu ra của từng hàm hoặc phương thức cụ thể nhằm đảm bảo việc xử lý ngoại lệ và luồng điều hướng của chương trình diễn ra chính xác theo thiết kế.
+\end{itemize}
+
+\subsection{Kiểm thử hộp xám (Gray-Box Testing)}
+
+Kiểm thử hộp xám là phương pháp lai kết hợp những ưu điểm của cả kiểm thử hộp đen và kiểm thử hộp trắng. Phương pháp này được áp dụng khi người kiểm thử có kiến thức về một phần cấu trúc bên trong, thiết kế hệ thống hoặc cơ sở dữ liệu của phần mềm.
+\begin{itemize}
+    \item \textbf{Nguyên lý hoạt động:} Người kiểm thử thực hiện các thao tác nghiệp vụ thông qua giao diện phần mềm như một người dùng thông thường (Hộp đen), nhưng sau đó sẽ truy cập trực tiếp vào cơ sở dữ liệu, tệp tin hệ thống hoặc theo dõi bộ nhớ để đối chiếu và xác minh xem dữ liệu thực tế (Actual) có được lưu trữ và cập nhật trạng thái chính xác với mong đợi (Expected) hay không (Hộp trắng).
+\end{itemize}
+
+\subsection{Kiểm thử tự động (Automation Test)}
+
+Kiểm thử tự động là quá trình sử dụng các phần mềm, công cụ độc lập hoặc các đoạn mã kịch bản (scripts) để thực thi các bài kiểm thử một cách tự động. Phương pháp này có khả năng tự động nạp khối lượng lớn dữ liệu đầu vào, thực thi thao tác và so sánh kết quả tự động, giúp tối ưu hóa và rút ngắn đáng kể thời gian cho quy trình kiểm thử hồi quy (Regression Test) mỗi khi hệ thống có sự thay đổi hoặc cập nhật mã nguồn.
+
+% ============================================================
+\chapter{Phân tích và Thiết kế hệ thống}
+\label{chap:phantichvathietke}
 
 \section{Kiến trúc tổng thể}
 
-Hệ thống được chia thành các lớp chính:
+Hệ thống được tổ chức theo mô hình kiến trúc bốn tầng (Four-Layer Architecture), với ranh giới trách nhiệm rõ ràng giữa các tầng và giao tiếp một chiều từ tầng trên xuống tầng dưới. Thiết kế này đảm bảo tính module hóa cao, giúp từng thành phần có thể được phát triển, kiểm thử và thay thế độc lập.
 
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabularx}{\textwidth}{|c|>{\raggedright\arraybackslash}p{4cm}|>{\raggedright\arraybackslash}X|}
+        \hline
+        \textbf{Tầng} & \textbf{Tên tầng} & \textbf{Thành phần và trách nhiệm} \\ \hline
+        1 & \textbf{Presentation Layer} \newline (Giao diện) & Frontend ReactJS + Vite; gửi HTTP request đến API server qua \texttt{localhost:8080}; nhận JSON response và hiển thị cho người dùng. \\ \hline
+        2 & \textbf{API Gateway Layer} \newline (Cổng API) & \texttt{main.cpp} với Crow/ASIO; định tuyến các REST endpoint (\texttt{/recommend}, \texttt{/products}, \texttt{/login}, v.v.); xử lý CORS middleware; serialization/deserialization JSON. \\ \hline
+        3 & \textbf{Core Engine Layer} \newline (Thuật toán) & \texttt{RatingMatrix}, \texttt{SimilarityMatrix}, \texttt{Recommender}; thực thi Item-based CF + Cosine Similarity; \texttt{UserManager}, \texttt{ItemManager}, \texttt{InteractionManager} xử lý nghiệp vụ. \\ \hline
+        4 & \textbf{Data Layer} \newline (Dữ liệu) & \texttt{CSVLoader} đọc/ghi tệp CSV; \texttt{DatabaseManager} kết nối MySQL; các file \texttt{.csv} và schema MySQL là nguồn dữ liệu gốc. \\ \hline
+    \end{tabularx}
+    \caption{Kiến trúc bốn tầng của hệ thống}
+    \label{tab:kien_truc_4_tang}
+\end{table}
+
+\section{Phân tích yêu cầu và Use Case}
+
+\subsection{Danh sách các tác nhân (Actors)}
+
+Hệ thống xác định hai tác nhân chính:
+\begin{itemize}
+    \item \textbf{Khách truy cập (Guest):} Người dùng chưa đăng nhập, chỉ có quyền xem danh sách sản phẩm và nhận gợi ý Cold Start (sản phẩm thịnh hành).
+    \item \textbf{Người dùng đã xác thực (Authenticated User):} Người dùng đã đăng nhập, được cá nhân hóa toàn bộ: nhận gợi ý theo lịch sử tương tác cá nhân, quản lý giỏ hàng và đặt hàng.
+\end{itemize}
+
+\subsection{Bảng Use Case tổng hợp}
+
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabularx}{\textwidth}{|c|>{\raggedright\arraybackslash}p{4.5cm}|c|>{\raggedright\arraybackslash}X|}
+        \hline
+        \textbf{UC ID} & \textbf{Tên Use Case} & \textbf{Actor} & \textbf{Mô tả ngắn} \\ \hline
+        UC-01 & Đăng ký tài khoản & Guest & Tạo tài khoản mới với họ tên, email, mật khẩu; hệ thống sinh \texttt{user\_id} và lưu vào bộ nhớ + CSV. \\ \hline
+        UC-02 & Đăng nhập & Guest & Xác thực bằng email + mật khẩu; hệ thống trả về token phiên làm việc. \\ \hline
+        UC-03 & Đăng xuất & User & Hủy token phiên làm việc hiện tại. \\ \hline
+        UC-04 & Xem trang chủ (sản phẩm thịnh hành) & Guest/User & Lấy Top 20 sản phẩm có điểm tổng hợp cao nhất; với User đã đăng nhập, hiển thị gợi ý cá nhân hóa. \\ \hline
+        UC-05 & Tìm kiếm sản phẩm & Guest/User & Tìm kiếm theo từ khóa trong tên sản phẩm (case-insensitive substring). \\ \hline
+        UC-06 & Lọc và sắp xếp sản phẩm & Guest/User & Lọc theo danh mục, nhãn (badge), điểm sao; sắp xếp theo giá hoặc mức độ bán chạy. \\ \hline
+        UC-07 & Xem chi tiết sản phẩm & Guest/User & Xem thông tin đầy đủ của một sản phẩm; hệ thống ghi nhận hành vi click. \\ \hline
+        UC-08 & Nhận gợi ý sản phẩm cá nhân & User & Hệ thống tính toán Item-based CF và trả về Top-N sản phẩm chưa tương tác. \\ \hline
+        UC-09 & Nhận gợi ý Cold Start & Guest & Hệ thống trả về Top-N sản phẩm phổ biến nhất theo tổng điểm toàn hệ thống. \\ \hline
+        UC-10 & Thêm vào giỏ hàng & User & Thêm sản phẩm với số lượng vào giỏ; nếu đã có thì cộng dồn. \\ \hline
+        UC-11 & Cập nhật số lượng giỏ hàng & User & Thay đổi số lượng một sản phẩm trong giỏ; nếu số lượng = 0 thì xóa. \\ \hline
+        UC-12 & Xóa sản phẩm khỏi giỏ & User & Loại bỏ hoàn toàn một mặt hàng khỏi giỏ hàng. \\ \hline
+        UC-13 & Xem giỏ hàng & User & Lấy danh sách sản phẩm và tổng tiền trong giỏ hiện tại. \\ \hline
+        UC-14 & Tạo đơn hàng & User & Chuyển toàn bộ giỏ hàng thành đơn, ghi nhận phương thức thanh toán; giỏ hàng được xóa sau khi tạo đơn thành công. \\ \hline
+        UC-15 & Gợi ý chéo sau mua (Cross-sell) & User & Sau khi đặt hàng, hệ thống đề xuất tối đa 5 sản phẩm cùng danh mục nhưng chưa có trong đơn. \\ \hline
+        UC-16 & Ghi nhận tương tác & User & Ghi log hành vi (click, add\_cart, purchase) vào bộ nhớ RAM phục vụ cập nhật ma trận tương tác. \\ \hline
+    \end{tabularx}
+    \caption{Bảng Use Case tổng hợp của hệ thống}
+    \label{tab:use_case}
+\end{table}
+
+\subsection{Luồng Use Case chính: Gợi ý sản phẩm cá nhân hóa (UC-08)}
+
+\textbf{Điều kiện tiên quyết:} Người dùng đã đăng nhập; \texttt{SimilarityMatrix} đã được xây dựng từ dữ liệu CSV khi khởi động server.
+
+\textbf{Luồng thực thi chính:}
 \begin{enumerate}
-    \item \textbf{Presentation Layer}: Giao diện người dùng / API REST.
-    \item \textbf{Business Logic Layer}: Các dịch vụ quản lý và thuật toán gợi ý.
-    \item \textbf{Data Access Layer}: Quản lý truy cập dữ liệu từ CSV và cơ sở dữ liệu.
-    \item \textbf{Database Layer}: MySQL cho lưu trữ dữ liệu lâu dài.
+    \item ReactJS gửi \texttt{GET /recommend/<user\_id>} đến API server.
+    \item Crow route handler gọi \texttt{engine.forUser(user\_id, 20)}.
+    \item \texttt{Recommender::forUser()} kiểm tra \texttt{rm\_.isNewUser(uid)}.
+    \item Nếu user \textbf{đã tồn tại}: duyệt các item user đã tương tác, lấy danh sách hàng xóm từ \texttt{sm\_.topK()}, tích lũy điểm dự đoán, Bubble Sort giảm dần, cắt Top-N.
+    \item Nếu user \textbf{chưa tồn tại}: gọi \texttt{coldStart(topN)} - trả về sản phẩm phổ biến nhất.
+    \item Kết quả (danh sách \texttt{item\_id}) được serialize thành JSON và trả về ReactJS.
+    \item ReactJS gọi \texttt{GET /product/<item\_id>} để lấy thông tin chi tiết và hiển thị.
 \end{enumerate}
 
-\section{Mô hình dữ liệu}
+\textbf{Luồng ngoại lệ:} Nếu \texttt{user\_id} hợp lệ nhưng chưa có tương tác nào, luồng tự động fallback về Cold Start mà không báo lỗi cho người dùng.
 
-\subsection{Entity-Relationship Diagram}
+\section{Luồng hoạt động của hàm \texttt{main()}}
 
-Hệ thống quản lý ba thực thể chính:
-
-\begin{itemize}
-    \item \textbf{User}: Đại diện cho người dùng với thông tin cá nhân.
-    \item \textbf{Item}: Đại diện cho sản phẩm được bán trên nền tảng.
-    \item \textbf{Interaction}: Ghi nhận mối quan hệ giữa người dùng và sản phẩm.
-\end{itemize}
-
-\subsection{Cấu trúc lớp User}
-
-\begin{verbatim}
-class User {
-    int user_id;
-    string username;
-    string email;
-    string country;
-    timestamp created_at;
-}
-\end{verbatim}
-
-\subsection{Cấu trúc lớp Item}
-
-\begin{verbatim}
-class Item {
-    int item_id;
-    string name;
-    string category;
-    double price;
-    string description;
-}
-\end{verbatim}
-
-\subsection{Cấu trúc lớp Interaction}
-
-\begin{verbatim}
-class Interaction {
-    int interaction_id;
-    int user_id;
-    int item_id;
-    int interaction_type;  // 1=view, 2=cart, 3=buy, 4=rate
-    double rating;         // 1-5 stars for ratings
-    timestamp timestamp;
-}
-\end{verbatim}
-
-\section{Thuật toán Collaborative Filtering}
-
-\subsection{Item-Based Collaborative Filtering}
-
-Thuật toán này dựa trên giả định rằng những người dùng yêu thích cùng một sản phẩm trong quá khứ sẽ có xu hướng thích các sản phẩm tương tự nhau trong tương lai.
+Khi chương trình khởi động, hàm \texttt{main()} thực hiện tuần tự các bước sau:
 
 \begin{enumerate}
-    \item Xây dựng Rating Matrix: Ma trận trong đó hàng là người dùng, cột là sản phẩm, giá trị là xếp hạng.
-    \item Tính Similarity Matrix: Tính độ tương đồng giữa các cặp sản phẩm dựa trên vector người dùng.
-    \item Sinh Recommendations: Cho một người dùng, tìm các sản phẩm chưa được đánh giá nhưng tương đồng với những sản phẩm đã được đánh giá.
+    \item \textbf{Nạp dữ liệu (Load CSV):} \texttt{CSVLoader} đọc ba file \texttt{users.csv}, \texttt{items.csv}, \texttt{interactions.csv} từ thư mục \texttt{4\_dataset/}, chuyển đổi thành các đối tượng \texttt{MyVector<User>}, \texttt{MyVector<Item>}, \texttt{MyVector<Interaction>}.
+    \item \textbf{Đồng bộ MySQL (DB Sync):} \texttt{DatabaseManager} kết nối đến MySQL Server, tự động tạo bảng nếu chưa tồn tại (\texttt{createTables()}), sau đó import toàn bộ sản phẩm qua \texttt{insertItem()}.
+    \item \textbf{Xây dựng Rating Matrix:} \texttt{RatingMatrix::buildMatrix()} duyệt qua \texttt{MyVector<Interaction>} và tính điểm tổng hợp cho mỗi cặp (user, item) theo công thức:\newline
+    $\text{Score} = \text{click} \times 1{,}0 + \text{add\_cart} \times 2{,}0 + \text{purchase} \times 5{,}0 + \text{rating} \times 3{,}0$
+
+    \item \textbf{Tính Similarity Matrix:} \texttt{SimilarityMatrix::build()} đảo chuyển (transpose) ma trận sang Item-User rồi tính Cosine Similarity cho mọi cặp sản phẩm, lưu vào \texttt{MyMap<string, MyMap<string, double>> simMatrix}.
+    \item \textbf{Khởi tạo các Manager:} Các đối tượng \texttt{UserManager}, \texttt{ItemManager}, \texttt{InteractionManager} và \texttt{Recommender} được khởi tạo với dữ liệu đã nạp.
+    \item \textbf{Khởi động API Server:} \texttt{crow::App} đăng ký các route, sau đó server được chạy trên luồng riêng (\texttt{std::thread}) để không chặn luồng demo console.
+    \item \textbf{Chạy demo console:} Thực thi tuần tự các demo: Auth (đăng ký/đăng nhập/đăng xuất), Item (tìm kiếm/lọc/chi tiết), Cart \& Order (giỏ hàng/đặt hàng/cross-sell).
 \end{enumerate}
 
-\subsection{Công thức tính độ tương đồng (Cosine Similarity)}
+\section{Thiết kế lớp (Class Design)}
 
-\[
-\text{similarity}(i, j) = \frac{\vec{v_i} \cdot \vec{v_j}}{\|\vec{v_i}\| \times \|\vec{v_j}\|}
-\]
+\subsection{Tầng Thực thể (1\_models)}
 
-Trong đó $\vec{v_i}$ là vector xếp hạng của sản phẩm $i$ từ tất cả người dùng.
+Ba lớp thực thể đóng vai trò là nền tảng dữ liệu của toàn hệ thống. Tất cả các thành phần tầng trên đều phụ thuộc vào ba lớp này, trong khi chúng không phụ thuộc vào bất kỳ module nào khác - đây là nguyên lý phụ thuộc một chiều quan trọng trong kiến trúc phân tầng.
 
-\section{Cấu trúc dữ liệu chính}
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabularx}{\textwidth}{|l|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|}
+        \hline
+        \textbf{Lớp} & \textbf{Thuộc tính chính} & \textbf{Phương thức quan trọng} \\ \hline
+        \texttt{User} & \texttt{user\_id}, \texttt{name}, \texttt{email}, \texttt{password}, \texttt{created\_at} & \texttt{checkPassword(pwd)} xác thực mật khẩu; các getter/setter theo chuẩn encapsulation. \\ \hline
+        \texttt{Item} & \texttt{item\_id}, \texttt{name}, \texttt{category}, \texttt{badge}, \texttt{price}, \texttt{star}, \texttt{sold}, \texttt{image\_url} & \texttt{displayInfo()} in thông tin; getter/setter đầy đủ cho tất cả thuộc tính. \\ \hline
+        \texttt{Interaction} & \texttt{user\_id}, \texttt{item\_id}, \texttt{click\_count}, \texttt{add\_cart\_count}, \texttt{purchase\_count}, \texttt{rating} & \texttt{computeScore()} tính điểm tổng hợp có trọng số - đây là hàm cốt lõi của tầng thực thể. \\ \hline
+    \end{tabularx}
+    \caption{Thiết kế các lớp thực thể (1\_models)}
+    \label{tab:thiet_ke_entity}
+\end{table}
 
-\subsection{Rating Matrix (Sparse)}
+\textbf{Thiết kế hàm \texttt{computeScore()}:} Đây là điểm phân biệt then chốt so với các hệ thống chỉ dùng rating số sao đơn thuần. Hàm kết hợp bốn tín hiệu hành vi với trọng số phản ánh mức độ cam kết thực sự:
 
-Để tiết kiệm bộ nhớ, sử dụng Sparse Matrix representation thay vì Dense Matrix.
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabularx}{\textwidth}{|l|c|c|>{\raggedright\arraybackslash}X|}
+        \hline
+        \textbf{Hành vi} & \textbf{Trọng số} & \textbf{Hằng số} & \textbf{Lý do thiết kế} \\ \hline
+        Click (xem sản phẩm) & 1.0 & \texttt{WEIGHT\_CLICK} & Tín hiệu nhẹ nhất: người dùng chỉ tò mò \\ \hline
+        Thêm vào giỏ hàng & 2.0 & \texttt{WEIGHT\_ADD\_CART} & Có ý định mua nhưng chưa quyết định \\ \hline
+        Mua hàng & 5.0 & \texttt{WEIGHT\_PURCHASE} & Cam kết cao nhất: đã chi tiền thực sự \\ \hline
+        Đánh giá (rating) & 3.0 & \texttt{WEIGHT\_RATING} & Phản hồi có chủ đích, nhân với giá trị sao \\ \hline
+    \end{tabularx}
+    \caption{Bảng trọng số hành vi trong hàm \texttt{computeScore()}}
+    \label{tab:trong_so}
+\end{table}
 
-\subsection{Similarity Matrix}
+Công thức tổng hợp:\newline
+$\text{Score} = (\text{click} \times 1.0) + (\text{add\_cart} \times 2.0) + (\text{purchase} \times 5.0) + (\text{rating} \times 3.0)$
 
-Ma trận lưu trữ độ tương đồng giữa các cặp sản phẩm.
+\subsection{Tầng Hạ tầng (2\_data)}
 
-\subsection{Hash Map}
-
-Sử dụng Hash Map (unordered\_map trong C++) cho truy cập nhanh O(1) đến thông tin người dùng, sản phẩm, tương tác.
-
-\subsection{Priority Queue}
-
-Sử dụng Priority Queue để lưu trữ danh sách gợi ý được sắp xếp theo độ tương đồng.
-
-\section{Các dịch vụ chính}
-
-\subsection{UserManager}
 \begin{itemize}
-    \item Thêm, cập nhật, xóa người dùng.
-    \item Tìm kiếm người dùng.
-    \item Lấy lịch sử tương tác của người dùng.
+    \item \textbf{CSVLoader:} Đọc/ghi ba file CSV với xử lý chuỗi an toàn qua \texttt{trim()} (loại bỏ khoảng trắng/CRLF) và \texttt{escapeField()} (escape dấu phẩy và ngoặc kép theo chuẩn RFC 4180). Mỗi phương thức \texttt{loadXxx()} bỏ qua dòng header, parse từng trường bằng \texttt{std::getline(ss, field, ',')}, và push đối tượng vào \texttt{MyVector} nội bộ.
+    \item \textbf{DatabaseManager:} Bọc MySQL Connector, cung cấp phương thức \texttt{connect()}, \texttt{createTables()}, \texttt{insertUser/Item/Interaction()} - thêm dữ liệu, \texttt{loadUsers/Items/Interactions()} - nạp dữ liệu, \texttt{deleteUser/Item/Interaction()} - xóa dữ liệu. Sử dụng \texttt{mysql\_real\_escape\_string()} để chống SQL Injection. Chiến lược \texttt{ON DUPLICATE KEY UPDATE} cho phép import lại CSV nhiều lần mà không gây lỗi trùng khóa.
+    \item \textbf{MyDataStructures.h:} Định nghĩa \texttt{MyVector<T>}, \texttt{MyMap<K,V>}, \texttt{MyPair<K,V>} thay thế hoàn toàn STL. File header duy nhất này là nền tảng cho toàn bộ hệ thống.
 \end{itemize}
 
-\subsection{ItemManager}
+\subsection{Tầng Thuật toán (3\_core)}
+
 \begin{itemize}
-    \item Thêm, cập nhật, xóa sản phẩm.
-    \item Tìm kiếm sản phẩm theo tên, danh mục.
-    \item Lấy thông tin chi tiết sản phẩm.
+    \item \textbf{RatingMatrix:} Lưu trữ ma trận thưa dưới dạng \texttt{MyMap<string, MyMap<string,double>>} (map lồng nhau: user\_id $\longrightarrow$ item\_id $\longrightarrow$ score). Phương thức của \texttt{buildMatrix()} duyệt qua \\ \texttt{MyVector<Interaction>}, gọi \texttt{computeScore()} cho từng bản ghi. Phương thức \texttt{normalizeMatrix()} thực hiện chuẩn hóa Mean-Centering, giúp giảm ảnh hưởng của xu hướng đánh giá cao/thấp cá nhân. Phương thức \texttt{itemTotalScore()} tổng hợp điểm tất cả người dùng cho một sản phẩm, phục vụ Cold Start.
+    \item \textbf{SimilarityMatrix:} Lưu ma trận tương đồng item-item dưới dạng \texttt{MyMap<string, \\ MyMap<string,double>> simMatrix}. Phương thức \texttt{build()} thực hiện hai bước: (1) đảo chuyển ma trận từ User-Item sang Item-User, (2) duyệt mọi cặp item $(i,j)$ với $j > i$ để tránh tính trùng, gọi \texttt{calculateCosine()} và lưu kết quả đối xứng. Kỹ thuật \texttt{smallerMap} trong \texttt{calculateCosine()} tối ưu hóa hiệu năng trên ma trận thưa.
+    \item \textbf{Recommender:} Điều phối \texttt{forUser(user\_id, topN)} (gợi ý cá nhân hóa) và \texttt{coldStart(topN)} (gợi ý phổ thông cho người dùng mới). Hàm \texttt{printResult()} hiển thị kết quả ra console dạng bảng.
 \end{itemize}
 
-\subsection{InteractionManager}
+\subsection{Tầng Nghiệp vụ (6\_services)}
+
 \begin{itemize}
-    \item Ghi nhận tương tác mới.
-    \item Truy vấn lịch sử tương tác.
-    \item Tính toán trọng số cho mỗi loại tương tác.
+    \item \textbf{UserManager:} Quản lý \texttt{MyVector<User>} nội bộ và \texttt{MyMap<string,string> sessions} (user\_id $\to$ token). Phương thức \texttt{Register()} kiểm tra email trùng lặp trước khi tạo tài khoản mới với \texttt{user\_id} sinh tự động (tìm max số hiện tại và tăng lên 1). Phương thức \texttt{Login()} tìm kiếm email, xác thực mật khẩu, tạo token ngẫu nhiên dựa trên \texttt{time()} và \texttt{rand()}.
+    \item \textbf{ItemManager:} \texttt{SearchProducts(keyword)} thực hiện tìm kiếm substring không phân biệt hoa thường qua \texttt{toLowerStr()}. \texttt{FilterAndSortProducts()} áp dụng bộ lọc đa tiêu chí (category, badge, minStar) rồi sắp xếp bằng Bubble Sort theo một trong bốn tiêu chí: \texttt{price\_asc}, \texttt{price\_desc}, \texttt{star}, \texttt{sold}.
+    \item \textbf{InteractionManager:} Quản lý hai \texttt{MyMap} nội bộ: \texttt{carts[userId] = MyVector<CartItem>} và \texttt{orders[orderId] = Order}. Phương thức \texttt{AddToCart()} kiểm tra xem sản phẩm đã có trong giỏ chưa trước khi thêm/cộng dồn. \texttt{CreateOrder()} tổng hợp giỏ hàng thành đơn và xóa giỏ. \\ \texttt{GetSuggestedProducts()} thực hiện cross-sell bằng cách tìm sản phẩm cùng danh mục với đơn hàng vừa tạo.
 \end{itemize}
 
-\subsection{Recommender}
-\begin{itemize}
-    \item Xây dựng Rating Matrix từ dữ liệu tương tác.
-    \item Tính Similarity Matrix.
-    \item Sinh danh sách Top-K gợi ý cho người dùng.
-\end{itemize}
+\section{Thiết kế quan hệ dữ liệu}
 
-\section{Luồng xử lý chính}
+\subsection{Quan hệ giữa các thực thể}
 
-\subsection{Luồng khởi tạo hệ thống}
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabularx}{\textwidth}{|l|c|l|>{\raggedright\arraybackslash}X|}
+        \hline
+        \textbf{Thực thể nguồn} & \textbf{Kiểu quan hệ} & \textbf{Thực thể đích} & \textbf{Mô tả} \\ \hline
+        User & 1 - N & Interaction & Một người dùng có thể có nhiều bản ghi tương tác với các sản phẩm khác nhau. \\ \hline
+        Item & 1 - N & Interaction & Một sản phẩm có thể xuất hiện trong nhiều bản ghi tương tác của nhiều người dùng khác nhau. \\ \hline
+        User & N - M & Item & Quan hệ nhiều-nhiều được thể hiện thông qua bảng Interaction trung gian. \\ \hline
+        CartItem & N - 1 & Order & Nhiều CartItem thuộc về một Order; sau khi CreateOrder, giỏ hàng bị xóa. \\ \hline
+        Item & 1 - N & CartItem & Một Item có thể xuất hiện trong CartItem của nhiều người dùng đồng thời. \\ \hline
+    \end{tabularx}
+    \caption{Quan hệ giữa các thực thể trong hệ thống}
+    \label{tab:entity_relations}
+\end{table}
 
-\begin{enumerate}
-    \item Tải dữ liệu người dùng từ CSV/Database.
-    \item Tải dữ liệu sản phẩm từ CSV/Database.
-    \item Tải dữ liệu tương tác từ CSV/Database.
-    \item Xây dựng Rating Matrix.
-    \item Tính Similarity Matrix (có thể lưu cache).
-\end{enumerate}
+\subsection{Thiết kế cơ sở dữ liệu CSV}
 
-\subsection{Luồng sinh gợi ý}
+Dữ liệu được lưu trong ba file CSV phẳng tại thư mục \texttt{4\_dataset/}:
 
-\begin{enumerate}
-    \item Nhận yêu cầu gợi ý từ người dùng.
-    \item Lấy lịch sử tương tác của người dùng.
-    \item Tính điểm gợi ý cho mỗi sản phẩm chưa được đánh giá.
-    \item Sắp xếp và trả về Top-K sản phẩm.
-\end{enumerate}
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabularx}{\textwidth}{|l|>{\raggedright\arraybackslash}X|l|}
+        \hline
+        \textbf{File} & \textbf{Các trường} & \textbf{Kích thước mẫu} \\ \hline
+        \texttt{users.csv} & user\_id, name, created\_at, email, password & 10.000 bản ghi \\ \hline
+        \texttt{items.csv} & item\_id, name, category, price & 500 bản ghi \\ \hline
+        \texttt{interactions.csv} & user\_id, item\_id, click, add\_cart, purchase, rating & 100.000 bản ghi \\ \hline
+    \end{tabularx}
+    \caption{Cấu trúc các file CSV dữ liệu}
+    \label{tab:csv_structure}
+\end{table}
 
+Quy tắc xử lý chuỗi trong CSV: trường chứa dấu phẩy hoặc dấu nháy kép sẽ được bao bởi dấu nháy kép (\texttt{escapeField()}); dấu nháy kép bên trong được nhân đôi. Dòng header được bỏ qua khi đọc (\texttt{getline} đầu tiên). Khoảng trắng và ký tự \texttt{CR/LF} ở đầu/cuối trường được loại bỏ bằng \texttt{trim()}.
+
+\subsection{Lược đồ MySQL}
+
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabularx}{\textwidth}{|l|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|l|}
+        \hline
+        \textbf{Bảng} & \textbf{Cột (Kiểu)} & \textbf{Ràng buộc} & \textbf{Ghi chú} \\ \hline
+        \texttt{users} & user\_id \texttt{VARCHAR(20)} & PRIMARY KEY & Khóa chính \\ \hline
+        & name \texttt{VARCHAR(100)} & NOT NULL & \\ \hline
+        & created\_at \texttt{DATE} & & \\ \hline
+        \texttt{items} & item\_id \texttt{VARCHAR(20)} & PRIMARY KEY & Khóa chính \\ \hline
+        & name \texttt{VARCHAR(150)} & NOT NULL & \\ \hline
+        & category \texttt{VARCHAR(50)} & & \\ \hline
+        & price \texttt{DOUBLE} & NOT NULL DEFAULT 0 & \\ \hline
+        \texttt{interactions} & id \texttt{INT} & PRIMARY KEY, AUTO\_INCREMENT & \\ \hline
+        & user\_id \texttt{VARCHAR(20)} & FOREIGN KEY $\to$ users & ON DELETE CASCADE \\ \hline
+        & item\_id \texttt{VARCHAR(20)} & FOREIGN KEY $\to$ items & ON DELETE CASCADE \\ \hline
+        & click, add\_cart, purchase \texttt{INT} & NOT NULL DEFAULT 0 & \\ \hline
+        & rating \texttt{DOUBLE} & NOT NULL DEFAULT 0 & \\ \hline
+    \end{tabularx}
+    \caption{Lược đồ MySQL của hệ thống}
+    \label{tab:mysql_schema}
+\end{table}
+
+\section{Thiết kế API Endpoints}
+
+\begin{table}[H]
+    \centering
+    \small
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabularx}{\textwidth}{|l|l|>{\raggedright\arraybackslash}X|l|}
+        \hline
+        \textbf{Method} & \textbf{Endpoint} & \textbf{Luồng xử lý} & \textbf{Response JSON} \\ \hline
+        GET & \texttt{/products} & DatabaseManager.loadItems() & \texttt{\{products: [...]\}} \\ \hline
+        GET & \texttt{/trending} & Tính tổng điểm, Bubble Sort & \texttt{\{trending\_items: [...]\}} \\ \hline
+        GET & \texttt{/recommend/<uid>} & Recommender.forUser() & \texttt{\{recommendations: [...]\}} \\ \hline
+        GET & \texttt{/product/<id>} & ItemManager.GetProductDetail() & \texttt{\{product: \{...\}\}} \\ \hline
+        POST & \texttt{/register} & UserManager.Register() & \texttt{\{status, user\_id\}} \\ \hline
+        POST & \texttt{/login} & UserManager.Login() & \texttt{\{status, user\_id, token\}} \\ \hline
+        POST & \texttt{/logout} & UserManager.Logout() & \texttt{\{status, message\}} \\ \hline
+        POST & \texttt{/cart/add} & InteractionManager.AddToCart() & \texttt{\{status, message\}} \\ \hline
+        POST & \texttt{/cart/remove} & InteractionManager.RemoveFromCart() & \texttt{\{status, message\}} \\ \hline
+        POST & \texttt{/cart/get} & InteractionManager.GetCartDetails() & \texttt{\{items: [...], total\}} \\ \hline
+        POST & \texttt{/order/create} & InteractionManager.CreateOrder() & \texttt{\{status, order\_id\}} \\ \hline
+        POST & \texttt{/track} & InteractionManager.AddInteraction() & \texttt{\{status, message\}} \\ \hline
+    \end{tabularx}
+    \caption{Bảng thiết kế REST API Endpoints}
+    \label{tab:api_design}
+\end{table}
+
+Tất cả các endpoint đều được xử lý CORS đầy đủ thông qua \texttt{cors\_middleware}: mỗi response tự động thêm header \texttt{Access-Control-Allow-Origin: *} và hỗ trợ OPTIONS preflight request (trả về 204 No Content).
 
 % ============================================================
-\chapter{Cài đặt và xây dựng chương trình}
+\chapter{Cài đặt hệ thống}
 \label{chap:caidat}
 
-\section{Môi trường phát triển}
+\section{Cấu trúc thư mục chương trình thực tế}
 
-\subsection{Công cụ và thư viện}
+Cây thư mục của hệ thống được tổ chức theo nguyên tắc phân chia module theo chức năng (modularization by feature), một cách tiếp cận phổ biến trong các dự án phần mềm quy mô vừa và lớn. Mỗi thư mục cấp một (từ \texttt{1\_models} đến \texttt{6\_services}) tương ứng với một tầng kiến trúc hoặc một nhóm chức năng cụ thể, giúp lập trình viên dễ dàng định vị mã nguồn cần sửa đổi mà không phải tìm kiếm qua hàng trăm tệp rải rác. Các thư mục được đánh số thứ tự (\texttt{1\_}, \texttt{2\_}, \texttt{3\_},..., \texttt{6\_}) thể hiện thứ tự phụ thuộc tăng dần - module \texttt{1\_models} không phụ thuộc vào module nào, trong khi module \texttt{6\_services} và \texttt{3\_core} phụ thuộc vào \texttt{1\_models} và \texttt{2\_data}.
 
+\vspace{0.5cm}
+\dirtree{%
+.1 Recommendation-System/.
+.2 main.cpp \DTcomment{Điểm vào chương trình (API Controller)}.
+.2 README.md \DTcomment{Tài liệu hướng dẫn}.
+.2 SETUP\_MYSQL\_CONNECTOR.md \DTcomment{Hướng dẫn cấu hình MySQL}.
+.2 1\_models/ \DTcomment{[Tầng Thực thể] Định nghĩa cấu trúc dữ liệu}.
+.3 User.h / User.cpp \DTcomment{Lớp Người dùng}.
+.3 Item.h / Item.cpp \DTcomment{Lớp Sản phẩm}.
+.3 Interaction.h / Interaction.cpp \DTcomment{Lớp Tương tác}.
+.2 2\_data/ \DTcomment{[Tầng Hạ tầng] Quản lý dữ liệu}.
+.3 MyDataStructures.h \DTcomment{Cấu trúc dữ liệu tự định nghĩa (MyVector, MyMap, MyPair)}.
+.3 CSVLoader.h / CSVLoader.cpp \DTcomment{Bộ nạp dữ liệu từ tệp CSV}.
+.3 DatabaseManager.h / .cpp \DTcomment{Quản lý kết nối MySQL}.
+.3 DataCreator.py \DTcomment{Script Python sinh dữ liệu mẫu}.
+.3 db\_config.example.h \DTcomment{Mẫu cấu hình kết nối cơ sở dữ liệu}.
+.2 3\_core/ \DTcomment{[Tầng Thuật toán] Engine gợi ý}.
+.3 RatingMatrix.h / .cpp \DTcomment{Ma trận tương tác User-Item}.
+.3 SimilarityMatrix.h / .cpp \DTcomment{Ma trận độ tương đồng Cosine Item-Item}.
+.3 Recommender.h / Recommender.cpp \DTcomment{Bộ tổng hợp gợi ý (Item-based CF + Cold Start)}.
+.2 4\_dataset/ \DTcomment{Dữ liệu thô (CSV \& SQL)}.
+.3 users.csv \DTcomment{Dữ liệu người dùng}.
+.3 items.csv \DTcomment{Dữ liệu sản phẩm}.
+.3 interactions.csv \DTcomment{Dữ liệu tương tác}.
+.3 recommendationsystem\_users.sql.
+.3 recommendationsystem\_items.sql.
+.3 recommendationsystem\_interactions.sql.
+.2 6\_services/ \DTcomment{[Tầng Nghiệp vụ] Logic xử lý}.
+.3 UserManager.h / .cpp \DTcomment{Quản lý người dùng (Auth)}.
+.3 ItemManager.h / .cpp \DTcomment{Quản lý sản phẩm (Search, Filter)}.
+.3 InteractionManager.h / .cpp \DTcomment{Quản lý tương tác (Cart, Order)}.
+}
+
+\section{Triển khai xây dựng các hàm chính}
+
+Trong khuôn khổ đồ án này, nhóm phát triển lựa chọn không sử dụng các thư viện chuẩn STL (Standard Template Library) của C++ nhằm mục đích học thuật, giúp người học hiểu sâu về cơ chế hoạt động bên trong của các cấu trúc dữ liệu phổ biến. Thay vào đó, hệ thống triển khai hai cấu trúc dữ liệu nền tảng: \texttt{MyVector} (mảng động) và \texttt{MyMap} (bảng băm), được định nghĩa trong tệp \texttt{2\_data/MyDataStructures.h}.
+
+\subsection{Cấu trúc cặp giá trị \texttt{MyPair} (Cài đặt thay thế \texttt{std::pair})}
+
+\texttt{MyPair} là một struct template (\texttt{template <typename K, typename V>}) đóng vai trò là kiểu dữ liệu trung gian dùng để biểu diễn một cặp khóa-giá trị (key-value pair). Struct này được sử dụng xuyên suốt hệ thống, đặc biệt là trong kiểu \texttt{RecommendResult} - định nghĩa là \texttt{MyVector<MyPair<std::string, double>>} dùng để lưu trữ danh sách các item cùng với điểm dự đoán tương ứng.
+
+\texttt{MyPair} đóng vai trò then chốt trong việc kết nối các cấu trúc dữ liệu khác:
 \begin{itemize}
-    \item \textbf{Ngôn ngữ}: C++ (C++17 standard).
-    \item \textbf{Compiler}: g++ hoặc MSVC.
-    \item \textbf{Quản lý dự án}: CMake (tùy chọn).
-    \item \textbf{Thư viện ngoài}:
-    \begin{itemize}
-        \item ASIO: Xử lý I/O bất đồng bộ.
-        \item Crow: Framework REST API nhẹ.
-        \item MySQL C++ Connector: Kết nối cơ sở dữ liệu.
-    \end{itemize}
+    \item Là kiểu phần tử của \texttt{MyVector} trong \texttt{RecommendResult} (kết quả gợi ý).
+    \item Là kiểu trả về của iterator trong \texttt{MyMap} thông qua phương thức \texttt{operator*()}.
+    \item Là kiểu dữ liệu trong \texttt{SimilarityMatrix} khi biểu diễn danh sách hàng xóm gần nhất dưới dạng \texttt{MyVector<MyPair<std::string, double>>}.
 \end{itemize}
 
-\subsection{Yêu cầu hệ thống}
-
+Cấu trúc bộ nhớ: \texttt{MyPair} sở hữu hai trường dữ liệu public:
 \begin{itemize}
-    \item Windows 10+ hoặc Linux/macOS tương tự.
-    \item Bộ nhớ RAM tối thiểu 4GB.
-    \item Dung lượng lưu trữ: Tùy thuộc vào kích thước dữ liệu (ít nhất 1GB).
+    \item \texttt{K first} - Khóa (key), trong ngữ cảnh hệ thống thường là \texttt{std::string} (mã định danh của item hoặc người dùng).
+    \item \texttt{V second} - Giá trị (value), trong ngữ cảnh hệ thống thường là \texttt{double} (điểm dự đoán hoặc độ tương đồng).
 \end{itemize}
 
-\section{Cấu trúc dự án}
+Đoạn mã dưới đây minh họa cách khai báo và các constructor của \texttt{MyPair} trong file \texttt{MyDataStructures.h}:
 
-\begin{verbatim}
-project_root/
-├── 1_models/          # Các lớp dữ liệu
-│   ├── User.h / User.cpp
-│   ├── Item.h / Item.cpp
-│   └── Interaction.h / Interaction.cpp
-├── 2_data/            # Quản lý dữ liệu
-│   ├── CSVLoader.h / CSVLoader.cpp
-│   ├── DatabaseManager.h / DatabaseManager.cpp
-│   └── db_config.h
-├── 3_core/            # Thuật toán chính
-│   ├── RatingMatrix.h / RatingMatrix.cpp
-│   ├── SimilarityMatrix.h / SimilarityMatrix.cpp
-│   └── Recommender.h / Recommender.cpp
-├── 6_services/        # Các dịch vụ
-│   ├── UserManager.h / UserManager.cpp
-│   ├── ItemManager.h / ItemManager.cpp
-│   └── InteractionManager.h / InteractionManager.cpp
-├── include/           # Thư viện ngoài (ASIO, Crow)
-├── main.cpp
-└── tasks.json / Makefile
-\end{verbatim}
+\begin{lstlisting}[caption={Cấu trúc MyPair (File MyDataStructures.h)}, label={lst:mypair}]
+template <typename K, typename V>
+struct MyPair {
+    K first;
+    V second;
 
-\section{Chi tiết cài đặt các module chính}
+    MyPair() : first(), second() {}
+    MyPair(const K& f, const V& s) : first(f), second(s) {}
+    MyPair(const MyPair& other) : first(other.first), second(other.second) {}
 
-\subsection{Module Models (1\_models/)}
+    MyPair& operator=(const MyPair& other) {
+        if (this != &other) {
+            first = other.first;
+            second = other.second;
+        }
+        return *this;
+    }
 
-Chứa các lớp cơ bản biểu diễn thực thể:
+    bool operator==(const MyPair& other) const {
+        return first == other.first && second == other.second;
+    }
+};
+\end{lstlisting}
 
+Toán tử gán và so sánh:
 \begin{itemize}
-    \item \textbf{User}: Lưu trữ ID, tên, email, quốc gia, thời gian tạo.
-    \item \textbf{Item}: Lưu trữ ID sản phẩm, tên, danh mục, giá, mô tả.
-    \item \textbf{Interaction}: Lưu trữ ID tương tác, user\_id, item\_id, loại tương tác, rating, timestamp.
+    \item \textbf{Copy Assignment Operator} (\texttt{operator=}): Gán lần lượt \texttt{first} và \texttt{second} từ đối tượng nguồn. Có kiểm tra tự gán (\texttt{this != \&other}) để đảm bảo an toàn.
+    \item \textbf{Equality Operator} (\texttt{operator==}): So sánh hai đối tượng \texttt{MyPair} bằng nhau nếu cả \texttt{first} và \texttt{second} đều bằng nhau tương ứng. Toán tử này được sử dụng trong các thao tác tìm kiếm và kiểm tra phần tử.
 \end{itemize}
 
-\subsection{Module Data (2\_data/)}
+\subsection{Cấu trúc \texttt{MyVector} (Cài đặt thay thế \texttt{std::vector})}
 
-\subsubsection{CSVLoader}
-Đọc dữ liệu từ tệp CSV và tạo các đối tượng tương ứng.
+\texttt{MyVector} là một lớp template (\texttt{template <typename T>}) quản lý một mảng cấp phát động trên heap, cho phép lưu trữ một dãy các phần tử kiểu \texttt{T} và tự động mở rộng sức chứa khi cần thiết.
 
-\subsubsection{DatabaseManager}
-Kết nối và đồng bộ dữ liệu với MySQL:
+Cấu trúc bộ nhớ:
 \begin{itemize}
-    \item Tải dữ liệu người dùng từ bảng users.
-    \item Tải dữ liệu sản phẩm từ bảng items.
-    \item Tải dữ liệu tương tác từ bảng interactions.
-    \item Hỗ trợ INSERT/UPDATE dữ liệu.
+    \item \texttt{T* data} - Con trỏ trỏ tới vùng nhớ trên heap chứa các phần tử.
+    \item \texttt{int sz} - Số lượng phần tử hiện tại (\texttt{size}).
+    \item \texttt{int cap} - Sức chứa tối đa hiện tại (\texttt{capacity}), tức số phần tử tối đa có thể chứa trước khi cần cấp phát lại.
 \end{itemize}
 
-\subsection{Module Core (3\_core/)}
+Cơ chế cấp phát động và mở rộng: Khi một phần tử mới được thêm vào thông qua phương thức \texttt{push\_back(const T\& value)}, hệ thống kiểm tra điều kiện \texttt{sz >= cap}. Nếu vùng đệm hiện tại đã đầy, một vùng nhớ mới với sức chứa gấp đôi được cấp phát thông qua hàm \texttt{reserveMore()}:
 
-\subsubsection{RatingMatrix}
+\begin{lstlisting}[caption={Hàm push\_back và reserveMore (File MyDataStructures.h)}, label={lst:pushback}]
+void push_back(const T& value) {
+    if (sz >= cap) {
+        int new_cap = (cap == 0) ? 4 : cap * 2;
+        reserveMore(new_cap);
+    }
+    data[sz] = value;
+    ++sz;
+}
+
+void reserveMore(int new_cap) {
+    T* new_data = new T[new_cap];
+    for (int i = 0; i < sz; ++i) {
+        new_data[i] = data[i];
+    }
+    delete[] data;
+    data = new_data;
+    cap = new_cap;
+}
+\end{lstlisting}
+
+\textbf{Ba quy tắc lớn - Phòng chống rò rỉ bộ nhớ:}
+
+\begin{enumerate}
+    \item \textbf{Destructor} (\texttt{\textasciitilde{}MyVector}): Giải phóng toàn bộ vùng nhớ do \texttt{data} quản lý bằng \texttt{delete[] data}. Gán \texttt{data = nullptr}, \texttt{sz = 0}, \texttt{cap = 0} để tránh dangling pointer.
+    \item \textbf{Copy Constructor} (\texttt{MyVector(const MyVector\& other)}): Tạo một bản sao độc lập (deep copy) bằng cách cấp phát một mảng mới có cùng sức chứa \texttt{cap = other.cap}, sau đó sao chép từng phần tử từ \texttt{other.data} sang \texttt{data}.
+    \item \textbf{Copy Assignment Operator} (\texttt{operator=}): Giải phóng vùng nhớ hiện tại, sau đó thực hiện cấp phát mới và sao chép toàn bộ dữ liệu từ đối tượng nguồn. Kiểm tra tự gán (\texttt{this != \&other}) để tránh lỗi hủy dữ liệu trước khi sao chép.
+\end{enumerate}
+
+Một số thao tác cơ bản:
+
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash}l|l|>{\raggedright\arraybackslash}X|}
+        \hline
+        \textbf{Thao tác} & \textbf{Độ phức tạp} & \textbf{Giải thích} \\ \hline
+        \texttt{operator[]} / \texttt{at(index)} & $O(1)$ & Truy cập trực tiếp qua địa chỉ bộ nhớ \texttt{data + index}, không phụ thuộc vào kích thước mảng. \\ \hline
+        \texttt{push\_back} (thường) & $O(1)$ & Thao tác thêm vào vị trí cuối cùng được thực hiện trong thời gian hằng số. \\ \hline
+        \texttt{push\_back} (khi đầy) & $O(n)$ & Hệ thống cấp phát vùng nhớ mới gấp đôi, sao chép toàn bộ $n$ phần tử cũ. \\ \hline
+        \texttt{push\_back} (khấu hao) & $O(1)^*$ & Độ phức tạp trung bình là hằng số nhờ chiến lược nhân đôi sức chứa. \\ \hline
+        \texttt{pop\_back} & $O(1)$ & Chỉ giảm biến đếm \texttt{size}, không cần giải phóng bộ nhớ. \\ \hline
+        \texttt{clear} & $O(n)$ & Thu hồi toàn bộ vùng nhớ đang sử dụng. \\ \hline
+    \end{tabularx}
+    \caption{Các thao tác của MyVector và độ phức tạp}
+    \label{tab:bang_minh_hoa}
+\end{table}
+
+\textit{Ghi chú:} Ký hiệu $O(1)^*$ biểu thị chi phí khấu hao. Mặc dù một lần \texttt{push\_back} riêng lẻ có thể tốn $O(n)$ khi cần mở rộng, tổng chi phí của $N$ lần \texttt{push\_back} liên tiếp là $O(N)$, dẫn đến chi phí trung bình mỗi lần là $O(1)$.
+
+\subsection{Bảng băm \texttt{MyMap} (Cài đặt thay thế \texttt{std::unordered\_map})}
+
+\texttt{MyMap} là một lớp template (\texttt{template <typename K, typename V>}) hiện thực cấu trúc dữ liệu từ điển (dictionary) lưu trữ các cặp khóa-giá trị (key-value pairs). Cấu trúc này sử dụng bảng băm (hash table) với phương pháp Separate Chaining để xử lý va chạm.
+
+\texttt{MyMap} sở hữu ba thành viên dữ liệu chính:
 \begin{itemize}
-    \item Xây dựng ma trận người dùng - sản phẩm.
-    \item Sử dụng Sparse Matrix để tiết kiệm bộ nhớ.
-    \item Hỗ trợ truy vấn rating của người dùng cho sản phẩm: O(1) average.
+    \item \texttt{Node** buckets} - Mảng các con trỏ, mỗi phần tử trỏ tới đầu một danh sách liên kết đơn (singly linked list) chứa các nút có cùng chỉ số băm.
+    \item \texttt{int bucket\_count} - Số lượng bucket (mặc định khởi tạo là 16).
+    \item \texttt{int sz} - Tổng số cặp key-value đang được lưu trữ.
 \end{itemize}
 
-\subsubsection{SimilarityMatrix}
+Mỗi nút trong danh sách liên kết được định nghĩa là một struct \texttt{Node}:
+
+\begin{lstlisting}[caption={Cấu trúc Node bên trong MyMap (File MyDataStructures.h)}, label={lst:node}]
+struct Node {
+    K key;
+    V value;
+    Node* next;
+    Node(const K& k, const V& v) : key(k), value(v), next(nullptr) {}
+};
+\end{lstlisting}
+
+Cơ chế băm: Sử dụng lớp \texttt{MyHashHelper} với các template specialization cho từng kiểu dữ liệu:
 \begin{itemize}
-    \item Tính độ tương đồng Cosine giữa các cặp sản phẩm.
-    \item Cache kết quả để tránh tính toán lặp lại.
-    \item Độ phức tạp: O(n²) với n là số sản phẩm.
+    \item Với \texttt{std::string}: Duyệt từng ký tự, nhân \texttt{h} với 31 và cộng giá trị ASCII (\texttt{h = h * 31 + (unsigned char)key[i]}).
+    \item Với \texttt{int}: Lấy giá trị tuyệt đối và ép kiểu thành \texttt{unsigned long}.
+    \item Với \texttt{double}: Lấy giá trị tuyệt đối, nhân với 1000 và ép kiểu thành \texttt{unsigned long}.
+    \item Với kiểu tổng quát \texttt{T}: Đọc từng byte của đối tượng và áp dụng cùng công thức băm.
 \end{itemize}
 
-\subsubsection{Recommender}
+Nén (compression): Chỉ số bucket được tính bằng phép toán \texttt{hashValue(key) \% bucket\_count}.
+
+Xử lý va chạm bằng Separate Chaining: Khi xảy ra va chạm băm, hệ thống tạo một nút mới và nối nó vào ngay trước (đầu) các nút đã có sẵn trong danh sách liên kết của ô đó:
+
+\begin{lstlisting}[caption={Thuật toán insert của MyMap (File MyDataStructures.h)}, label={lst:mapinsert}]
+void insert(const K& key, const V& value) {
+    unsigned long idx = hash(key);
+    Node* cur = buckets[idx];
+
+    // Kiem tra key da ton tai chua
+    while (cur != nullptr) {
+        if (cur->key == key) {
+            cur->value = value; // Cap nhat value
+            return;
+        }
+        cur = cur->next;
+    }
+
+    // Them nut moi vao dau danh sach
+    Node* new_node = new Node(key, value);
+    new_node->next = buckets[idx];
+    buckets[idx] = new_node;
+    ++sz;
+}
+\end{lstlisting}
+
+Cơ chế quản lý bộ nhớ: Tương tự \texttt{MyVector}, \texttt{MyMap} tuân thủ Ba quy tắc lớn:
 \begin{itemize}
-    \item Sinh danh sách Top-K gợi ý cho người dùng.
-    \item Sử dụng Priority Queue để duy trì danh sách Top-K hiệu quả.
-    \item Tính toán weighted score dựa trên similarity và interaction weight.
+    \item \textbf{Destructor}: Duyệt toàn bộ các bucket, xóa lần lượt từng nút trong danh sách liên kết (hàm \texttt{clearBuckets()}), sau đó giải phóng mảng \texttt{buckets}.
+    \item \textbf{Copy Constructor}: Tạo bảng băm mới với cùng số bucket, sau đó duyệt toàn bộ các nút của bảng gốc và gọi \texttt{insert()} cho từng cặp key-value.
+    \item \textbf{Copy Assignment Operator}: Giải phóng bảng hiện tại, tạo bảng mới và sao chép toàn bộ dữ liệu.
 \end{itemize}
 
-\subsection{Module Services (6\_services/)}
+Một số thao tác cơ bản:
 
-\subsubsection{UserManager}
-Quản lý tất cả các hoạt động liên quan đến người dùng.
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabularx}{\textwidth}{|l|c|c|>{\raggedright\arraybackslash}X|}
+        \hline
+        \textbf{Thao tác} & \textbf{Trường hợp trung bình} & \textbf{Trường hợp xấu nhất} & \textbf{Giải thích} \\ \hline
+        \texttt{insert} & $O(1)$ & $O(n)$ & Trung bình: Hàm băm phân phối đều. Xấu nhất: Tất cả khóa rơi vào cùng một bucket. \\ \hline
+        \texttt{find} & $O(1)$ & $O(n)$ & Tương tự thao tác chèn, cần duyệt danh sách tại bucket đã được băm tới. \\ \hline
+        \texttt{contains} & $O(1)$ & $O(n)$ & Kiểm tra sự tồn tại của khóa thông qua việc tìm kiếm danh sách liên kết. \\ \hline
+        \texttt{operator[]} & $O(1)$ & $O(n)$ & Có thể kích hoạt tạo mới nút nếu khóa chưa tồn tại. \\ \hline
+        \texttt{remove} & $O(1)$ & $O(n)$ & Cần thực hiện tìm kiếm phần tử trước khi tách nút ra khỏi danh sách. \\ \hline
+    \end{tabularx}
+    \caption{Phân tích độ phức tạp thời gian của các thao tác trên Hash Map}
+    \label{tab:do_phuc_tap_hashmap}
+\end{table}
 
-\subsubsection{ItemManager}
-Quản lý tất cả các hoạt động liên quan đến sản phẩm.
+Giải thích: Trong trường hợp xấu nhất, hàm băm có thể bị suy thoái - tất cả các khóa đều cho cùng một chỉ số băm. Khi đó, toàn bộ dữ liệu tập trung vào một danh sách liên kết duy nhất, biến bảng băm thành danh sách liên kết với độ phức tạp $O(n)$ cho mọi thao tác. Trong thực tế, với hàm băm phân phối đều và hệ số tải (load factor) hợp lý, hầu hết các thao tác đạt $O(1)$.
 
-\subsubsection{InteractionManager}
-Quản lý ghi nhận và truy vấn tương tác.
+\section{Các thuật toán nền tảng}
 
-\section{Luồng xử lý chương trình}
+\subsection{Thuật toán Sắp xếp nổi bọt (Bubble Sort)}
 
-\subsection{Khởi tạo}
+Sau khi hệ thống tính toán điểm dự đoán (prediction score) cho từng item, cần sắp xếp danh sách kết quả theo thứ tự giảm dần để lấy \texttt{topN} item có điểm cao nhất gợi ý cho người dùng. Thuật toán được lựa chọn cho tác vụ này là Bubble Sort (Sắp xếp nổi bọt).
 
-\begin{verbatim}
-1. Khởi tạo DatabaseManager, kết nối MySQL
-2. Tải dữ liệu users, items, interactions
-3. Khởi tạo Recommender
-4. Xây dựng RatingMatrix
-5. Tính SimilarityMatrix (có thể cached)
-\end{verbatim}
+\begin{lstlisting}[caption={Thuật toán Bubble Sort trong Recommender::forUser() (File Recommender.cpp)}, label={lst:bubblesort}]
+// Sap xep giam dan theo score (Bubble Sort)
+for (int i = 0; i < result.size() - 1; ++i) {
+    for (int j = 0; j < result.size() - i - 1; ++j) {
+        if (result[j].second < result[j + 1].second) {
+            MyPair<std::string, double> temp = result[j];
+            result[j] = result[j + 1];
+            result[j + 1] = temp;
+        }
+    }
+}
+\end{lstlisting}
 
-\subsection{Xử lý yêu cầu gợi ý}
+Bubble Sort được triển khai tại hai vị trí trong tệp \texttt{3\_core/Recommender.cpp}:
+\begin{enumerate}
+    \item Hàm \texttt{forUser()} (dòng 62--71): Sắp xếp danh sách \texttt{RecommendResult} - \\ tức \texttt{MyVector<MyPair<std::string, double>>} - chứa các item được gợi ý cho người dùng đã có lịch sử tương tác.
+    \item Hàm \texttt{coldStart()} (dòng 91--99): Sắp xếp danh sách các item cho người dùng mới (chưa có tương tác), dựa trên tổng điểm toàn cục của item.
+\end{enumerate}
+Cả hai đoạn mã đều có cùng cấu trúc thuật toán giống nhau.
 
-\begin{verbatim}
-1. Nhận user_id từ API
-2. Xác định danh sách items đã được đánh giá
-3. Lặp qua từng items chưa được đánh giá
-4. Tính recommendation score dựa trên items tương tự
-5. Sắp xếp và trả về Top-K
-\end{verbatim}
+\textbf{Độ phức tạp thời gian:}
 
-\section{Xử lý lỗi và ngoại lệ}
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash}p{2.5cm}|l|l|c|>{\raggedright\arraybackslash}X|}
+        \hline
+        \textbf{Trường hợp} & \textbf{Số lần so sánh} & \textbf{Số lần hoán đổi} & \textbf{Big O} & \textbf{Giải thích} \\ \hline
+        Tốt nhất (Best Case) & $n(n-1)/2$ & $0$ & $O(n^2)$ & Dù mảng đã sắp xếp, thuật toán vẫn thực hiện toàn bộ vòng lặp vì không có cơ chế dừng sớm (flag). \\ \hline
+        Trung bình (Average Case) & $n(n-1)/2$ & $\approx n(n-1)/4$ & $O(n^2)$ & Với dữ liệu ngẫu nhiên, trung bình khoảng một nửa số cặp phần tử cần thực hiện hoán đổi. \\ \hline
+        Xấu nhất (Worst Case) & $n(n-1)/2$ & $n(n-1)/2$ & $O(n^2)$ & Xảy ra khi mảng sắp xếp ngược chiều mong muốn, mỗi lần so sánh đều dẫn đến hoán đổi. \\ \hline
+    \end{tabularx}
+    \caption{Phân tích độ phức tạp thời gian của Bubble Sort}
+    \label{tab:time_bubble}
+\end{table}
 
+\textbf{Ghi chú:} Công thức tính tổng số lần so sánh:
+$$\text{Tổng số lần so sánh} = (n-1) + (n-2) + \dots + 2 + 1 = \frac{n(n-1)}{2}$$
+Do đó $T(n) \approx n^2/2$, suy ra độ phức tạp là $O(n^2)$.
+
+\textbf{Độ phức tạp không gian:}
+
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabularx}{\textwidth}{|>{\centering\arraybackslash}p{3.5cm}|c|>{\raggedright\arraybackslash}X|}
+        \hline
+        \textbf{Loại} & \textbf{Big O} & \textbf{Giải thích} \\ \hline
+        Bộ nhớ phụ (Auxiliary Space) & $O(1)$ & Thuật toán chỉ sử dụng duy nhất một biến tạm \texttt{temp} để hoán đổi giá trị. Chi phí bộ nhớ bổ sung là hằng số, không phụ thuộc vào $n$. \\ \hline
+        Tổng bộ nhớ (Total Space) & $O(n)$ & Mảng đầu vào \texttt{result} chiếm $O(n)$ bộ nhớ để lưu trữ $n$ phần tử kiểu \texttt{MyPair}, đây là không gian lưu trữ dữ liệu gốc. \\ \hline
+    \end{tabularx}
+    \caption{Phân tích độ phức tạp không gian của Bubble Sort}
+    \label{tab:space_bubble}
+\end{table}
+
+\subsection{Triển khai hàm tính toán Cosine Similarity tối ưu bằng kỹ thuật \texttt{smallerMap}}
+
+Trong một hệ thống gợi ý thực tế, ma trận tương tác User-Item hầu như luôn là một \textbf{ma trận thưa (Sparse Matrix)} - nghĩa là phần lớn các ô trong ma trận đều bằng 0, bởi một người dùng chỉ tương tác với một số rất ít sản phẩm trong tổng số hàng nghìn hoặc hàng triệu sản phẩm có sẵn. Ví dụ, với 10.000 người dùng và 5.000 sản phẩm, một người dùng trung bình chỉ tương tác với khoảng 20--50 sản phẩm, dẫn đến mật độ ma trận chỉ khoảng 0,1\%--0,5\%.
+
+Nếu tính toán Cosine Similarity theo cách tuần tự - duyệt qua toàn bộ các \texttt{user\_id} của cả hai vector mỗi lần tính - thì có tới hơn 99\% phép nhân là thừa thãi (nhân với 0). Kỹ thuật \texttt{smallerMap} được triển khai trong hàm \texttt{SimilarityMatrix::calculateCosine()} là một bước tối ưu hóa then chốt giải quyết triệt để vấn đề này:
+
+\begin{lstlisting}[caption={Kỹ thuật smallerMap trong SimilarityMatrix::calculateCosine() (File SimilarityMatrix.cpp)}, label={lst:smallermap}]
+// Meo toi uu: Chi duyet qua map co kich thuoc nho hon
+const MyMap<std::string, double>* smallerMap = &itemA_users;
+const MyMap<std::string, double>* largerMap  = &itemB_users;
+
+if (itemA_users.size() > itemB_users.size()) {
+    smallerMap = &itemB_users;
+    largerMap  = &itemA_users;
+}
+
+// Chi nhan diem cua nhung User da tuong tac voi CA HAI item
+MyVector<std::string> smallerKeys = smallerMap->keys();
+for (int i = 0; i < smallerKeys.size(); ++i) {
+    std::string user_id = smallerKeys[i];
+    double scoreA;
+    smallerMap->find(user_id, scoreA);
+
+    // Tim xem User nay co tuong tac voi item ben kia khong?
+    double scoreB;
+    if (largerMap->find(user_id, scoreB)) {
+        dotProduct += (scoreA * scoreB); // R_{u,i} * R_{u,j}
+    }
+}
+\end{lstlisting}
+
+\vspace{0.3cm}
+\textbf{Phân tích kỹ thuật cốt lõi:}
 \begin{itemize}
-    \item Kiểm tra file CSV tồn tại, định dạng hợp lệ.
-    \item Xử lý kết nối cơ sở dữ liệu thất bại.
-    \item Xử lý người dùng/sản phẩm không tồn tại.
-    \item Xử lý memory allocation failures.
-    \item Logging các lỗi và sự kiện quan trọng.
+    \item[\textbf{a)}] Phép tính tích vô hướng (tử số của Cosine) chỉ có ý nghĩa trên tập giao của hai vector (người dùng đã tương tác với cả hai sản phẩm). Phép so sánh kích thước giúp hệ thống luôn chọn ra \texttt{smallerMap} (vector chứa ít phần tử hơn) làm gốc để duyệt.
+    \item[\textbf{b)}] Thay vì duyệt qua toàn bộ không gian người dùng ($N_u$), vòng lặp \texttt{for} chỉ duyệt qua các \texttt{user\_id} thực sự có dữ liệu trong \texttt{smallerMap}. Với mỗi \texttt{user\_id} này, hệ thống tận dụng tốc độ $O(1)$ của Bảng băm để tra cứu xem nó có tồn tại trong \texttt{largerMap} hay không. Việc này mang lại lợi ích kép: loại bỏ 100\% các phép nhân vô ích với 0 và tránh việc phải duyệt mảng lớn.
+    \item[\textbf{c)}] \textbf{Tác động hiệu năng (Big O):} Gọi $N_u$ là tổng số người dùng, $d$ là mật độ tương tác trung bình (số user tương tác với 1 item).
 \end{itemize}
 
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabularx}{\textwidth}{|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|}
+        \hline
+        \textbf{Cách tiếp cận} & \textbf{Độ phức tạp 1 cặp item} \\ \hline
+        Ngây thơ (duyệt toàn bộ user) & $O(N_u)$ \\ \hline
+        Tối ưu \texttt{smallerMap} & $O(d)$ \\ \hline
+    \end{tabularx}
+    \caption{So sánh độ phức tạp tính toán Cosine Similarity}
+    \label{tab:cosine_optimization}
+\end{table}
+
+Bằng kỹ thuật này, độ phức tạp thuật toán được giảm từ phụ thuộc vào tổng quy mô hệ thống $O(N_u)$ xuống chỉ còn phụ thuộc vào mật độ tương tác $O(d)$ (vốn rất nhỏ và ổn định). Nhờ đó, thuật toán cắt giảm được hàng tỷ phép tính thừa, giúp hệ thống tính toán ma trận mượt mà trên bộ nhớ RAM mà không bị tràn tải CPU.
 
 % ============================================================
-\chapter{Kiểm thử và Đánh giá kết quả}
-\label{chap:kiemthu}
+\chapter{Thực nghiệm và đánh giá kết quả}
+\label{chap:thucnghiem}
 
-\section{Chiến lược kiểm thử}
+\section{Môi trường thực nghiệm}
 
-\subsection{Kiểm thử đơn vị (Unit Testing)}
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabularx}{\textwidth}{|l|>{\raggedright\arraybackslash}X|}
+        \hline
+        \textbf{Thành phần} & \textbf{Cấu hình} \\ \hline
+        Hệ điều hành & Windows 11 x64 \\ \hline
+        Trình biên dịch & MinGW-w64 g++ 13.1.0, C++17 \\ \hline
+        Kích thước dữ liệu & 10.000 users, 500 items, 100.000 interactions \\ \hline
+        Cơ sở dữ liệu & MySQL Server 8.0.46 \\ \hline
+        Frontend & ReactJS + Vite (Node.js 20) \\ \hline
+    \end{tabularx}
+    \caption{Môi trường thực nghiệm}
+    \label{tab:moi_truong}
+\end{table}
 
-Kiểm thử các hàm và lớp riêng lẻ:
+\section{Kết quả chạy demo console}
 
-\begin{itemize}
-    \item Kiểm thử các phương thức của lớp User, Item, Interaction.
-    \item Kiểm thử CSVLoader: Đọc file CSV hợp lệ, xử lý file không hợp lệ.
-    \item Kiểm thử DatabaseManager: Kết nối, tải dữ liệu, lưu dữ liệu.
-    \item Kiểm thử RatingMatrix: Xây dựng, truy vấn, cập nhật.
-    \item Kiểm thử SimilarityMatrix: Tính toán độ tương đồng chính xác.
-    \item Kiểm thử Recommender: Sinh gợi ý với các input khác nhau.
-\end{itemize}
+Sau khi build thành công và khởi chạy chương trình, hệ thống thực hiện tuần tự ba luồng demo trên console: xác thực người dùng (Auth), quản lý sản phẩm (Item), và quản lý giỏ hàng/đơn hàng (Cart \& Order). Đồng thời, API server khởi động tại \texttt{localhost:8080} chạy song song trên luồng riêng.
 
-\subsection{Kiểm thử tích hợp (Integration Testing)}
+\noindent\textit{[Chèn ảnh chụp màn hình kết quả console sau khi build và chạy chương trình.]}
 
-Kiểm thử tương tác giữa các module:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=12cm]{5.1.png}
+    \caption{Kết quả chạy demo console - luồng Auth, Item và Cart/Order}
+    \label{fig:console_demo}
+\end{figure}
 
-\begin{itemize}
-    \item Kiểm thử luồng tải dữ liệu từ CSV qua UserManager/ItemManager/InteractionManager.
-    \item Kiểm thử luồng xây dựng Recommender từ dữ liệu đã tải.
-    \item Kiểm thử luồng sinh gợi ý end-to-end.
-    \item Kiểm thử xử lý lỗi giữa các module.
-\end{itemize}
+\section{Kết quả gợi ý sản phẩm}
 
-\subsection{Kiểm thử hiệu năng (Performance Testing)}
+Giao diện ReactJS gọi API \texttt{GET /recommend/<user\_id>} và hiển thị danh sách Top-20 sản phẩm được gợi ý. Với người dùng đã có lịch sử tương tác, kết quả phản ánh đúng các sản phẩm tương đồng với những gì họ đã tương tác. Với người dùng mới, hệ thống hiển thị danh sách sản phẩm thịnh hành (Cold Start).
 
-Đánh giá hiệu suất của hệ thống:
+\noindent\textit{[Chèn ảnh giao diện ReactJS hiển thị kết quả gợi ý từ API /recommend/<user\_id>.]}
 
-\begin{itemize}
-    \item Kiểm thử với các kích thước dữ liệu khác nhau (1K, 10K, 100K users/items).
-    \item Đo lường thời gian xây dựng RatingMatrix.
-    \item Đo lường thời gian tính toán SimilarityMatrix.
-    \item Đo lường thời gian sinh gợi ý trung bình.
-    \item Kiểm thử memory usage.
-\end{itemize}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=12cm]{5.2.png}
+    \caption{Giao diện ReactJS hiển thị danh sách gợi ý sản phẩm cá nhân hóa}
+    \label{fig:react_recommend}
+\end{figure}
 
-\subsection{Kiểm thử chức năng (Functional Testing)}
+\section{Kiểm thử các chức năng theo luồng nghiệp vụ}
 
-Kiểm thử các chức năng chính:
+Hệ thống được kiểm thử theo luồng nghiệp vụ từ đầu đến cuối (end-to-end), bao gồm 37 trường hợp kiểm thử (TC01--TC37) phân theo 10 nhóm chức năng.
 
-\begin{itemize}
-    \item Thêm người dùng mới và xác minh dữ liệu được lưu.
-    \item Thêm sản phẩm mới và xác minh dữ liệu được lưu.
-    \item Ghi nhận tương tác và xác minh được lưu đúng cách.
-    \item Sinh gợi ý và xác minh kết quả hợp lý.
-\end{itemize}
+\subsection{Nhóm 1: Nạp và xử lý dữ liệu (TC01--TC03)}
 
-\section{Trường hợp kiểm thử}
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabularx}{\textwidth}{|c|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|c|}
+        \hline
+        \textbf{TC ID} & \textbf{Tên kiểm thử} & \textbf{Đầu vào} & \textbf{Kết quả mong đợi} & \textbf{Trạng thái} \\ \hline
+        TC01 & Nạp file users.csv & File 9990 dòng (1 header + 9991 data) & \texttt{users.size() == 10000}; không lỗi parse & Pass \\ \hline
+        TC02 & Nạp file items.csv & File 501 dòng (1 header + 500 data) & \texttt{items.size() == 500}; trường price parse đúng kiểu double & Pass  \\ \hline
+        TC03 & Nạp file interactions.csv & File 100.001 dòng; rating có thể NULL & \texttt{interactions.size() == 100000}; NULL rating được parse thành 0.0 & Pass  \\ \hline
+    \end{tabularx}
+    \caption{Kiểm thử Nhóm 1: Nạp và xử lý dữ liệu}
+    \label{tab:tc_01_03}
+\end{table}
 
-\subsection{TC1: Tải dữ liệu từ CSV}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=12cm]{5.3.png}
+    \caption{Kết quả kiểm thử TC01--TC03: Nạp dữ liệu từ CSV}
+    \label{fig:tc_01_03}
+\end{figure}
 
-\textbf{Tiền điều kiện}: File CSV hợp lệ tồn tại.
+\subsection{Nhóm 2: Tính điểm tương tác -\texttt{computeScore()} (TC04--TC06)}
 
-\textbf{Bước}: 
-\begin{enumerate}
-    \item Gọi CSVLoader::loadUsers() với file users.csv.
-    \item Kiểm thử số lượng users được tải.
-    \item Kiểm thử dữ liệu của một user cụ thể.
-\end{enumerate}
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabularx}{\textwidth}{|c|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|c|}
+        \hline
+        \textbf{TC ID} & \textbf{Tên kiểm thử} & \textbf{Đầu vào} & \textbf{Kết quả mong đợi} & \textbf{Trạng thái} \\ \hline
+        TC04 & Tính điểm hành vi đầy đủ & click=3, add\_cart=1, purchase=1, rating=5.0 & $3\times1 + 1\times2 + 1\times5 + 5\times3 = 25.0$ & Pass\\ \hline
+        TC05 & Tính điểm chỉ click & click=5, add\_cart=0, purchase=0, rating=0.0 & $5\times1 = 5.0$ & Pass \\ \hline
+        TC06 & Tính điểm tất cả bằng 0 & click=0, add\_cart=0, purchase=0, rating=0.0 & $0.0$ - đây là Interaction không hợp lệ, không nên tồn tại trong CSV & Pass \\ \hline
+    \end{tabularx}
+    \caption{Kiểm thử Nhóm 2: Hàm tính điểm \texttt{computeScore()}}
+    \label{tab:tc_04_06}
+\end{table}
 
-\textbf{Kết quả mong đợi}: Tất cả users được tải đúng, không có dữ liệu mất.
+\subsection{Nhóm 3: Xây dựng Rating Matrix (TC07--TC09)}
 
-\subsection{TC2: Tính độ tương đồng giữa 2 sản phẩm}
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabularx}{\textwidth}{|c|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|c|}
+        \hline
+        \textbf{TC ID} & \textbf{Tên kiểm thử} & \textbf{Đầu vào} & \textbf{Kết quả mong đợi} & \textbf{Trạng thái} \\ \hline
+        TC07 & Xây dựng ma trận & 100.000 interactions & \texttt{matrix[uid][iid] > 0} cho mọi cặp đã tương tác & Pass\\ \hline
+        TC08 & Truy vấn điểm tồn tại & uid=``U00001'', iid có trong tương tác & Trả về giá trị $> 0$ & Pass \\ \hline
+        TC09 & Truy vấn điểm không tồn tại & uid=``U00001'', iid không có trong tương tác & Trả về $0.0$; không gây exception & Pass \\ \hline
+    \end{tabularx}
+    \caption{Kiểm thử Nhóm 3: Xây dựng Rating Matrix}
+    \label{tab:tc_07_09}
+\end{table}
 
-\textbf{Tiền điều kiện}: RatingMatrix đã được xây dựng.
+\subsection{Nhóm 4: Tính Similarity Matrix (TC10--TC12)}
 
-\textbf{Bước}:
-\begin{enumerate}
-    \item Chọn 2 sản phẩm có người dùng chung.
-    \item Gọi SimilarityMatrix::getSimilarity(item1, item2).
-    \item Kiểm thử giá trị similarity trong khoảng [0, 1].
-\end{enumerate}
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabularx}{\textwidth}{|c|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|c|}
+        \hline
+        \textbf{TC ID} & \textbf{Tên kiểm thử} & \textbf{Đầu vào} & \textbf{Kết quả mong đợi} & \textbf{Trạng thái} \\ \hline
+        TC10 & Xây dựng Similarity Matrix & RatingMatrix đã xây dựng & \texttt{simMatrix} có dữ liệu; tính đối xứng: \texttt{sim(A,B) == sim(B,A)} & Pass\\ \hline
+        TC11 & Giá trị Cosine hợp lệ & Hai item có user chung & Giá trị $\in [0.0, 1.0]$ & Pass \\ \hline
+        TC12 & Cosine hai item không có user chung & Hai item tách biệt hoàn toàn & Trả về $0.0$; không lưu vào simMatrix & Pass\\ \hline
+    \end{tabularx}
+    \caption{Kiểm thử Nhóm 4: Tính Similarity Matrix}
+    \label{tab:tc_10_12}
+\end{table}
 
-\textbf{Kết quả mong đợi}: Giá trị similarity hợp lý, tuân theo công thức Cosine Similarity.
+\subsection{Nhóm 5: Engine gợi ý cá nhân hóa - \texttt{forUser()} (TC13--TC16)}
 
-\subsection{TC3: Sinh danh sách gợi ý cho người dùng}
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabularx}{\textwidth}{|c|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|c|}
+        \hline
+        \textbf{TC ID} & \textbf{Tên kiểm thử} & \textbf{Đầu vào} & \textbf{Kết quả mong đợi} & \textbf{Trạng thái} \\ \hline
+        TC13 & Gợi ý cho user hợp lệ & uid=``U00001'', topN=10 & Danh sách $\leq 10$ item; không có item user đã tương tác & Pass\\ \hline
+        TC14 & Kết quả sắp xếp giảm dần & uid hợp lệ, topN=5 & score[0] $\geq$ score[1] $\geq \ldots \geq$ score[4] & Pass \\ \hline
+        TC15 & Không trùng item đã tương tác & uid=``U00001'' & Không có item nào trong seen set xuất hiện trong kết quả & Pass \\ \hline
+        TC16 & Gợi ý khi user tương tác ít & uid chỉ có 1 interaction & Vẫn trả về kết quả hợp lệ, có thể ít hơn topN & Pass \\ \hline
+    \end{tabularx}
+    \caption{Kiểm thử Nhóm 5: Engine gợi ý cá nhân hóa}
+    \label{tab:tc_13_161}
+\end{table}
 
-\textbf{Tiền điều kiện}: Người dùng có lịch sử tương tác ít nhất 1 sản phẩm.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=12cm]{5.4.1.png}
+    \caption{Kết quả kiểm thử TC13--TC16: Gợi ý sản phẩm cá nhân hóa}
+    \label{fig:tc_13_162}
+\end{figure}
 
-\textbf{Bước}:
-\begin{enumerate}
-    \item Chọn user\_id cụ thể.
-    \item Gọi Recommender::getRecommendations(user\_id, k=5).
-    \item Kiểm thử danh sách có k sản phẩm.
-    \item Kiểm thử các sản phẩm chưa được user đánh giá.
-    \item Kiểm thử sắp xếp giảm dần theo điểm.
-\end{enumerate}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=12cm]{5.4.2.png}
+    \caption{Kết quả kiểm thử TC13--TC16: Gợi ý sản phẩm cá nhân hóa}
+    \label{fig:tc_13_163}
+\end{figure}
 
-\textbf{Kết quả mong đợi}: Danh sách gợi ý hợp lý, có k sản phẩm, không chứa các sản phẩm đã đánh giá.
+\subsection{Nhóm 6: Gợi ý Cold Start (TC17--TC18)}
 
-\subsection{TC4: Xử lý người dùng không tồn tại}
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabularx}{\textwidth}{|c|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|c|}
+        \hline
+        \textbf{TC ID} & \textbf{Tên kiểm thử} & \textbf{Đầu vào} & \textbf{Kết quả mong đợi} & \textbf{Trạng thái} \\ \hline
+        TC17 & User mới - Cold Start & uid=``U99999'' (không tồn tại trong matrix) & Log ``la nguoi dung moi''; kết quả là Top-N sản phẩm phổ biến nhất, không rỗng & Pass\\ \hline
+        TC18 & Cold Start sắp xếp đúng & uid mới, topN=5 & itemTotalScore giảm dần; item[0] có tổng điểm cao nhất toàn hệ thống & Pass \\ \hline
+    \end{tabularx}
+    \caption{Kiểm thử Nhóm 6: Gợi ý Cold Start}
+    \label{tab:tc_17_18}
+\end{table}
 
-\textbf{Tiền điều kiện}: Hệ thống đã khởi tạo.
+\subsection{Nhóm 7: Xác thực người dùng - Auth (TC19--TC23)}
 
-\textbf{Bước}:
-\begin{enumerate}
-    \item Gọi UserManager::getUser() với user\_id không tồn tại.
-    \item Kiểm thử exception được throw hoặc error được trả về.
-\end{enumerate}
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabularx}{\textwidth}{|c|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|c|}
+        \hline
+        \textbf{TC ID} & \textbf{Tên kiểm thử} & \textbf{Đầu vào} & \textbf{Kết quả mong đợi} & \textbf{Trạng thái} \\ \hline
+        TC19 & Đăng ký thành công & name=``Test'', email=``test@mail.com'', pwd=``123456'' & status=``success''; trả về \texttt{user\_id} mới; ghi vào users.csv & Pass \\ \hline
+        TC20 & Đăng ký email trùng & email đã tồn tại trong hệ thống & status=``error''; message=``Email da duoc dang ky!'' & Pass \\ \hline
+        TC21 & Đăng nhập đúng thông tin & email và password khớp & status=``success''; trả về token và user\_id & Pass \\ \hline
+        TC22 & Đăng nhập sai mật khẩu & email đúng, password sai & status=``error''; message=``Sai mat khau!'' & Pass \\ \hline
+        TC23 & Đăng xuất & user\_id hợp lệ đang đăng nhập & Session bị xóa; logged\_in\_user\_id = ``'' & Pass \\ \hline
+    \end{tabularx}
+    \caption{Kiểm thử Nhóm 7: Xác thực người dùng}
+    \label{tab:tc_19_23}
+\end{table}
 
-\textbf{Kết quả mong đợi}: Xử lý lỗi đúng cách, không crash chương trình.
 
-\section{Kết quả thực nghiệm}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=12cm]{5.6.1.png}
+    \caption{Kết quả kiểm thử TC19--TC23: Luồng xác thực người dùng}
+    \label{fig:tc_auth1}
+\end{figure}
 
-\subsection{Thử nghiệm với dataset nhỏ}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=12cm]{5.6.2.png}
+    \caption{Kết quả kiểm thử TC19--TC23: Luồng xác thực người dùng}
+    \label{fig:tc_auth2}
+\end{figure}
 
-Dữ liệu: 100 users, 50 items, 500 interactions.
+\subsection{Nhóm 8: Quản lý sản phẩm (TC24--TC27)}
 
-\begin{itemize}
-    \item Thời gian tải dữ liệu: $<$100ms.
-    \item Thời gian xây dựng RatingMatrix: $<$50ms.
-    \item Thời gian tính SimilarityMatrix: $<$200ms.
-    \item Thời gian sinh gợi ý: $<$10ms.
-\end{itemize}
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabularx}{\textwidth}{|c|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|c|}
+        \hline
+        \textbf{TC ID} & \textbf{Tên kiểm thử} & \textbf{Đầu vào} & \textbf{Kết quả mong đợi} & \textbf{Trạng thái} \\ \hline
+        TC24 & Tìm kiếm sản phẩm đúng từ khóa & keyword=``sach'' & Trả về danh sách item có tên chứa ``sach'' (case-insensitive) & Pass\\ \hline
+        TC25 & Tìm kiếm từ khóa không tồn tại & keyword=``xyznotexist'' & Trả về danh sách rỗng, không lỗi & Pass \\ \hline
+        TC26 & Lọc theo danh mục và sắp xếp giá & category=``Books'', sortBy=``price\_asc'' & Chỉ trả về sản phẩm category=Books; sắp xếp giá tăng dần & Pass\\ \hline
+        TC27 & Xem chi tiết sản phẩm tồn tại & item\_id=``I001'' & Trả về đúng thông tin Item I001 (Laptop Dell XPS 15) & Pass \\ \hline
+    \end{tabularx}
+    \caption{Kiểm thử Nhóm 8: Quản lý sản phẩm}
+    \label{tab:tc_24_271}
+\end{table}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=12cm]{5.8.1.png}
+    \caption{Kết quả kiểm thử TC24--TC27: Quản lý sản phẩm}
+    \label{fig:tc_24_272}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=12cm]{5.8.2.png}
+    \caption{Kết quả kiểm thử TC24--TC27: Quản lý sản phẩm}
+    \label{fig:tc_24_273}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=12cm]{5.8.3.png}
+    \caption{Kết quả kiểm thử TC24--TC27: Quản lý sản phẩm}
+    \label{fig:tc_24_27}
+\end{figure}
+\subsection{Nhóm 9: Quản lý giỏ hàng (TC28--TC31)}
 
-\subsection{Thử nghiệm với dataset trung bình}
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabularx}{\textwidth}{|c|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|c|}
+        \hline
+        \textbf{TC ID} & \textbf{Tên kiểm thử} & \textbf{Đầu vào} & \textbf{Kết quả mong đợi} & \textbf{Trạng thái} \\ \hline
+        TC28 & Thêm sản phẩm mới vào giỏ & uid=``U001'', iid=``I001'', qty=1 & CartItem được tạo; subtotal=price*qty & Pass\\ \hline
+        TC29 & Thêm sản phẩm đã có trong giỏ & uid=``U001'', iid=``I001'', qty=2 (đã có qty=1) & quantity cộng dồn thành 3; subtotal cập nhật tương ứng & Pass\\ \hline
+        TC30 & Cập nhật số lượng & uid=``U001'', iid=``I001'', newQty=0 & Item bị xóa khỏi giỏ; tổng giỏ hàng giảm tương ứng & Pass\\ \hline
+        TC31 & Xóa sản phẩm khỏi giỏ & uid=``U001'', iid=``I013'' & Item ``I013'' bị loại; giỏ hàng chỉ còn các item còn lại & Pass\\ \hline
+    \end{tabularx}
+    \caption{Kiểm thử Nhóm 9: Quản lý giỏ hàng}
+    \label{tab:tc_28_31}
+\end{table}
 
-Dữ liệu: 10,000 users, 5,000 items, 100,000 interactions.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=12cm]{5.11.png}
+    \caption{Kết quả kiểm thử TC28--TC31: Quản lý giỏ hàng}
+    \label{fig:tc_cart}
+\end{figure}
 
-\begin{itemize}
-    \item Thời gian tải dữ liệu: $\sim$500ms.
-    \item Thời gian xây dựng RatingMatrix: $\sim$300ms.
-    \item Thời gian tính SimilarityMatrix: $\sim$5s.
-    \item Thời gian sinh gợi ý: $\sim$50ms.
-\end{itemize}
+\subsection{Nhóm 10: Đặt hàng và gợi ý chéo (TC32--TC37)}
 
-\subsection{Đánh giá chất lượng gợi ý}
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabularx}{\textwidth}{|c|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|c|}
+        \hline
+        \textbf{TC ID} & \textbf{Tên kiểm thử} & \textbf{Đầu vào} & \textbf{Kết quả mong đợi} & \textbf{Trạng thái} \\ \hline
+        TC32 & Tạo đơn hàng từ giỏ hợp lệ & uid=``U001''; giỏ có 3 sản phẩm & status=``success''; trả về order\_id; giỏ hàng bị xóa & Pass\\ \hline
+        TC33 & Tạo đơn từ giỏ rỗng & uid=``U001''; giỏ rỗng & status=``error''; message=``Gio hang trong!'' & Pass \\ \hline
+        TC34 & Xem chi tiết đơn hàng & order\_id hợp lệ vừa tạo & Trả về đủ thông tin: order\_id, user\_id, items, total, status=``Pending'' & Pass \\ \hline
+        TC35 & Gợi ý chéo sau mua & order\_id chứa sản phẩm category=``Books'' & Trả về $\leq 5$ sản phẩm cùng category Books nhưng không trùng với items trong đơn & Pass \\ \hline
+        TC36 & API /recommend/<uid> trả về JSON đúng & GET /recommend/U00001 & HTTP 200; JSON có field \texttt{recommendations} là array các item\_id & Pass \\ \hline
+        TC37 & API /cart/get phản hồi đúng trạng thái giỏ & POST /cart/get với \{user\_id: ``U001''\} & HTTP 200; JSON có \texttt{items} và \texttt{total} khớp với state giỏ hàng hiện tại & Pass \\ \hline
+    \end{tabularx}
+    \caption{Kiểm thử Nhóm 10: Đặt hàng, gợi ý chéo và API}
+    \label{tab:tc_32_37}
+\end{table}
 
-Gợi ý được đánh giá dựa trên:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=12cm]{5.12.png}
+    \caption{Kết quả kiểm thử TC32--TC37: Đặt hàng, gợi ý chéo và kiểm thử API}
+    \label{fig:tc_order}
+\end{figure}
 
-\begin{itemize}
-    \item \textbf{Precision}: Tỷ lệ gợi ý chính xác / tổng gợi ý.
-    \item \textbf{Recall}: Tỷ lệ sản phẩm phù hợp được tìm thấy / tổng sản phẩm phù hợp.
-    \item \textbf{RMSE}: Root Mean Square Error so sánh với rating thực tế.
-\end{itemize}
+\section{Tổng hợp kết quả kiểm thử}
 
-\section{Nhận xét và rút ra}
-
-\begin{itemize}
-    \item Hệ thống đáp ứng được yêu cầu về hiệu năng.
-    \item Chất lượng gợi ý tốt với Item-Based Collaborative Filtering.
-    \item Có thể mở rộng để sử dụng các thuật toán nâng cao hơn.
-    \item Cần tối ưu hóa thêm khi xử lý dữ liệu rất lớn (millions of records).
-\end{itemize}
-
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash}X|c|c|c|}
+        \hline
+        \textbf{Nhóm kiểm thử} & \textbf{Số TC} & \textbf{PASS} & \textbf{FAIL} \\ \hline
+        Nhóm 1: Nạp dữ liệu & 3 & x & \\ \hline
+        Nhóm 2: Tính điểm \texttt{computeScore()} & 3 & x & \\ \hline
+        Nhóm 3: Rating Matrix & 3 & x  & \\ \hline
+        Nhóm 4: Similarity Matrix & 3 & x  & \\ \hline
+        Nhóm 5: Gợi ý cá nhân hóa & 4 & x  & \\ \hline
+        Nhóm 6: Cold Start & 2 & x  & \\ \hline
+        Nhóm 7: Xác thực (Auth) & 5 & x  & \\ \hline
+        Nhóm 8: Quản lý sản phẩm & 4 & x  & \\ \hline
+        Nhóm 9: Giỏ hàng & 4 & x  & \\ \hline
+        Nhóm 10: Đặt hàng và API & 6 & x  & \\ \hline
+        \textbf{Tổng cộng} & \textbf{37} &  & \\ \hline
+    \end{tabularx}
+    \caption{Bảng tổng hợp kết quả kiểm thử 37 test case}
+    \label{tab:tong_hop_kt}
+\end{table}
 
 % ============================================================
-\chapter{Kết luận và hướng phát triển}
-\label{ketluan}
+\chapter{Kết luận và Hướng phát triển}
+\label{chap:ketluan}
 
-\section{Kết luận}
+\section{Kết quả đạt được}
 
-\subsection{Những đạt được}
-
-Đề tài đã thành công trong việc:
-
-\begin{enumerate}
-    \item \textbf{Xây dựng mô hình dữ liệu}: Thiết kế và cài đặt các lớp User, Item, Interaction để biểu diễn bài toán Recommendation System.
-    
-    \item \textbf{Triển khai cấu trúc dữ liệu hiệu quả}: Sử dụng Sparse Matrix, Hash Map, Priority Queue để đạt hiệu năng tốt và tiết kiệm bộ nhớ.
-    
-    \item \textbf{Cài đặt thuật toán Collaborative Filtering}: Triển khai Item-Based Collaborative Filtering với công thức Cosine Similarity để tính toán độ tương đồng giữa các sản phẩm.
-    
-    \item \textbf{Tích hợp cơ sở dữ liệu}: Kết nối và đồng bộ dữ liệu với MySQL, hỗ trợ tải từ CSV.
-    
-    \item \textbf{Xây dựng các dịch vụ quản lý}: UserManager, ItemManager, InteractionManager, Recommender để quản lý toàn bộ luồng xử lý.
-    
-    \item \textbf{Kiểm thử toàn diện}: Tiến hành kiểm thử đơn vị, tích hợp, hiệu năng và chức năng, xác nhận chất lượng của hệ thống.
-\end{enumerate}
-
-\subsection{Ứng dụng thực tiễn}
-
-Hệ thống có thể được ứng dụng trực tiếp cho:
+Sau quá trình triển khai, nhóm đã hoàn thành các mục tiêu đề ra ở Chương 1, cụ thể:
 
 \begin{itemize}
-    \item \textbf{Thương mại điện tử}: Tích hợp vào các nền tảng như Shopee, Lazada để gợi ý sản phẩm cho người dùng.
-    \item \textbf{Nền tảng nội dung}: Netflix, YouTube sử dụng các nguyên lý tương tự để gợi ý phim, video.
-    \item \textbf{Mạng xã hội}: Facebook, Instagram sử dụng gợi ý kết bạn, kết nối.
+    \item Xây dựng thành công một hệ thống có kiến trúc bốn tầng rõ ràng, kết nối liền mạch giữa giao diện Frontend (ReactJS + Vite) và lõi xử lý thuật toán C++ thông qua REST API (Crow + ASIO), với cơ chế CORS middleware xử lý đầy đủ cả request OPTIONS lẫn các phương thức GET/POST.
+    \item Làm chủ hoàn toàn các cấu trúc dữ liệu nền tảng bằng cách tự cài đặt \texttt{MyVector}, \texttt{MyMap}, \texttt{MyPair} thông qua con trỏ và quản lý bộ nhớ thủ công (\texttt{new[]}/\texttt{delete[]}), tuân thủ đầy đủ ``Ba quy tắc lớn'' (Destructor, Copy Constructor, Copy Assignment Operator) để tránh rò rỉ bộ nhớ - không phụ thuộc vào bất kỳ container nào của STL.
+    \item Cài đặt thành công thuật toán Item-based Collaborative Filtering kết hợp Cosine Similarity, có tối ưu hoá bằng kỹ thuật \texttt{smallerMap} giúp giảm độ phức tạp tính tương đồng từ $O(N_u)$ xuống $O(d)$ với $d$ là mật độ tương tác trung bình - một cải tiến có ý nghĩa thực tiễn rõ rệt trên ma trận thưa.
+    \item Giải quyết bài toán Cold Start cho người dùng mới bằng chiến lược fallback phi cá nhân hoá (Popularity-based), đảm bảo hệ thống không bao giờ trả về danh sách gợi ý rỗng.
+    \item Xây dựng đầy đủ các dịch vụ nghiệp vụ (\texttt{UserManager}, \texttt{ItemManager}, \texttt{InteractionManager}) phục vụ toàn bộ vòng đời tương tác: đăng ký/đăng nhập, tìm kiếm/lọc sản phẩm, giỏ hàng, đặt hàng và gợi ý chéo (cross-sell) sau khi mua.
+    \item Tiến hành kiểm thử có hệ thống qua 37 trường hợp kiểm thử (TC01--TC37, Chương 5), bao trùm từ việc nạp dữ liệu, tính điểm tương tác, gợi ý cá nhân hoá, Cold Start, đến các API nghiệp vụ.
 \end{itemize}
 
-\subsection{Đóng góp học thuật}
+\section{Tổng kết các kỹ thuật lập trình đã vận dụng}
 
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash}p{4.5cm}|>{\raggedright\arraybackslash}X|}
+        \hline
+        \textbf{Nhóm kỹ thuật} & \textbf{Nội dung cụ thể} \\ \hline
+        \textbf{Quản lý bộ nhớ động} & \texttt{new[]}/\texttt{delete[]}, chiến lược nhân đôi sức chứa (doubling strategy) trong \texttt{MyVector::reserveMore()}, Deep Copy trong Copy Constructor/Copy Assignment của \texttt{MyVector} và \texttt{MyMap}. \\ \hline
+        \textbf{Lập trình hướng đối tượng} & Đóng gói (Encapsulation) qua getter/setter trong \texttt{User}/\texttt{Item}/\texttt{Interaction}; tách lớp theo nguyên lý Single Responsibility; phân tầng Model--Service (\texttt{1\_models} $\leftrightarrow$ \texttt{6\_services}). \\ \hline
+        \textbf{Cấu trúc dữ liệu tự cài đặt} & Bảng băm với Separate Chaining (\texttt{MyMap}), mảng động khấu hao $O(1)$ (\texttt{MyVector}), cặp khóa-giá trị template (\texttt{MyPair}). \\ \hline
+        \textbf{Giải thuật} & Bubble Sort $O(n^2)$ để xếp hạng Top-N gợi ý; tối ưu Cosine Similarity bằng kỹ thuật duyệt tập nhỏ hơn (\texttt{smallerMap}). \\ \hline
+        \textbf{Lập trình hệ thống \& mạng} & HTTP server bất đồng bộ với Crow/ASIO, đa luồng (\texttt{std::thread} cho server song song với demo console), xử lý JSON (\texttt{crow::json::wvalue}), CORS middleware. \\ \hline
+        \textbf{Xử lý chuỗi \& I/O} & Tokenization CSV bằng \texttt{std::stringstream}, \texttt{trim()} loại bỏ khoảng trắng/CRLF, \texttt{escapeField()} theo chuẩn CSV khi ghi tệp. \\ \hline
+        \textbf{Tích hợp hệ thống ngoài} & Kết nối MySQL qua MySQL Connector/C (\texttt{mysql\_real\_connect}, \texttt{mysql\_real\_escape\_string} chống SQL Injection). \\ \hline
+    \end{tabularx}
+    \caption{Tổng kết các kỹ thuật lập trình đã vận dụng}
+    \label{tab:ky_thuat_lap_trinh}
+\end{table}
+
+\section{Hạn chế của hệ thống}
+
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash}p{4.5cm}|>{\raggedright\arraybackslash}X|}
+        \hline
+        \textbf{Hạn chế} & \textbf{Mô tả} \\ \hline
+        \textbf{Lưu trữ bằng CSV} & Hiệu năng ghi giảm khi tập dữ liệu phình to lên hàng triệu dòng; không hỗ trợ giao dịch (transaction) hay truy cập đồng thời an toàn (concurrent write) như một RDBMS thực thụ. \\ \hline
+        \textbf{Sparsity (loãng dữ liệu)} & Thuật toán Item-based CF có thể cho kết quả kém chính xác khi ma trận tương tác quá thưa (nhiều người dùng/sản phẩm có rất ít tương tác). \\ \hline
+        \textbf{Độ phức tạp $O(n^2)$ của \texttt{SimilarityMatrix::build()}} & Dù đã tối ưu phần tính Cosine bằng \texttt{smallerMap}, việc duyệt mọi cặp sản phẩm vẫn có chi phí toàn cục bậc hai theo số lượng sản phẩm, gây khó khăn khi mở rộng lên hàng trăm nghìn sản phẩm. \\ \hline
+        \textbf{Bubble Sort $O(n^2)$} & Việc xếp hạng kết quả gợi ý dùng Bubble Sort thay vì các thuật toán $O(n \log n)$ (Quick Sort, Merge Sort), phù hợp với quy mô Top-N nhỏ hiện tại nhưng sẽ là điểm nghẽn nếu danh sách ứng viên lớn hơn đáng kể. \\ \hline
+        \textbf{Bảo mật mật khẩu} & Mật khẩu người dùng hiện được lưu dạng plaintext (\texttt{User::password}) chưa qua băm (hashing) như bcrypt/Argon2, chưa phù hợp triển khai thực tế. \\ \hline
+        \textbf{Cold Start sản phẩm mới} & Hệ thống mới xử lý Cold Start cho người dùng mới; sản phẩm mới chưa có tương tác vẫn chưa có cơ chế gợi ý chuyên biệt. \\ \hline
+        \textbf{Không xử lý ngữ cảnh} & Hệ thống chưa tính đến các yếu tố thời gian, vị trí địa lý hay thiết bị truy cập khi sinh gợi ý. \\ \hline
+    \end{tabularx}
+    \caption{Các hạn chế hiện tại của hệ thống}
+    \label{tab:han_che_he_thong}
+\end{table}
+
+\section{Hướng phát triển và nâng cấp tương lai}
+
+\textbf{Ngắn hạn}
 \begin{itemize}
-    \item Minh họa ứng dụng các cấu trúc dữ liệu cơ bản (Hash Map, Sparse Matrix, Heap) vào bài toán thực tế.
-    \item Cải thiện hiểu biết về thuật toán Collaborative Filtering và các phương pháp tính toán độ tương đồng.
-    \item Giáo dục về quy trình phát triển phần mềm từ phân tích yêu cầu đến kiểm thử.
+    \item Băm mật khẩu (bcrypt/Argon2) thay cho lưu plaintext; bổ sung JWT cho cơ chế xác thực token thay vì token sinh thủ công bằng \texttt{time()} + số ngẫu nhiên.
+    \item Thay Bubble Sort bằng Quick Sort/\texttt{std::sort}-tương đương tự cài đặt khi danh sách ứng viên gợi ý mở rộng.
+    \item Cache kết quả \texttt{SimilarityMatrix} ra tệp nhị phân, định kỳ tính lại theo lịch (batch job) thay vì tính lại toàn bộ mỗi lần khởi động server.
 \end{itemize}
 
-\section{Hạn chế}
-
-\begin{enumerate}
-    \item \textbf{Cold Start Problem}: Khi người dùng hoặc sản phẩm mới được thêm vào hệ thống, không có đủ dữ liệu để sinh gợi ý chính xác.
-    
-    \item \textbf{Sparsity}: Ma trận tương tác thường rất thưa, đặc biệt trong các hệ thống e-commerce lớn, gây ảnh hưởng đến độ chính xác.
-    
-    \item \textbf{Độ phức tạp tính toán}: Tính toán SimilarityMatrix có độ phức tạp O(n²), trở nên khó khăn với số lượng sản phẩm rất lớn.
-    
-    \item \textbf{Không xử lý thông tin ngữ cảnh}: Hệ thống không tính đến các yếu tố như thời gian, vị trí địa lý, xu hướng hiện tại.
-    
-    \item \textbf{Khó phát hiện sản phẩm mới}: Vì Collaborative Filtering dựa trên dữ liệu quá khứ, nên sản phẩm mới khó được gợi ý trừ khi có người dùng đánh giá.
-\end{enumerate}
-
-\section{Hướng phát triển}
-
-\subsection{Ngắn hạn}
-
-\begin{enumerate}
-    \item \textbf{Hybrid Recommendation}: Kết hợp Collaborative Filtering với Content-Based Filtering để cải thiện chất lượng.
-    
-    \item \textbf{Xử lý Cold Start}: Sử dụng demographic data, content features hoặc popularity-based approach cho người dùng/sản phẩm mới.
-    
-    \item \textbf{Caching và Optimization}: Lưu cache các SimilarityMatrix, định kỳ cập nhật để cải thiện hiệu năng.
-    
-    \item \textbf{REST API Extension}: Phát triển REST API hoàn chỉnh hỗ trợ CRUD operations trên tất cả thực thể.
-\end{enumerate}
-
-\subsection{Trung hạn}
-
-\begin{enumerate}
-    \item \textbf{Machine Learning Integration}: Áp dụng Deep Learning (Neural Collaborative Filtering) để tăng độ chính xác.
-    
-    \item \textbf{Distributed Computing}: Sử dụng MapReduce hoặc Spark để xử lý dữ liệu phân tán trên nhiều server.
-    
-    \item \textbf{Real-time Updates}: Cập nhật gợi ý theo thời gian thực khi có tương tác mới.
-    
-    \item \textbf{Context-Aware Recommendation}: Tính đến thời gian, vị trí địa lý, thiết bị được sử dụng.
-\end{enumerate}
-
-\subsection{Dài hạn}
-
-\begin{enumerate}
-    \item \textbf{Explainable AI}: Giải thích tại sao một sản phẩm được gợi ý.
-    
-    \item \textbf{Multi-Stakeholder Recommendation}: Xét đến lợi ích của cả người dùng và doanh nghiệp.
-    
-    \item \textbf{Fairness và Diversity}: Đảm bảo gợi ý công bằng và đa dạng, tránh bọc lọc thông tin (filter bubble).
-    
-    \item \textbf{Cross-Domain Recommendation}: Gợi ý trên nhiều domain khác nhau (ví dụ: sách + âm nhạc + phim).
-\end{enumerate}
-
-\section{Khuyến nghị}
-
+\vspace{0.3cm}
+\textbf{Trung hạn}
 \begin{itemize}
-    \item Tiếp tục nghiên cứu các thuật toán Recommendation nâng cao.
-    \item Thu thập phản hồi người dùng để đánh giá chất lượng gợi ý thực tế.
-    \item Phát triển giao diện đồ họa (GUI) để người dùng tương tác dễ dàng hơn.
-    \item Xây dựng dashboard cho quản trị viên theo dõi hiệu suất hệ thống.
+    \item Chuyển nguồn dữ liệu chính từ CSV sang MySQL/PostgreSQL ở quy mô sản xuất, tận dụng \texttt{DatabaseManager} đã có sẵn, bổ sung transaction và index.
+    \item Bổ sung Content-Based Filtering (dựa trên category, mô tả sản phẩm) kết hợp với Item-based CF hiện tại theo mô hình Hybrid Recommendation, đồng thời xử lý Cold Start cho sản phẩm mới.
+    \item Cập nhật gợi ý theo thời gian thực (incremental update) khi có tương tác mới, thay vì chỉ xây dựng \texttt{SimilarityMatrix} một lần lúc khởi động.
 \end{itemize}
 
+\vspace{0.3cm}
+\textbf{Dài hạn}
+\begin{itemize}
+    \item Áp dụng các mô hình Matrix Factorization (SVD, ALS) hoặc Neural Collaborative Filtering để cải thiện độ chính xác trên dữ liệu thưa.
+    \item Tính đến yếu tố ngữ cảnh (Context-Aware Recommendation: thời gian, thiết bị, vị trí) và đảm bảo tính công bằng, đa dạng (Fairness \& Diversity), tránh hiện tượng bóng lọc thông tin (filter bubble).
+    \item Mở rộng kiến trúc theo hướng phân tán (ví dụ tách \texttt{SimilarityMatrix} thành dịch vụ tính toán độc lập) để đáp ứng quy mô dữ liệu lớn hơn nhiều lần so với phạm vi thử nghiệm hiện tại.
+\end{itemize}
 
 % ============================================================
-\cleardoublepage
+\addcontentsline{toc}{chapter}{Tài liệu tham khảo}
 \nocite{*}
 \bibliographystyle{ieeetr}
-\bibliography{references}  % Gọi file references.bib
+\bibliography{references}
 
 % ============================================================
 \appendix
-\chapter{Mã nguồn hàm main()}
+\chapter*{Phụ lục A: Hướng dẫn triển khai hệ thống}
+\addcontentsline{toc}{chapter}{Phụ lục A: Hướng dẫn triển khai hệ thống}
+\label{app:deployment}
 
-Hàm main() khởi tạo hệ thống, tải dữ liệu và xử lý các yêu cầu gợi ý:
+Phụ lục này mô tả quy trình thiết lập môi trường, biên dịch và khởi chạy hệ thống từ đầu trên Windows.
 
-\begin{verbatim}
-int main() {
-    try {
-        // Khởi tạo quản lý dữ liệu
-        DatabaseManager dbMgr("localhost", "root", "", "recommendationsystem");
-        
-        // Tải dữ liệu từ CSV hoặc Database
-        UserManager userMgr = dbMgr.loadUsers();
-        ItemManager itemMgr = dbMgr.loadItems();
-        InteractionManager interMgr = dbMgr.loadInteractions();
-        
-        // Xây dựng hệ thống gợi ý
-        RatingMatrix ratingMatrix(userMgr, itemMgr, interMgr);
-        SimilarityMatrix simMatrix(itemMgr, ratingMatrix);
-        Recommender recommender(ratingMatrix, simMatrix);
-        
-        // Xử lý yêu cầu gợi ý
-        int userId = 123;
-        int k = 5;
-        vector<pair<int, double>> recommendations = 
-            recommender.getRecommendations(userId, k);
-        
-        cout << "Recommendations for user " << userId << ":" << endl;
-        for (auto& rec : recommendations) {
-            cout << "Item " << rec.first 
-                 << " - Score: " << rec.second << endl;
-        }
-        
-        return 0;
-    } catch (exception& e) {
-        cerr << "Error: " << e.what() << endl;
-        return 1;
-    }
+\section*{A.1 Yêu cầu hệ thống}
+
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash}p{3.5cm}|>{\raggedright\arraybackslash}p{4.5cm}|>{\raggedright\arraybackslash}X|}
+        \hline
+        \textbf{Thành phần} & \textbf{Phiên bản tối thiểu} & \textbf{Ghi chú} \\ \hline
+        Hệ điều hành & Windows 10/11 & x64 \\ \hline
+        Trình biên dịch & MinGW-w64 (g++ 8.1+) & Hỗ trợ C++17 \\ \hline
+        MySQL Server & 8.0+ & Chạy local trên \texttt{127.0.0.1:3306} \\ \hline
+        Git & Bất kỳ & Clone repo \\ \hline
+        CMake & Không bắt buộc & Chỉ dùng nếu muốn build qua CMake \\ \hline
+    \end{tabularx}
+    \caption{Yêu cầu hệ thống}
+    \label{tab:yeu_cau_he_thong}
+\end{table}
+
+\noindent\textbf{\textit{Lưu ý quan trọng:}} Hệ thống sử dụng \textbf{CrowCpp} làm HTTP server và \textbf{MySQL Connector/C} để kết nối MySQL. Cả hai thư viện đã được đóng gói sẵn trong thư mục \texttt{include/} và \texttt{third\_party/mysql/}. Bạn \textbf{không cần cài thêm} thư viện bên ngoài.
+
+\section*{A.2 Quy trình triển khai (8 bước)}
+
+\subsubsection*{Bước 1 - Clone repository}
+\begin{lstlisting}[language=bash, style=cppstyle, caption={Clone repository}]
+git clone https://github.com/ndtchumoa/Recommendation-System.git
+cd Recommendation-System
+\end{lstlisting}
+
+\subsubsection*{Bước 2 - Kiểm tra cấu trúc thư mục}
+
+Đảm bảo cây thư mục đầy đủ:
+\vspace{0.3cm}
+\dirtree{%
+.1 Recommendation-System/.
+.2 1\_models/ \DTcomment{Entity classes}.
+.2 2\_data/ \DTcomment{CSV Loader \& DatabaseManager}.
+.3 db\_config.example.h \DTcomment{Mẫu cấu hình DB}.
+.2 3\_core/ \DTcomment{Core algorithms}.
+.2 4\_dataset/ \DTcomment{CSV dữ liệu mẫu}.
+.2 6\_services/ \DTcomment{Service layer}.
+.2 include/ \DTcomment{CrowCpp + ASIO headers}.
+.2 third\_party/mysql/ \DTcomment{MySQL Connector/C headers + libs}.
+.3 include/.
+.3 lib/.
+.4 libmysql.dll.
+.4 libmysql.a.
+.2 main.cpp \DTcomment{Entry point}.
+.2 README.md.
 }
-\end{verbatim}
+\vspace{0.3cm}
 
-\chapter{Mô tả các hàm xử lý chính}
+\subsubsection*{Bước 3 - Cài đặt MySQL Server (nếu chưa có)}
 
-\section{RatingMatrix::buildMatrix()}
+\textbf{Cách A - XAMPP (khuyên dùng cho dev):}
+\begin{enumerate}
+    \item Tải \href{https://www.apachefriends.org/}{XAMPP} và cài đặt.
+    \item Mở XAMPP Control Panel $\rightarrow$ Start \textbf{MySQL} (port 3306, user: \texttt{root}, password: rỗng \texttt{""}).
+\end{enumerate}
 
-\begin{verbatim}
+\textbf{Cách B - MySQL Installer (bản đầy đủ):}
+\begin{enumerate}
+    \item Tải \href{https://dev.mysql.com/downloads/installer/}{MySQL Installer} và cài MySQL Server 8.0+.
+    \item Ghi nhớ \textbf{port}, \textbf{user} và \textbf{password} bạn đã đặt.
+\end{enumerate}
+
+\subsubsection*{Bước 4 - Tạo database}
+
+Mở MySQL client (Command Prompt / Workbench) và chạy:
+\begin{lstlisting}[language=SQL, style=cppstyle, caption={Tạo database}]
+CREATE DATABASE IF NOT EXISTS recommendation_db
+    CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- (tuy chon) Tao user rieng cho ung dung
+CREATE USER 'rec_app'@'localhost' IDENTIFIED BY 'your_password';
+GRANT ALL PRIVILEGES ON recommendation_db.* TO 'rec_app'@'localhost';
+FLUSH PRIVILEGES;
+\end{lstlisting}
+
+\begin{quote}
+Ứng dụng sẽ tự gọi \texttt{createTables()} khi khởi chạy để tạo các bảng \texttt{users}, \texttt{items}, \texttt{interactions} - bạn không cần tạo bảng bằng tay.
+\end{quote}
+
+\subsubsection*{Bước 5 - Cấu hình kết nối database}
+
+Mỗi thành viên trong nhóm cần tạo file cấu hình DB \textbf{cá nhân} (không commit lên git):
+\begin{lstlisting}[language=bash, style=cppstyle, caption={Sao chép file cấu hình DB}]
+# PowerShell
+Copy-Item 2_data\db_config.example.h 2_data\db_config.h
+\end{lstlisting}
+
+Mở file \texttt{2\_data/db\_config.h} và sửa các thông số:
+\begin{lstlisting}[caption={Nội dung db\_config.h cần chỉnh sửa}]
+static const std::string DB_HOST = "127.0.0.1";
+static const std::string DB_USER = "root";       // Ten dang nhap
+static const std::string DB_PASS = "";
+// Mat khau (XAMPP: "")
+static const std::string DB_NAME = "recommendation_db";
+static const unsigned int DB_PORT = 3306;
+\end{lstlisting}
+
+\begin{quote}
+File \texttt{db\_config.h} đã được liệt kê trong \texttt{.gitignore} $\rightarrow$ \textbf{an toàn, không bị đẩy lên GitHub}.
+\end{quote}
+
+\subsubsection*{Bước 6 - Kiểm tra MySQL Connector/C}
+
+Thư mục \texttt{third\_party/mysql/} đã được commit kèm trong repo, bao gồm:
+\begin{itemize}
+    \item \texttt{include/} - chứa \texttt{mysql.h} và các header MySQL
+    \item \texttt{lib/libmysql.dll} - thư viện động (runtime)
+    \item \texttt{lib/libmysql.a} - import library cho MinGW g++ (đã được tạo từ \texttt{libmysql.dll})
+\end{itemize}
+
+\begin{quote}
+Nếu thư mục này còn đầy đủ $\rightarrow$ \textbf{bỏ qua bước này}. Nếu thiếu, làm theo hướng dẫn chi tiết tại \texttt{SETUP\_MYSQL\_CONNECTOR.md}.
+\end{quote}
+
+\subsubsection*{Bước 7 - Biên dịch (build)}
+
+\textbf{Cách A - Build bằng VSCode Task (Ctrl+Shift+B):}
+\begin{enumerate}
+    \item Mở project trong VSCode.
+    \item Nhấn \texttt{Ctrl+Shift+B} $\rightarrow$ chọn task \textbf{build-recommendation}.
+    \item Task sẽ tự động copy \texttt{libmysql.dll} ra thư mục gốc sau khi build.
+\end{enumerate}
+
+\textbf{Cách B - Build thủ công (Windows cmd):}
+\begin{lstlisting}[language=bash, style=cppstyle, caption={Lệnh build thủ công}]
+g++ -std=c++17 -O2 -Wall ^
+  -Ithird_party/mysql/include ^
+  main.cpp 1_models/*.cpp 2_data/*.cpp 3_core/*.cpp ^
+  6_services/*.cpp ^
+  -Lthird_party/mysql/lib -llibmysql ^
+  -lws2_32 -lwsock32 -lpthread ^
+  -o recommendation.exe
+
+copy third_party\mysql\lib\libmysql.dll .
+\end{lstlisting}
+
+\begin{quote}
+\textbf{Lưu ý:} \texttt{libmysql.dll} \textbf{phải nằm cùng thư mục với \texttt{recommendation.exe}} khi chạy.
+\end{quote}
+
+\subsubsection*{Bước 8 - Đưa dữ liệu mẫu vào MySQL (seed)}
+
+\textbf{Cách A - Import tự động (khuyên dùng):}
+
+Chạy chương trình; \texttt{main.cpp} sẽ tự động đọc CSV và đồng bộ vào MySQL:
+\begin{lstlisting}[language=bash, style=cppstyle]
+recommendation.exe
+\end{lstlisting}
+
+\textbf{Cách B - Import từ file \texttt{.sql}:}
+\begin{lstlisting}[language=bash, style=cppstyle, caption={Import dữ liệu mẫu từ SQL dump}]
+mysql -u root -p recommendation_db < recommendationsystem_users.sql
+mysql -u root -p recommendation_db < recommendationsystem_items.sql
+mysql -u root -p recommendation_db < recommendationsystem_interactions.sql
+\end{lstlisting}
+(Thứ tự quan trọng: \textbf{users $\rightarrow$ items $\rightarrow$ interactions} vì có ràng buộc FOREIGN KEY.)
+
+\section*{A.3 Khởi chạy và kiểm tra hệ thống}
+
+Sau khi build thành công, chạy:
+\begin{lstlisting}[language=bash, style=cppstyle]
+recommendation.exe
+\end{lstlisting}
+
+Chương trình sẽ: (1) nạp dữ liệu từ \texttt{4\_dataset/*.csv}, (2) đồng bộ vào MySQL, (3) khởi tạo Recommender Engine, (4) chạy demo console, (5) khởi động API server tại \url{http://localhost:8080}. Nhấn \texttt{Ctrl+C} để tắt server.
+
+Kiểm tra API bằng trình duyệt hoặc \texttt{curl}:
+\begin{lstlisting}[language=bash, style=cppstyle, caption={Ví dụ gọi API}]
+# Lay danh sach san pham
+curl http://localhost:8080/products
+
+# Lay goi y cho user U001
+curl http://localhost:8080/recommend/U001
+
+# Lay trending items
+curl http://localhost:8080/trending
+\end{lstlisting}
+
+\section*{A.4 Danh sách các API Endpoints}
+
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabularx}{\textwidth}{|l|l|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|}
+        \hline
+        \textbf{Method} & \textbf{Endpoint} & \textbf{Chức năng} & \textbf{Body (JSON)} \\ \hline
+        GET & \texttt{/products} & Lấy danh sách sản phẩm & - \\ \hline
+        GET & \texttt{/trending} & Lấy top 20 sản phẩm thịnh hành & - \\ \hline
+        GET & \texttt{/recommend/<user\_id>} & Gợi ý sản phẩm cho user & - \\ \hline
+        GET & \texttt{/product/<item\_id>} & Chi tiết sản phẩm & - \\ \hline
+        POST & \texttt{/register} & Đăng ký tài khoản & \texttt{\{name, email, password\}} \\ \hline
+        POST & \texttt{/login} & Đăng nhập & \texttt{\{email, password\}} \\ \hline
+        POST & \texttt{/logout} & Đăng xuất & \texttt{\{user\_id\}} \\ \hline
+        POST & \texttt{/cart/add} & Thêm vào giỏ hàng & \texttt{\{user\_id, item\_id, quantity\}} \\ \hline
+        POST & \texttt{/cart/remove} & Xóa khỏi giỏ hàng & \texttt{\{user\_id, item\_id\}} \\ \hline
+        POST & \texttt{/cart/get} & Xem giỏ hàng & \texttt{\{user\_id\}} \\ \hline
+        POST & \texttt{/track} & Ghi nhận tương tác & \texttt{\{user\_id, item\_id, action\}} \\ \hline
+        POST & \texttt{/order/create} & Tạo đơn hàng & \texttt{\{user\_id\}} \\ \hline
+    \end{tabularx}
+    \caption{Danh sách các API Endpoints}
+    \label{tab:api_endpoints}
+\end{table}
+
+\begin{quote}
+Tất cả endpoint đều hỗ trợ CORS (có xử lý OPTIONS preflight).
+\end{quote}
+
+% ============================================================
+\chapter*{Phụ lục B: Mã nguồn các thuật toán cốt lõi}
+\addcontentsline{toc}{chapter}{Phụ lục B: Mã nguồn các thuật toán cốt lõi}
+\label{app:sourcecode}
+
+Phụ lục này trình bày mã nguồn hoàn chỉnh của năm thuật toán/hàm cốt lõi nhất trong hệ thống: hàm tính điểm tương tác, xây dựng ma trận đánh giá, tính độ tương đồng Cosine, gợi ý cá nhân hóa và gợi ý Cold Start.
+
+\section*{B.1 Hàm \texttt{Interaction::computeScore()} - Tính điểm tương tác tổng hợp}
+
+\textit{File: \texttt{1\_models/Interaction.cpp}}
+
+Đây là hàm nền tảng của toàn hệ thống. Thay vì chỉ dựa vào rating số sao, hàm kết hợp bốn tín hiệu hành vi với trọng số phản ánh mức độ cam kết thực sự: mua hàng (5.0) $>$ đánh giá (3.0) $>$ thêm giỏ (2.0) $>$ click (1.0).
+
+\begin{lstlisting}[caption={Hàm computeScore() - File 1\_models/Interaction.cpp}, label={lst:compute_score}]
+// Cac trong so hanh vi (hang so static)
+const double Interaction::WEIGHT_CLICK    = 1.0;
+const double Interaction::WEIGHT_ADD_CART = 2.0;
+const double Interaction::WEIGHT_PURCHASE = 5.0;
+const double Interaction::WEIGHT_RATING   = 3.0;
+
+// Cong thuc tinh diem co trong so:
+// Score = (Click * W_click) + (Cart * W_cart)
+//       + (Purchase * W_purchase) + (Rating * W_rating)
+double Interaction::computeScore() const {
+    double score = (click_count    * WEIGHT_CLICK)
+                 + (add_cart_count * WEIGHT_ADD_CART)
+                 + (purchase_count * WEIGHT_PURCHASE)
+                 + (rating         * WEIGHT_RATING);
+    return score;
+}
+\end{lstlisting}
+
+\section*{B.2 Hàm \texttt{RatingMatrix::buildMatrix()} - Xây dựng ma trận User-Item}
+
+\textit{File: \texttt{3\_core/RatingMatrix.cpp}}
+
+Hàm duyệt qua toàn bộ \texttt{MyVector<Interaction>} và xây dựng ma trận thưa hai chiều \texttt{matrix[user\_id][item\_id] = score}. Sử dụng \texttt{MyMap} lồng nhau để chỉ lưu các ô có giá trị khác 0, tiết kiệm bộ nhớ đáng kể so với ma trận dày.
+
+\begin{lstlisting}[caption={Hàm buildMatrix() - File 3\_core/RatingMatrix.cpp}, label={lst:build_matrix}]
 void RatingMatrix::buildMatrix(
-    const InteractionManager& interMgr) {
-    
-    // Xây dựng ma trận người dùng - sản phẩm
-    // Ma trận thưa lưu trữ dưới dạng unordered_map
-    
-    for (const auto& interaction : interMgr.getAllInteractions()) {
-        int userId = interaction.user_id;
-        int itemId = interaction.item_id;
-        double weight = calculateWeight(interaction);
-        
-        ratingMatrix[userId][itemId] = weight;
+        const MyVector<Interaction>& interactions) {
+    for (int i = 0; i < interactions.size(); ++i) {
+        std::string u_id = interactions[i].getUserId();
+        std::string i_id = interactions[i].getItemId();
+
+        // Goi computeScore() tu lop Interaction
+        // de lay diem tong hop co trong so
+        double score = interactions[i].computeScore();
+
+        // Gan vao ma tran (tu dong tao moi neu chua ton tai)
+        matrix[u_id][i_id] = score;
     }
 }
-\end{verbatim}
+\end{lstlisting}
 
-\section{SimilarityMatrix::computeSimilarity()}
+Sau \texttt{buildMatrix()}, có thể gọi thêm \texttt{normalizeMatrix()} để thực hiện Mean-Centering - trừ điểm trung bình của mỗi user khỏi từng score, giúp chuẩn hóa xu hướng đánh giá cao/thấp cá nhân.
 
-\begin{verbatim}
-double SimilarityMatrix::computeSimilarity(
-    int itemId1, int itemId2) {
-    
-    // Lấy vector xếp hạng của 2 sản phẩm
-    vector<double> v1 = getRatingVector(itemId1);
-    vector<double> v2 = getRatingVector(itemId2);
-    
-    // Tính Cosine Similarity
-    double dotProduct = 0.0;
-    double norm1 = 0.0, norm2 = 0.0;
-    
-    for (size_t i = 0; i < v1.size(); i++) {
-        dotProduct += v1[i] * v2[i];
-        norm1 += v1[i] * v1[i];
-        norm2 += v2[i] * v2[i];
+\section*{B.3 Hàm \texttt{SimilarityMatrix::calculateCosine()} - Tính độ tương đồng Cosine tối ưu}
+
+\textit{File: \texttt{3\_core/SimilarityMatrix.cpp}}
+
+Hàm tính Cosine Similarity giữa hai vector sản phẩm. Kỹ thuật cốt lõi là \texttt{smallerMap}: chỉ duyệt qua vector có ít phần tử hơn và dùng tra cứu $O(1)$ của bảng băm để kiểm tra tập giao. Điều này giảm độ phức tạp từ $O(N_u)$ xuống $O(d)$ với $d$ là mật độ tương tác.
+
+\begin{lstlisting}[caption={Hàm calculateCosine() tối ưu - File 3\_core/SimilarityMatrix.cpp}, label={lst:calc_cosine}]
+double SimilarityMatrix::calculateCosine(
+        const MyMap<std::string, double>& itemA_users,
+        const MyMap<std::string, double>& itemB_users) const {
+    double dotProduct = 0.0, normA = 0.0, normB = 0.0;
+
+    // 1. Tinh do dai vector A
+    MyVector<std::string> keysA = itemA_users.keys();
+    for (int i = 0; i < keysA.size(); ++i) {
+        double val;
+        itemA_users.find(keysA[i], val);
+        normA += val * val;
     }
-    
-    norm1 = sqrt(norm1);
-    norm2 = sqrt(norm2);
-    
-    if (norm1 == 0.0 || norm2 == 0.0) return 0.0;
-    
-    return dotProduct / (norm1 * norm2);
+
+    // 2. Tinh do dai vector B
+    MyVector<std::string> keysB = itemB_users.keys();
+    for (int i = 0; i < keysB.size(); ++i) {
+        double val;
+        itemB_users.find(keysB[i], val);
+        normB += val * val;
+    }
+
+    // Neu mot trong hai vector bang 0 -> cosine = 0
+    if (normA == 0.0 || normB == 0.0) return 0.0;
+
+    // 3. Ky thuat smallerMap: duyet qua map nho hon
+    //    de giam do phuc tap tinh tich vo huong
+    const MyMap<std::string, double>* smallerMap = &itemA_users;
+    const MyMap<std::string, double>* largerMap  = &itemB_users;
+    if (itemA_users.size() > itemB_users.size()) {
+        smallerMap = &itemB_users;
+        largerMap  = &itemA_users;
+    }
+
+    MyVector<std::string> smallerKeys = smallerMap->keys();
+    for (int i = 0; i < smallerKeys.size(); ++i) {
+        double scoreA, scoreB;
+        smallerMap->find(smallerKeys[i], scoreA);
+        // Chi tinh neu User nay cung tuong tac voi item ben kia
+        if (largerMap->find(smallerKeys[i], scoreB)) {
+            dotProduct += scoreA * scoreB;
+        }
+    }
+
+    // 4. Tra ve cosine
+    return dotProduct / (std::sqrt(normA) * std::sqrt(normB));
 }
-\end{verbatim}
+\end{lstlisting}
 
-\section{Recommender::getRecommendations()}
+\section*{B.4 Hàm \texttt{Recommender::forUser()} - Gợi ý cá nhân hóa}
 
-\begin{verbatim}
-vector<pair<int, double>> Recommender::getRecommendations(
-    int userId, int k) {
-    
-    // Lấy danh sách items đã được đánh giá
-    set<int> ratedItems = getRatedItems(userId);
-    
-    // Priority queue để lưu Top-K gợi ý
-    priority_queue<pair<double, int>> pq;
-    
-    // Lặp qua tất cả items chưa được đánh giá
-    for (int itemId = 0; itemId < totalItems; itemId++) {
-        if (ratedItems.find(itemId) == ratedItems.end()) {
-            double score = calculateScore(userId, itemId);
-            
-            if (pq.size() < k) {
-                pq.push({score, itemId});
-            } else if (score > pq.top().first) {
-                pq.pop();
-                pq.push({score, itemId});
+\textit{File: \texttt{3\_core/Recommender.cpp}}
+
+Hàm tổng hợp kết quả gợi ý cho một người dùng cụ thể. Logic cốt lõi: với mỗi item user đã tương tác, lấy danh sách hàng xóm từ SimilarityMatrix, tích lũy điểm dự đoán theo công thức weighted sum, rồi sắp xếp và cắt TopN.
+
+\begin{lstlisting}[caption={Hàm forUser() - File 3\_core/Recommender.cpp}, label={lst:for_user}]
+RecommendResult Recommender::forUser(
+        const std::string& uid, int topN) const {
+    // User moi chua co interaction -> Cold Start
+    if (rm_.isNewUser(uid)) {
+        std::cout << "[Recommender] '" << uid
+                  << "' la nguoi dung moi -> Cold Start\n";
+        return coldStart(topN);
+    }
+
+    const MyVector<std::string>& allItems = rm_.items();
+
+    // Tap item user da tuong tac (dung MyMap nhu mot set)
+    MyMap<std::string, bool> seen;
+    for (int i = 0; i < allItems.size(); ++i) {
+        if (rm_.get(uid, allItems[i]) > 0.0)
+            seen[allItems[i]] = true;
+    }
+
+    // Tich luy diem du doan cho cac item chua tuong tac
+    // predicted[j] = Sum(sim(i,j) * score(u,i)) / Sum|sim(i,j)|
+    MyMap<std::string, double> num, den;
+    MyVector<std::string> seenKeys = seen.keys();
+    for (int s = 0; s < seenKeys.size(); ++s) {
+        std::string iid = seenKeys[s];
+        double userScore = rm_.get(uid, iid);
+        // Lay danh sach hang xom tu SimilarityMatrix
+        MyVector<MyPair<std::string, double>> neighbors =
+            sm_.topK(iid, allItems.size());
+        for (int n = 0; n < neighbors.size(); ++n) {
+            std::string nbr = neighbors[n].first;
+            double sim = neighbors[n].second;
+            if (seen.contains(nbr)) continue; // Da xem -> bo
+            num[nbr] += sim * userScore;
+            den[nbr] += std::abs(sim);
+        }
+    }
+
+    // Tinh diem cuoi va gom vao result
+    RecommendResult result;
+    MyVector<std::string> numKeys = num.keys();
+    for (int i = 0; i < numKeys.size(); ++i) {
+        std::string iid = numKeys[i];
+        double d;
+        if (!den.find(iid, d) || d == 0.0) continue;
+        result.push_back(MyPair<std::string, double>(
+            iid, num[iid] / d));
+    }
+
+    // Sap xep giam dan theo score (Bubble Sort)
+    for (int i = 0; i < result.size() - 1; ++i) {
+        for (int j = 0; j < result.size() - i - 1; ++j) {
+            if (result[j].second < result[j + 1].second) {
+                MyPair<std::string, double> tmp = result[j];
+                result[j] = result[j + 1];
+                result[j + 1] = tmp;
             }
         }
     }
-    
-    // Chuyển kết quả từ priority queue
-    vector<pair<int, double>> result;
-    while (!pq.empty()) {
-        result.push_back({pq.top().second, pq.top().first});
-        pq.pop();
+
+    // Cat lay TopN
+    if (result.size() > topN) {
+        RecommendResult truncated;
+        for (int i = 0; i < topN; ++i)
+            truncated.push_back(result[i]);
+        result = truncated;
     }
-    reverse(result.begin(), result.end());
     return result;
 }
-\end{verbatim}
+\end{lstlisting}
 
-\chapter{Hướng dẫn cài đặt và sử dụng chương trình}
+\section*{B.5 Hàm \texttt{Recommender::coldStart()} - Gợi ý người dùng mới}
 
-\section{Yêu cầu hệ thống}
+\textit{File: \texttt{3\_core/Recommender.cpp}}
 
-\begin{itemize}
-    \item Windows 10+ / Linux / macOS
-    \item g++ 7.0+ hoặc MSVC 2017+
-    \item MySQL 5.7+
-    \item Git
-\end{itemize}
+Khi người dùng chưa có lịch sử tương tác, hàm này thay thế gợi ý cá nhân hóa bằng danh sách sản phẩm phổ biến nhất tính theo tổng điểm toàn hệ thống (\texttt{itemTotalScore}).
 
-\section{Bước cài đặt}
+\begin{lstlisting}[caption={Hàm coldStart() - File 3\_core/Recommender.cpp}, label={lst:cold_start}]
+RecommendResult Recommender::coldStart(int topN) const {
+    MyVector<MyPair<std::string, double>> result;
+    MyVector<std::string> allItems = rm_.items();
 
-\subsection{Bước 1: Clone Repository}
+    // Tinh tong diem cua tung item tren toan bo he thong
+    for (int i = 0; i < allItems.size(); ++i) {
+        result.push_back(MyPair<std::string, double>(
+            allItems[i],
+            rm_.itemTotalScore(allItems[i])
+        ));
+    }
 
-\begin{verbatim}
-git clone <repository_url>
-cd recommendation-system
-\end{verbatim}
+    // Sap xep giam dan theo tong diem (Bubble Sort)
+    for (int i = 0; i < result.size() - 1; ++i) {
+        for (int j = 0; j < result.size() - i - 1; ++j) {
+            if (result[j].second < result[j + 1].second) {
+                MyPair<std::string, double> tmp = result[j];
+                result[j] = result[j + 1];
+                result[j + 1] = tmp;
+            }
+        }
+    }
 
-\subsection{Bước 2: Cài đặt MySQL}
+    // Cat lay TopN san pham pho bien nhat
+    if (result.size() > topN) {
+        MyVector<MyPair<std::string, double>> truncated;
+        for (int i = 0; i < topN; ++i)
+            truncated.push_back(result[i]);
+        result = truncated;
+    }
+    return result;
+}
+\end{lstlisting}
 
-\begin{enumerate}
-    \item Tải MySQL Community Server từ \url{https://dev.mysql.com/downloads/}
-    \item Cài đặt theo hướng dẫn chính thức.
-    \item Tạo cơ sở dữ liệu:
-    \begin{verbatim}
-    CREATE DATABASE recommendationsystem;
-    \end{verbatim}
-    \item Import schema:
-    \begin{verbatim}
-    mysql -u root -p recommendationsystem < 
-    4_dataset/recommendationsystem_users.sql
-    mysql -u root -p recommendationsystem < 
-    4_dataset/recommendationsystem_items.sql
-    mysql -u root -p recommendationsystem < 
-    4_dataset/recommendationsystem_interactions.sql
-    \end{verbatim}
-\end{enumerate}
-
-\subsection{Bước 3: Cấu hình kết nối Database}
-
-Chỉnh sửa file \texttt{2\_data/db\_config.h}:
-
-\begin{verbatim}
-const char* DB_HOST = "localhost";
-const char* DB_USER = "root";
-const char* DB_PASS = "your_password";
-const char* DB_NAME = "recommendationsystem";
-\end{verbatim}
-
-\subsection{Bước 4: Biên dịch chương trình}
-
-\subsubsection{Windows (sử dụng PowerShell)}
-
-\begin{verbatim}
-$env:Path += ";C:\Program Files\mingw-w64\x86_64-8.1-win32-seh-rt_v6-rev0\mingw64\bin"
-g++ -std=c++17 -O2 -Wall -I include -I third_party/mysql/include `
-    main.cpp 1_models/User.cpp 1_models/Item.cpp `
-    1_models/Interaction.cpp 2_data/CSVLoader.cpp `
-    2_data/DatabaseManager.cpp 3_core/RatingMatrix.cpp `
-    3_core/SimilarityMatrix.cpp 3_core/Recommender.cpp `
-    6_services/UserManager.cpp 6_services/ItemManager.cpp `
-    6_services/InteractionManager.cpp `
-    -L third_party/mysql/lib -lmysql -lpthread -lws2_32 -lwsock32 `
-    -o recommendation.exe
-\end{verbatim}
-
-\subsubsection{Linux/macOS}
-
-\begin{verbatim}
-g++ -std=c++17 -O2 -Wall -I include -I /usr/include/mysql \
-    main.cpp 1_models/*.cpp 2_data/*.cpp 3_core/*.cpp \
-    6_services/*.cpp \
-    -L /usr/lib/x86_64-linux-gnu \
-    -lmysqlclient -lpthread \
-    -o recommendation
-\end{verbatim}
-
-\subsection{Bước 5: Chạy chương trình}
-
-\subsubsection{Windows}
-
-\begin{verbatim}
-.\recommendation.exe
-\end{verbatim}
-
-\subsubsection{Linux/macOS}
-
-\begin{verbatim}
-./recommendation
-\end{verbatim}
-
-\section{Sử dụng chương trình}
-
-\subsection{Tải dữ liệu từ CSV}
-
-\begin{verbatim}
-Chương trình sẽ tự động tải dữ liệu từ:
-- 4_dataset/users.csv
-- 4_dataset/items.csv
-- 4_dataset/interactions.csv
-\end{verbatim}
-
-\subsection{Sinh gợi ý}
-
-Nhập user\_id để nhận danh sách gợi ý Top-5:
-
-\begin{verbatim}
-Enter user ID: 123
-Recommendations for user 123:
-Item 45 - Score: 0.85
-Item 67 - Score: 0.78
-Item 23 - Score: 0.72
-Item 89 - Score: 0.68
-Item 34 - Score: 0.65
-\end{verbatim}
-
-\section{Khắc phục sự cố}
-
-\subsection{Lỗi kết nối MySQL}
-
-\textbf{Nguyên nhân}: Cấu hình database sai hoặc MySQL không chạy.
-
-\textbf{Giải pháp}:
-\begin{enumerate}
-    \item Kiểm tra MySQL server đang chạy.
-    \item Kiểm tra username, password trong db\_config.h.
-    \item Kiểm tra cơ sở dữ liệu tồn tại.
-\end{enumerate}
-
-\subsection{Lỗi file CSV không tìm thấy}
-
-\textbf{Nguyên nhân}: File CSV không ở vị trí đúng.
-
-\textbf{Giải pháp}:
-\begin{enumerate}
-    \item Đảm bảo file CSV nằm trong thư mục 4\_dataset/.
-    \item Kiểm tra tên file khớp với đúng tên trong code.
-\end{enumerate}
-
-\subsection{Lỗi biên dịch}
-
-\textbf{Nguyên nhân}: Compiler không hỗ trợ C++17 hoặc thư viện MySQL chưa cài.
-
-\textbf{Giải pháp}:
-\begin{enumerate}
-    \item Cập nhật compiler lên phiên bản mới nhất.
-    \item Cài đặt MySQL development libraries.
-    \item Kiểm tra đường dẫn include/lib trong lệnh biên dịch.
-\end{enumerate}
 \end{document}

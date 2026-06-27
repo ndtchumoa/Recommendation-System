@@ -1,10 +1,37 @@
 \babel@toc {vietnamese}{}\relax 
 \addvspace {10\p@ }
+\contentsline {table}{\numberline {1.1}{\ignorespaces Bảng công nghệ sử dụng trong dự án}}{8}{table.caption.5}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
+\contentsline {table}{\numberline {3.1}{\ignorespaces Kiến trúc bốn tầng của hệ thống}}{13}{table.caption.6}%
+\contentsline {table}{\numberline {3.2}{\ignorespaces Bảng Use Case tổng hợp của hệ thống}}{14}{table.caption.7}%
+\contentsline {table}{\numberline {3.3}{\ignorespaces Thiết kế các lớp thực thể (1\_models)}}{15}{table.caption.8}%
+\contentsline {table}{\numberline {3.4}{\ignorespaces Bảng trọng số hành vi trong hàm \texttt {computeScore()}}}{16}{table.caption.9}%
+\contentsline {table}{\numberline {3.5}{\ignorespaces Quan hệ giữa các thực thể trong hệ thống}}{17}{table.caption.10}%
+\contentsline {table}{\numberline {3.6}{\ignorespaces Cấu trúc các file CSV dữ liệu}}{17}{table.caption.11}%
+\contentsline {table}{\numberline {3.7}{\ignorespaces Lược đồ MySQL của hệ thống}}{18}{table.caption.12}%
+\contentsline {table}{\numberline {3.8}{\ignorespaces Bảng thiết kế REST API Endpoints}}{18}{table.caption.13}%
 \addvspace {10\p@ }
+\contentsline {table}{\numberline {4.1}{\ignorespaces Các thao tác của MyVector và độ phức tạp}}{22}{table.caption.14}%
+\contentsline {table}{\numberline {4.2}{\ignorespaces Phân tích độ phức tạp thời gian của các thao tác trên Hash Map}}{23}{table.caption.15}%
+\contentsline {table}{\numberline {4.3}{\ignorespaces Phân tích độ phức tạp thời gian của Bubble Sort}}{24}{table.caption.16}%
+\contentsline {table}{\numberline {4.4}{\ignorespaces Phân tích độ phức tạp không gian của Bubble Sort}}{25}{table.caption.17}%
+\contentsline {table}{\numberline {4.5}{\ignorespaces So sánh độ phức tạp tính toán Cosine Similarity}}{26}{table.caption.18}%
 \addvspace {10\p@ }
+\contentsline {table}{\numberline {5.1}{\ignorespaces Môi trường thực nghiệm}}{27}{table.caption.19}%
+\contentsline {table}{\numberline {5.2}{\ignorespaces Kiểm thử Nhóm 1: Nạp và xử lý dữ liệu}}{29}{table.caption.22}%
+\contentsline {table}{\numberline {5.3}{\ignorespaces Kiểm thử Nhóm 2: Hàm tính điểm \texttt {computeScore()}}}{29}{table.caption.24}%
+\contentsline {table}{\numberline {5.4}{\ignorespaces Kiểm thử Nhóm 3: Xây dựng Rating Matrix}}{30}{table.caption.25}%
+\contentsline {table}{\numberline {5.5}{\ignorespaces Kiểm thử Nhóm 4: Tính Similarity Matrix}}{30}{table.caption.26}%
+\contentsline {table}{\numberline {5.6}{\ignorespaces Kiểm thử Nhóm 5: Engine gợi ý cá nhân hóa}}{30}{table.caption.27}%
+\contentsline {table}{\numberline {5.7}{\ignorespaces Kiểm thử Nhóm 6: Gợi ý Cold Start}}{31}{table.caption.30}%
+\contentsline {table}{\numberline {5.8}{\ignorespaces Kiểm thử Nhóm 7: Xác thực người dùng}}{32}{table.caption.31}%
+\contentsline {table}{\numberline {5.9}{\ignorespaces Kiểm thử Nhóm 8: Quản lý sản phẩm}}{33}{table.caption.34}%
+\contentsline {table}{\numberline {5.10}{\ignorespaces Kiểm thử Nhóm 9: Quản lý giỏ hàng}}{34}{table.caption.38}%
+\contentsline {table}{\numberline {5.11}{\ignorespaces Kiểm thử Nhóm 10: Đặt hàng, gợi ý chéo và API}}{35}{table.caption.40}%
+\contentsline {table}{\numberline {5.12}{\ignorespaces Bảng tổng hợp kết quả kiểm thử 37 test case}}{36}{table.caption.42}%
 \addvspace {10\p@ }
-\addvspace {10\p@ }
-\addvspace {10\p@ }
-\addvspace {10\p@ }
+\contentsline {table}{\numberline {6.1}{\ignorespaces Tổng kết các kỹ thuật lập trình đã vận dụng}}{38}{table.caption.43}%
+\contentsline {table}{\numberline {6.2}{\ignorespaces Các hạn chế hiện tại của hệ thống}}{38}{table.caption.44}%
+\contentsline {table}{\numberline {3}{\ignorespaces Yêu cầu hệ thống}}{41}{table.caption.48}%
+\contentsline {table}{\numberline {4}{\ignorespaces Danh sách các API Endpoints}}{44}{table.caption.60}%

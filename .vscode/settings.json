@@ -46,14 +46,68 @@
     "**/build",
     "**/build/**",
     "**/.*",
-    "**/.*/**",
-    "**/.vscode",
-    "**/.vscode/**"
+    "**/.*/**"
   ],
   "C_Cpp_Runner.useAddressSanitizer": false,
   "C_Cpp_Runner.useUndefinedSanitizer": false,
   "C_Cpp_Runner.useLeakSanitizer": false,
   "C_Cpp_Runner.showCompilationTime": false,
   "C_Cpp_Runner.useLinkTimeOptimization": false,
-  "C_Cpp_Runner.msvcSecureNoWarnings": false
+  "C_Cpp_Runner.msvcSecureNoWarnings": false,
+
+  /* --- CẤU HÌNH LATEX WORKSHOP CHUẨN --- */
+  "latex-workshop.latex.tools": [
+    {
+      "name": "pdflatex",
+      "command": "pdflatex",
+      "args": [
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        "-file-line-error",
+        "%DOC%"
+      ]
+    },
+    {
+      "name": "bibtex",
+      "command": "bibtex",
+      "args": [
+        "%DOCFILE%"
+      ]
+    },
+    {
+      "name": "latexmk",
+      "command": "latexmk",
+      "args": [
+        "-pdf",
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        "-file-line-error",
+        "%DOC%"
+      ]
+    }
+  ],
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "pdflatex ➞ bibtex ➞ pdflatex x2",
+      "tools": [
+        "pdflatex",
+        "bibtex",
+        "pdflatex",
+        "pdflatex"
+      ]
+    },
+    {
+      "name": "latexmk (pdflatex)",
+      "tools": [
+        "latexmk"
+      ]
+    }
+  ],
+  "latex-workshop.view.pdf.viewer": "tab",
+  
+  // Cấu hình dọn dẹp file rác thông minh
+  "latex-workshop.latex.autoClean.run": "onFailed", // Chỉ tự dọn dẹp nếu build lỗi. Nếu build thành công, việc dọn dẹp sẽ do các tool (như latexmk) tự xử lý hoặc dọn thủ công để tránh làm mất file .aux của bibtex giữa các chu kỳ dịch.
+  "latex-workshop.latex.clean.extension": [
+    ".blg", ".bbl", ".aux", ".log", ".toc", ".out", ".synctex.gz", ".fdb_latexmk", ".fls"
+  ]
 }

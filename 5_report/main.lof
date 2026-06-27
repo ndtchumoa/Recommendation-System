@@ -4,7 +4,16 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\addvspace {10\p@ }
-\addvspace {10\p@ }
-\addvspace {10\p@ }
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Kết quả chạy demo console - luồng Auth, Item và Cart/Order}}{28}{figure.caption.20}%
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Giao diện ReactJS hiển thị danh sách gợi ý sản phẩm cá nhân hóa}}{28}{figure.caption.21}%
+\contentsline {figure}{\numberline {5.3}{\ignorespaces Kết quả kiểm thử TC01--TC03: Nạp dữ liệu từ CSV}}{29}{figure.caption.23}%
+\contentsline {figure}{\numberline {5.4}{\ignorespaces Kết quả kiểm thử TC13--TC16: Gợi ý sản phẩm cá nhân hóa}}{31}{figure.caption.28}%
+\contentsline {figure}{\numberline {5.5}{\ignorespaces Kết quả kiểm thử TC13--TC16: Gợi ý sản phẩm cá nhân hóa}}{31}{figure.caption.29}%
+\contentsline {figure}{\numberline {5.6}{\ignorespaces Kết quả kiểm thử TC19--TC23: Luồng xác thực người dùng}}{32}{figure.caption.32}%
+\contentsline {figure}{\numberline {5.7}{\ignorespaces Kết quả kiểm thử TC19--TC23: Luồng xác thực người dùng}}{32}{figure.caption.33}%
+\contentsline {figure}{\numberline {5.8}{\ignorespaces Kết quả kiểm thử TC24--TC27: Quản lý sản phẩm}}{33}{figure.caption.35}%
+\contentsline {figure}{\numberline {5.9}{\ignorespaces Kết quả kiểm thử TC24--TC27: Quản lý sản phẩm}}{33}{figure.caption.36}%
+\contentsline {figure}{\numberline {5.10}{\ignorespaces Kết quả kiểm thử TC24--TC27: Quản lý sản phẩm}}{34}{figure.caption.37}%
+\contentsline {figure}{\numberline {5.11}{\ignorespaces Kết quả kiểm thử TC28--TC31: Quản lý giỏ hàng}}{34}{figure.caption.39}%
+\contentsline {figure}{\numberline {5.12}{\ignorespaces Kết quả kiểm thử TC32--TC37: Đặt hàng, gợi ý chéo và kiểm thử API}}{35}{figure.caption.41}%
 \addvspace {10\p@ }
