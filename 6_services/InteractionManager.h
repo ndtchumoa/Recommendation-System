@@ -4,7 +4,7 @@
 #include <string>
 #include "../2_data/MyDataStructures.h"
 #include "../1_models/Item.h"
-
+#include "../1_models/Interaction.h"
 struct CartItem {
     std::string item_id;
     std::string item_name;
@@ -33,11 +33,14 @@ private:
     MyMap<std::string, Order> orders;
     MyVector<Item> items;
 
+    MyVector<Interaction> all_interactions;
+
     std::string generateOrderId() const;
     std::string getCurrentDateTime() const;
     bool findItemById(const std::string& itemId, Item& out) const;
 
 public:
+    InteractionManager(const MyVector<Item>& loaded_items, const MyVector<Interaction>& loaded_interactions);
     InteractionManager(const MyVector<Item>& loaded_items);
 
     MyPair<bool, std::string> AddToCart(const std::string& userId,
@@ -64,7 +67,10 @@ public:
 
     void AddInteraction(const std::string& userId,
                         const std::string& itemId,
-                        const std::string& type) const;
+                        const std::string& type);
+const MyVector<Interaction>& getInteractions() const {
+        return all_interactions;
+    }
 };
 
 #endif // INTERACTION_MANAGER_H

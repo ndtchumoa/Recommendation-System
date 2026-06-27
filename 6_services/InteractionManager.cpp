@@ -6,8 +6,9 @@
 #include <cstdlib>
 
 // --- Constructor ---
-InteractionManager::InteractionManager(const MyVector<Item>& loaded_items) {
+InteractionManager::InteractionManager(const MyVector<Item>& loaded_items, const MyVector<Interaction>& loaded_interactions) {    
     items = loaded_items;
+    all_interactions = loaded_interactions;
 }
 
 // --- Hỗ trợ: Tạo orderId ---
@@ -275,12 +276,43 @@ MyVector<Item> InteractionManager::GetSuggestedProducts(const std::string& order
 }
 
 // --- AddInteraction: Ghi log tương tác ra console (mô phỏng) ---
+// --- AddInteraction: Lưu vào RAM (all_interactions) ---
+// --- AddInteraction: Lưu vào RAM (all_interactions) ---
 void InteractionManager::AddInteraction(const std::string& userId,
                                          const std::string& itemId,
-                                         const std::string& type) const {
+                                         const std::string& type) {
+    // 1. In Log ra màn hình 
     std::string timestamp = getCurrentDateTime();
-    std::cout << "[LOG] User " << userId
-              << " | " << type
-              << " | Item " << itemId
-              << " | " << timestamp << "\n";
+    std::cout << "[LOG] User " << userId << " | " << type << " | Item " << itemId << " | " << timestamp << "\n";
+
+    // 2. Tìm xem cặp User - Item này đã từng có lịch sử tương tác chưa
+    bool found = false;
+    for (int i = 0; i < all_interactions.size(); ++i) {
+        if (all_interactions[i].user_id == userId && all_interactions[i].item_id == itemId) {
+            // Đã từng có tương tác -> Chỉ cộng dồn hành vi (Click, Add Cart, Purchase)
+            if (type == "click") all_interactions[i].click_count++;
+            else if (type == "add_cart") all_interactions[i].add_cart_count++;
+            else if (type == "purchase") all_interactions[i].purchase_count++;
+            
+            // Đã xóa phần tự động tính rating ở đây để bảo toàn cột sao đánh giá
+
+            found = true;
+            break;
+        }
+    }
+
+    // 3. Nếu chưa từng tương tác bao giờ -> Tạo record mới
+    if (!found) {
+        // Khởi tạo record mới với điểm rating mặc định luôn là 0.0
+        Interaction newInteract(userId, itemId, 0, 0, 0, 0.0);
+        
+        if (type == "click") newInteract.click_count = 1;
+        else if (type == "add_cart") newInteract.add_cart_count = 1;
+        else if (type == "purchase") newInteract.purchase_count = 1;
+
+        // Đã xóa phần set rating 0.1, 0.5, 1.0 ở đây
+
+        all_interactions.push_back(newInteract);
+        std::cout << "[DEBUG] Da them vao RAM: User " << userId << " | Item " << itemId << "\n";
+    }
 }

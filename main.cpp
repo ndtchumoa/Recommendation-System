@@ -95,7 +95,7 @@ int main() {
 
     UserManager userMgr(users);
     ItemManager itemMgr(items);
-    InteractionManager interactMgr(items);
+    InteractionManager interactMgr(loader.getItems(), loader.getInteractions());
 
     // ─────────────────────────────────────────────────────────────
     // 3. KHỞI TẠO VÀ CHẠY API SERVER SONG SONG
@@ -322,7 +322,8 @@ CROW_ROUTE(app, "/login").methods(crow::HTTPMethod::POST, crow::HTTPMethod::OPTI
     // ─────────────────────────────────────────────────────────────
     // 4. API THÊM GIỎ HÀNG (ADD TO CART)
     // ─────────────────────────────────────────────────────────────
-    CROW_ROUTE(app, "/cart/add").methods(crow::HTTPMethod::POST, crow::HTTPMethod::OPTIONS)([&interactMgr](const crow::request& req){
+   CROW_ROUTE(app, "/cart/add").methods(crow::HTTPMethod::POST, crow::HTTPMethod::OPTIONS)
+    ([&interactMgr, &loader](const crow::request& req){ // 🔥 1. Thêm &loader vào trong ngoặc vuông
         if (req.method == crow::HTTPMethod::OPTIONS) {
             crow::response r(204);
             r.add_header("Access-Control-Allow-Methods", "POST, OPTIONS");
@@ -336,7 +337,6 @@ CROW_ROUTE(app, "/login").methods(crow::HTTPMethod::POST, crow::HTTPMethod::OPTI
         if (!body) {
             res["status"] = "error";
             crow::response r(400, res);
-            
             return r;
         }
 
@@ -344,13 +344,21 @@ CROW_ROUTE(app, "/login").methods(crow::HTTPMethod::POST, crow::HTTPMethod::OPTI
         std::string item_id = body["item_id"].s();
         int quantity = body.has("quantity") ? body["quantity"].i() : 1;
 
+        // --- BƯỚC 1: Xử lý giỏ hàng (Code cũ của cậu) ---
         interactMgr.AddToCart(user_id, item_id, quantity);
         
+        // --- BƯỚC 2: Ghi nhận tương tác vào RAM để tính điểm AI ---
+        // (Gọi hàm này để nó cộng dồn điểm add_cart và tính rating)
+        interactMgr.AddInteraction(user_id, item_id, "add_cart");
+
+        // --- BƯỚC 3: Ghi đè toàn bộ mảng RAM xuống file CSV ---
+        loader.saveInteractions("4_dataset/interactions.csv", interactMgr.getInteractions());
+        std::cout << "[+] Da luu hanh vi ADD_CART xuong file CSV!\n";
+
         res["status"] = "success";
         res["message"] = "Da them vao gio hang";
 
         crow::response r(res);
-        
         return r;
     });
 
@@ -378,39 +386,57 @@ if (body.has("user_id")) {
     return r;
 });
 
-CROW_ROUTE(app, "/product/<string>").methods(crow::HTTPMethod::GET, crow::HTTPMethod::OPTIONS)([&itemMgr](const crow::request& req, std::string itemId){
-    if (req.method == crow::HTTPMethod::OPTIONS) {
-        crow::response r(204);
-        r.add_header("Access-Control-Allow-Methods", "GET, OPTIONS");
-        r.add_header("Access-Control-Allow-Headers", "Content-Type");
-        return r;
-    }
+// 🔥 Nhớ thêm &interactMgr và &loader vào ngoặc vuông
+    CROW_ROUTE(app, "/product/<string>").methods(crow::HTTPMethod::GET, crow::HTTPMethod::OPTIONS)
+    ([&itemMgr, &interactMgr, &loader](const crow::request& req, std::string itemId){
+        if (req.method == crow::HTTPMethod::OPTIONS) {
+            crow::response r(204);
+            r.add_header("Access-Control-Allow-Methods", "GET, OPTIONS");
+            r.add_header("Access-Control-Allow-Headers", "Content-Type");
+            return r;
+        }
 
-    Item detail;
-    crow::json::wvalue res;
+        Item detail;
+        crow::json::wvalue res;
 
-    if (itemMgr.GetProductDetail(itemId, detail)) {
-        res["status"] = "success";
-        
-        crow::json::wvalue prod;
-        // Đã sửa thành hàm get()
-        prod["id"] = detail.getItemId(); 
-        prod["name"] = detail.getName();
-        prod["category"] = detail.getCategory();
-        prod["price"] = detail.getPrice();
-        
-        res["product"] = std::move(prod);
+        if (itemMgr.GetProductDetail(itemId, detail)) {
+            res["status"] = "success";
+            
+            crow::json::wvalue prod;
+            prod["id"] = detail.getItemId(); 
+            prod["name"] = detail.getName();
+            prod["category"] = detail.getCategory();
+            prod["price"] = detail.getPrice();
+            
+            res["product"] = std::move(prod);
 
-        crow::response r(res);
-        return r;
-    } else {
-        res["status"] = "error";
-        res["message"] = "Product not found";
-        
-        crow::response r(404, res);
-        return r;
-    }
-});
+            // ==========================================================
+            // 🔥 TÍNH NĂNG ĐỘ THÊM: TRACKING CLICK TRỰC TIẾP
+            // ==========================================================
+            // Cố gắng đọc user_id từ URL (ví dụ: /product/I00091?user_id=U9987)
+            char* userIdParam = req.url_params.get("user_id");
+            if (userIdParam != nullptr) {
+                std::string user_id(userIdParam);
+                
+                // 1. Ghi nhận click vào RAM
+                interactMgr.AddInteraction(user_id, itemId, "click");
+                
+                // 2. Ép lưu xuống ổ cứng
+                loader.saveInteractions("4_dataset/interactions.csv", interactMgr.getInteractions());
+                std::cout << "[+] Da luu tracking CLICK tu API /product xuong file CSV!\n";
+            }
+            // ==========================================================
+
+            crow::response r(res);
+            return r;
+        } else {
+            res["status"] = "error";
+            res["message"] = "Product not found";
+            
+            crow::response r(204, res);
+            return r;
+        }
+    });
 
 CROW_ROUTE(app, "/cart/remove").methods(crow::HTTPMethod::POST, crow::HTTPMethod::OPTIONS)([&interactMgr](const crow::request& req){
     if (req.method == crow::HTTPMethod::OPTIONS) {
@@ -482,97 +508,105 @@ CROW_ROUTE(app, "/cart/get").methods(crow::HTTPMethod::POST, crow::HTTPMethod::O
     return r;
 });
 
-CROW_ROUTE(app, "/track").methods(crow::HTTPMethod::POST, crow::HTTPMethod::OPTIONS)([&interactMgr](const crow::request& req){
-    // Xử lý CORS thăm dò
-    if (req.method == crow::HTTPMethod::OPTIONS) {
-        crow::response r(204);
-        r.add_header("Access-Control-Allow-Methods", "POST, OPTIONS");
-        r.add_header("Access-Control-Allow-Headers", "Content-Type");
-        return r;
-    }
-
-    auto body = crow::json::load(req.body);
-    crow::json::wvalue res;
-
-    if (!body) {
-        res["status"] = "error";
-        res["message"] = "Du lieu khong hop le";
-        crow::response r(400, res);
-        return r;
-    }
-
-    // Lấy dữ liệu an toàn
-    std::string user_id = body.has("user_id") ? std::string(body["user_id"].s()) : "";
-    std::string item_id = body.has("item_id") ? std::string(body["item_id"].s()) : "";
-    std::string action = body.has("action") ? std::string(body["action"].s()) : "click"; // click, add_cart, purchase
-
-    if (user_id != "" && item_id != "") {
-        // Ghi nhận vào hệ thống C++ (lưu vào Database/RAM)
-        interactMgr.AddInteraction(user_id, item_id, action);
-        res["status"] = "success";
-        res["message"] = "Da luu tracking";
-    } else {
-        res["status"] = "error";
-        res["message"] = "Thieu user_id hoac item_id";
-    }
-
-    crow::response r(res);
-    return r;
-});
-
-// API TẠO ĐƠN HÀNG
-CROW_ROUTE(app, "/order/create").methods(crow::HTTPMethod::POST, crow::HTTPMethod::OPTIONS)([&interactMgr](const crow::request& req){
-    if (req.method == crow::HTTPMethod::OPTIONS) {
-        crow::response r(204);
-        r.add_header("Access-Control-Allow-Methods", "POST, OPTIONS");
-        r.add_header("Access-Control-Allow-Headers", "Content-Type");
-        return r;
-    }
-    
-    auto body = crow::json::load(req.body);
-    crow::json::wvalue res;
-
-    if (!body || !body.has("user_id")) {
-        res["status"] = "error";
-        res["message"] = "Thieu user_id";
-        crow::response r(400, res);
-        return r;
-    }
-
-    std::string user_id = body["user_id"].s();
-    
-    // TRƯỚC KHI TẠO ĐƠN, HÃY KIỂM TRA GIỎ HÀNG THỰC TẾ
-    auto cartInfo = interactMgr.GetCartDetails(user_id);
-    if (cartInfo.first.size() == 0) {
-        res["status"] = "error";
-        res["message"] = "Gio hang trong, khong the tao don!";
-        return crow::response(res);
-    }
-
-    // 1. Tạo đơn hàng
-    MyPair<bool, std::string> orderResult = interactMgr.CreateOrder(user_id, "COD");
-
-    if (orderResult.first) {
-        // 2. TRACKING TỰ ĐỘNG
-        for (int i = 0; i < cartInfo.first.size(); ++i) {
-            interactMgr.AddInteraction(user_id, cartInfo.first[i].item_id, "purchase");
-            std::cout << "[DEBUG] Da them vao RAM: User " << user_id << " | Item " << cartInfo.first[i].item_id << std::endl;
+CROW_ROUTE(app, "/track").methods(crow::HTTPMethod::POST, crow::HTTPMethod::OPTIONS)
+    ([&interactMgr, &loader](const crow::request& req){ // 🔥 1. Thêm &loader vào đây
+        // Xử lý CORS thăm dò
+        if (req.method == crow::HTTPMethod::OPTIONS) {
+            crow::response r(204);
+            r.add_header("Access-Control-Allow-Methods", "POST, OPTIONS");
+            r.add_header("Access-Control-Allow-Headers", "Content-Type");
+            return r;
         }
 
-        // 3. XÓA GIỎ HÀNG SAU KHI MUA THÀNH CÔNG
-        // Nếu m có hàm này, hãy gọi nó để giỏ hàng trống sau khi mua
-        // interactMgr.ClearCart(user_id); 
+        auto body = crow::json::load(req.body);
+        crow::json::wvalue res;
 
-        res["status"] = "success";
-        res["order_id"] = orderResult.second;
-    } else {
-        res["status"] = "error";
-        res["message"] = "He thong tu choi tao don hang";
-    }
+        if (!body) {
+            res["status"] = "error";
+            res["message"] = "Du lieu khong hop le";
+            crow::response r(400, res);
+            return r;
+        }
 
-    crow::response r(res);
-    return r;
-});
+        // Lấy dữ liệu an toàn
+        std::string user_id = body.has("user_id") ? std::string(body["user_id"].s()) : "";
+        std::string item_id = body.has("item_id") ? std::string(body["item_id"].s()) : "";
+        std::string action = body.has("action") ? std::string(body["action"].s()) : "click"; // click, add_cart, purchase
+
+        if (user_id != "" && item_id != "") {
+            // --- BƯỚC 1: Ghi nhận vào mảng RAM (đã gọi hàm tính cộng điểm) ---
+            interactMgr.AddInteraction(user_id, item_id, action);
+            
+            // --- BƯỚC 2: ÉP LƯU XUỐNG Ổ CỨNG NGAY LẬP TỨC ---
+            loader.saveInteractions("4_dataset/interactions.csv", interactMgr.getInteractions());
+            std::cout << "[+] Da luu tracking hanh vi '" << action << "' xuong file CSV!\n";
+
+            res["status"] = "success";
+            res["message"] = "Da luu tracking";
+        } else {
+            res["status"] = "error";
+            res["message"] = "Thieu user_id hoac item_id";
+        }
+
+        crow::response r(res);
+        return r;
+    });
+// API TẠO ĐƠN HÀNG
+CROW_ROUTE(app, "/order/create").methods(crow::HTTPMethod::POST, crow::HTTPMethod::OPTIONS)
+    ([&interactMgr, &loader](const crow::request& req){ // 🔥 1. Phải có &loader ở đây
+        if (req.method == crow::HTTPMethod::OPTIONS) {
+            crow::response r(204);
+            r.add_header("Access-Control-Allow-Methods", "POST, OPTIONS");
+            r.add_header("Access-Control-Allow-Headers", "Content-Type");
+            return r;
+        }
+        
+        auto body = crow::json::load(req.body);
+        crow::json::wvalue res;
+
+        if (!body || !body.has("user_id")) {
+            res["status"] = "error";
+            res["message"] = "Thieu user_id";
+            crow::response r(400, res);
+            return r;
+        }
+
+        std::string user_id = body["user_id"].s();
+        
+        // TRƯỚC KHI TẠO ĐƠN, HÃY KIỂM TRA GIỎ HÀNG THỰC TẾ
+        auto cartInfo = interactMgr.GetCartDetails(user_id);
+        if (cartInfo.first.size() == 0) {
+            res["status"] = "error";
+            res["message"] = "Gio hang trong, khong the tao don!";
+            return crow::response(res);
+        }
+
+        // 1. Tạo đơn hàng
+        MyPair<bool, std::string> orderResult = interactMgr.CreateOrder(user_id, "COD");
+
+        if (orderResult.first) {
+            // 2. TRACKING TỰ ĐỘNG VÀO RAM
+            for (int i = 0; i < cartInfo.first.size(); ++i) {
+                interactMgr.AddInteraction(user_id, cartInfo.first[i].item_id, "purchase");
+            }
+
+            // 🔥 3. CHỐT HẠ: LƯU TỪ RAM XUỐNG Ổ CỨNG (FILE CSV)
+            loader.saveInteractions("4_dataset/interactions.csv", interactMgr.getInteractions());
+            std::cout << "[+] Da luu toan bo lich su mua hang (PURCHASE) xuong file CSV!\n";
+
+            // (Ghi chú: Cậu không cần uncomment cái hàm ClearCart đâu, 
+            // vì bên trong hàm CreateOrder cậu viết đã có sẵn lệnh gọi ClearCart rồi!)
+
+            res["status"] = "success";
+            res["order_id"] = orderResult.second;
+        } else {
+            res["status"] = "error";
+            res["message"] = "He thong tu choi tao don hang";
+        }
+
+        crow::response r(res);
+        return r;
+    });
     // Chạy server API trên luồng riêng để không làm khựng phần Demo bên dưới
     std::thread server_thread([&](){ app.port(8080).multithreaded().run(); });
     // server_thread.detach();

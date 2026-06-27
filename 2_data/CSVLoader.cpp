@@ -38,14 +38,23 @@ bool CSVLoader::loadUsers(const std::string& filepath) {
     std::string line;
     std::getline(file, line); 
     while (std::getline(file, line)) {
+        if (!line.empty() && line.back() == '\r') 
+            line.pop_back();
         if (line.empty()) continue;
         std::stringstream ss(line);
-        std::string id, name, date;
+        std::string id, name, date, email, password;
         std::getline(ss, id, ',');
         std::getline(ss, name, ',');
         std::getline(ss, date, ',');
-        std::string email    = trim(id) + "@email.com";
-        std::string password = "password123";
+        std::getline(ss, email, ',');
+        std::getline(ss, password, '\n');
+        
+        id = trim(id);
+        name = trim(name);
+        date = trim(date);
+        email = trim(email);
+        password = trim(password);
+
         users.push_back(User(trim(id), trim(name), email, password, trim(date)));
     }
     file.close();
@@ -88,23 +97,59 @@ bool CSVLoader::loadInteractions(const std::string& filepath) {
         return false;
     }
     std::string line;
-    std::getline(file, line); 
+    std::getline(file, line); // Bỏ qua dòng tiêu đề
+    
+    int lineNumber = 1; // Biến theo dõi vị trí dòng bị lỗi
+    
     while (std::getline(file, line)) {
-        if (line.empty()) continue;
+        lineNumber++;
+        if (line.empty() || line == "\r") continue;
+        
         std::stringstream ss(line);
         std::string u_id, i_id, click_str, cart_str, purchase_str, rating_str;
+        
         std::getline(ss, u_id, ',');
         std::getline(ss, i_id, ',');
         std::getline(ss, click_str, ',');
         std::getline(ss, cart_str, ',');
         std::getline(ss, purchase_str, ',');
         std::getline(ss, rating_str, ',');
-        int clicks     = click_str.empty()    ? 0 : std::stoi(trim(click_str));
-        int carts      = cart_str.empty()     ? 0 : std::stoi(trim(cart_str));
-        int purchases  = purchase_str.empty() ? 0 : std::stoi(trim(purchase_str));
-        double rating  = rating_str.empty()   ? 0.0 : std::stod(trim(rating_str));
+        
+        int clicks = 0, carts = 0, purchases = 0;
+        double rating = 0.0;
+        
+        // --- BỌC GIÁP TRY-CATCH CHỐNG CRASH CHO TỪNG CỘT ---
+        try { 
+            std::string temp = trim(click_str);
+            if (!temp.empty()) clicks = std::stoi(temp); 
+        } catch(...) { 
+            std::cerr << "[Warning] Du lieu Click rac tai dong " << lineNumber << ". Tu dong set ve 0.\n"; 
+        }
+        
+        try { 
+            std::string temp = trim(cart_str);
+            if (!temp.empty()) carts = std::stoi(temp); 
+        } catch(...) { 
+            std::cerr << "[Warning] Du lieu Cart rac tai dong " << lineNumber << ". Tu dong set ve 0.\n"; 
+        }
+        
+        try { 
+            std::string temp = trim(purchase_str);
+            if (!temp.empty()) purchases = std::stoi(temp); 
+        } catch(...) { 
+            std::cerr << "[Warning] Du lieu Purchase rac tai dong " << lineNumber << ". Tu dong set ve 0.\n"; 
+        }
+        
+        try { 
+            std::string temp = trim(rating_str);
+            if (!temp.empty()) rating = std::stod(temp); 
+        } catch(...) { 
+            std::cerr << "[Warning] Du lieu Rating rac tai dong " << lineNumber << ". Tu dong set ve 0.0.\n"; 
+        }
+
         interactions.push_back(Interaction(trim(u_id), trim(i_id), clicks, carts, purchases, rating));
     }
+    
     file.close();
     return true;
 }
